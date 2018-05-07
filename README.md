@@ -1,8 +1,7 @@
 # RTree2D
 
 RTree2D is a 2D immutable [R-tree](https://en.wikipedia.org/wiki/R-tree) with 
-[STR (Sort-Tile-Recursive)](https://archive.org/details/DTIC_ADA324493) packing 
-for efficient memory usage and ultra-fast access.
+[STR (Sort-Tile-Recursive)](https://archive.org/details/DTIC_ADA324493) packing.
 
 ## How to use
 
@@ -24,7 +23,7 @@ Add the library to a dependency list:
 
 ```sbt
 libraryDependencies += "com.sizmek.rtree2d" %% "core" % "0.1.0-SNAPSHOT"
-```
+ ```
 
 Add import, create an R-tree, and use it with search by point or rectangle requests:
 
