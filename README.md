@@ -1,6 +1,6 @@
 # RTree2D
 
-[![build status](https://travis-ci.org/Sizmek/rtree2d.svg?branch=master)](https://travis-ci.org/Sizmek/rtree2d)
+[![build status](https://travis-ci.com/Sizmek/rtree2d.svg?branch=master)](https://travis-ci.com/Sizmek/rtree2d)
 [![codecov](https://codecov.io/gh/Sizmek/rtree2d/branch/master/graph/badge.svg)](https://codecov.io/gh/Sizmek/rtree2d)
 
 RTree2D is a 2D immutable [R-tree](https://en.wikipedia.org/wiki/R-tree) with 
