@@ -8,24 +8,17 @@ RTree2D is a 2D immutable [R-tree](https://en.wikipedia.org/wiki/R-tree) with
 
 ## How to use
 
-Build it and publish locally for all Scala versions.
+The library is published to JCenter, so please add a resolver for it in your `build.sbt` file or ensure that it is 
+already added:
 
-Publish to the local Ivy repo:
-
-```sh
-sbt +publishLocal
-```
-
-Publish to the local Maven repo:
-
-```sh
-sbt +publishM2
+```sbt
+resolvers += Resolver.jcenterRepo
 ```
 
 Add the library to a dependency list:
 
 ```sbt
-libraryDependencies += "com.sizmek.rtree2d" %% "core" % "0.1.0-SNAPSHOT"
+libraryDependencies += "com.sizmek.rtree2d" %% "core" % "0.1.0"
  ```
 
 Add import, create an R-tree, and use it with search by point or rectangle requests:
@@ -53,7 +46,7 @@ assert(rtree.searchAll(1.5f, 1.5f, 2.5f, 2.5f).forall(entries.contains))
 To compile, run tests, check coverage for different Scala versions use a command:
 
 ```sh
-sbt clean +coverage +test +coverageReport
+sbt clean +coverage +test +coverageReport +mimaReportBinaryIssues
 ```
 
 ### Run benchmarks
@@ -80,3 +73,33 @@ It will save benchmark report in `benchamrk/rtree.json` file.
 Results that are stored in JSON can be easy plotted in [JMH Visualizer](http://jmh.morethan.io/) by drugging & dropping
 of your file(s) to the drop zone or using the `source` or `sources` parameters with an HTTP link to your file(s) in the 
 URLs: `http://jmh.morethan.io/?source=<link to json file>` or `http://jmh.morethan.io/?sources=<link to json file1>,<link to json file2>`.
+
+### Publish locally
+
+Publish to local Ivy repo:
+
+```sh
+sbt publishLocal
+```
+
+Publish to local Maven repo:
+
+```sh
+sbt publishM2
+```
+
+### Release
+
+For version numbering use [Recommended Versioning Scheme](http://docs.scala-lang.org/overviews/core/binary-compatibility-for-library-authors.html#recommended-versioning-scheme)
+that is used in the Scala ecosystem.
+
+Double check binary and source compatibility, including behavior, and release using the following command (credentials 
+are required):
+
+```sh
+sbt release
+```
+
+Do not push changes to github until promoted artifacts for the new version are not available for download on 
+[jCenter](http://jcenter.bintray.com/com/sizmek/rtree2d/core_2.12/)
+to avoid binary compatibility check failures in triggered Travis CI builds. 

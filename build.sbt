@@ -1,6 +1,32 @@
 import com.typesafe.sbt.pgp.PgpKeys._
+import com.typesafe.tools.mima.plugin.MimaPlugin.mimaDefaultSettings
 import sbt.Keys.scalacOptions
 import sbt.url
+import scala.sys.process._
+
+lazy val oldVersion = "git describe --abbrev=0".!!.trim.replaceAll("^v", "")
+
+def mimaSettings = mimaDefaultSettings ++ Seq(
+  mimaCheckDirection := {
+    def isPatch = {
+      val Array(newMajor, newMinor, _) = version.value.split('.')
+      val Array(oldMajor, oldMinor, _) = oldVersion.split('.')
+      newMajor == oldMajor && newMinor == oldMinor
+    }
+
+    if (isPatch) "both" else "backward"
+  },
+  mimaPreviousArtifacts := {
+    def isCheckingRequired = {
+      val Array(newMajor, newMinor, _) = version.value.split('.')
+      val Array(oldMajor, oldMinor, _) = oldVersion.split('.')
+      newMajor == oldMajor && (newMajor != "0" || newMinor == oldMinor)
+    }
+
+    if (isCheckingRequired) Set(organization.value %% moduleName.value % oldVersion)
+    else Set()
+  }
+)
 
 lazy val commonSettings = Seq(
   organization := "com.sizmek.rtree2d",
@@ -47,11 +73,7 @@ lazy val commonSettings = Seq(
 
 lazy val noPublishSettings = Seq(
   skip in publish := true,
-  publishArtifact := false,
-  // Replace tasks to work around https://github.com/sbt/sbt-bintray/issues/93
-  bintrayRelease := ((): Unit),
-  bintrayEnsureBintrayPackageExists := ((): Unit),
-  bintrayEnsureLicenses := ((): Unit),
+  publishArtifact := false
 )
 
 lazy val publishSettings = Seq(
@@ -74,6 +96,7 @@ lazy val rtree2d = project.in(file("."))
 
 lazy val core = project
   .settings(commonSettings: _*)
+  .settings(mimaSettings: _*)
   .settings(publishSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
