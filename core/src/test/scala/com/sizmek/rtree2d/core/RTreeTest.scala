@@ -180,4 +180,12 @@ class RTreeTest extends FunSuite {
         |  RTreeEntry(2.0,2.0,3.9,3.9,2)
         |""".stripMargin)
   }
+
+  test("RTree.equals") {
+    intercept[UnsupportedOperationException](RTree(entries, 2) == RTree(entries, 4))
+  }
+
+  test("RTree.hashCode") {
+    intercept[UnsupportedOperationException](RTree(entries).hashCode())
+  }
 }
