@@ -4,10 +4,11 @@ import java.util.concurrent.TimeUnit
 
 import com.sizmek.rtree2d.core._
 import org.openjdk.jmh.annotations._
+import org.openjdk.jmh.infra.Blackhole
 
 import scala.collection.breakOut
 
-@State(Scope.Benchmark)
+@State(Scope.Thread)
 @BenchmarkMode(Array(Mode.AverageTime))
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
@@ -24,6 +25,20 @@ import scala.collection.breakOut
 "-XX:+AlwaysPreTouch"
 ))
 class RTreeBenchmark {
+  private[benchmark] var rtreeEntries: Array[RTreeEntry[PointOfInterest]] = _
+  private[benchmark] var rtree: RTree[PointOfInterest] = _
+  private[this] var xys: Array[Float] = _
+  private[this] var curr: Int = 0
+  private[this] var blackhole: Blackhole = _
+  private[this] val exit: RTreeEntry[PointOfInterest] => Boolean = x => {
+    blackhole.consume(x)
+    true
+  }
+  private[this] val continue: RTreeEntry[PointOfInterest] => Boolean = x =>  {
+    blackhole.consume(x)
+    false
+  }
+
   @Param(Array("8", "16"))
   var nodeCapacity = 16
 
@@ -35,13 +50,6 @@ class RTreeBenchmark {
 
   @Param(Array("false", "true"))
   var shuffle = true
-
-  private[benchmark] var rtreeEntries: Array[RTreeEntry[PointOfInterest]] = _
-  private[benchmark] var rtree: RTree[PointOfInterest] = _
-  private[this] var xys: Array[Float] = _
-  private[this] var curr: Int = 0
-  private[this] val exit: RTreeEntry[PointOfInterest] => Boolean = _ => true
-  private[this] val continue: RTreeEntry[PointOfInterest] => Boolean = _ => false
 
   @Setup
   def setup(): Unit = {
@@ -74,14 +82,16 @@ class RTreeBenchmark {
   def entries: Seq[RTreeEntry[PointOfInterest]] = rtree.entries
 
   @Benchmark
-  def searchFirst: Boolean = {
+  def searchFirst(bh: Blackhole): Boolean = {
+    blackhole = bh
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0
     rtree.search(xys(i), xys(i + 1))(exit)
   }
 
   @Benchmark
-  def searchAll: Boolean = {
+  def searchAll(bh: Blackhole): Boolean = {
+    blackhole = bh
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0
     rtree.search(xys(i), xys(i + 1))(continue)
