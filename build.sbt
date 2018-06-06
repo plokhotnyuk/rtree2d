@@ -115,5 +115,18 @@ lazy val benchmark = project
     libraryDependencies ++= Seq(
       "pl.project13.scala" % "sbt-jmh-extras" % "0.3.4",
       "org.scalatest" %% "scalatest" % "3.0.5-M1" % Test
-    )
+    ),
+    charts := Def.inputTaskDyn {
+      val jmhParams = Def.spaceDelimited().parsed
+      val targetDir = crossTarget.value
+      val jmhReport = targetDir / "rtree.json"
+      val runTask = run in Jmh
+      Def.inputTask {
+        val _ = runTask.evaluated
+        Bencharts(jmhReport, "Execution time (ns/op)", targetDir)
+        targetDir
+      }.toTask(s" -rf json -rff ${jmhReport.absolutePath} ${jmhParams.mkString(" ")}")
+    }.evaluated
   )
+
+lazy val charts = inputKey[File]("Runs the benchmarks and produce charts")

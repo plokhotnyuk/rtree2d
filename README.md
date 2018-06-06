@@ -55,7 +55,6 @@ Benchmarks are developed in the separated module using [Sbt plugin](https://gith
 for [JMH tool](http://openjdk.java.net/projects/code-tools/jmh/). 
 
 They test build, unbuild, and search requests for the following parameters:
-- nodeCapacity (max number of children per node)
 - overlap (number of overlap in each 4 directions for bounding box of entires)
 - size (number of entries in the rtree)
 - shuffle (flag to turn on/off shuffling of entries before rtree building)
@@ -68,11 +67,31 @@ To see throughput with allocation rate run benchmarks with GC profiler using the
 sbt -no-colors clean 'benchmark/jmh:run -prof gc -rf json -rff rtree.json .*Benchmark.*'
 ```
 
-It will save benchmark report in `benchamrk/rtree.json` file.
+It will save benchmark report in `benchmark/rtree.json` file.
 
 Results that are stored in JSON can be easy plotted in [JMH Visualizer](http://jmh.morethan.io/) by drugging & dropping
 of your file(s) to the drop zone or using the `source` or `sources` parameters with an HTTP link to your file(s) in the 
 URLs: `http://jmh.morethan.io/?source=<link to json file>` or `http://jmh.morethan.io/?sources=<link to json file1>,<link to json file2>`.
+
+Also, there is an ability to run benchmarks and visualize results with a `charts` command. It adds `-rf` and `-rff` 
+options to all passes options and supply them to `jmh:run` task, then group results per benchmark and plot main score 
+series to separated images. Here is an example how it can be called:
+
+```sh
+sbt 'charts -jvm /usr/lib/jvm/java-8-oracle/bin/java .*Benchmark.*'
+```
+
+Results will be places in a cross-build suffixed subdirectory of the `benchmark/target` directory in `*.png` files:
+```sh
+$ ls benchmark/target/scala-2.12/*.*n*
+
+benchmark/target/scala-2.12/com.sizmek.rtree2d.benchmark.RTreeBenchmark.apply.png
+benchmark/target/scala-2.12/com.sizmek.rtree2d.benchmark.RTreeBenchmark.entries.png
+benchmark/target/scala-2.12/com.sizmek.rtree2d.benchmark.RTreeBenchmark.searchAll.png
+benchmark/target/scala-2.12/com.sizmek.rtree2d.benchmark.RTreeBenchmark.searchAndCollectAll.png
+benchmark/target/scala-2.12/com.sizmek.rtree2d.benchmark.RTreeBenchmark.searchFirst.png
+benchmark/target/scala-2.12/rtree.json
+``` 
 
 ### Publish locally
 

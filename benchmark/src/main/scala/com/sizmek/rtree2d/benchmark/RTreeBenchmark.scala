@@ -14,15 +14,16 @@ import scala.collection.breakOut
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, jvmArgs = Array(
-"-server",
-"-Xms2g",
-"-Xmx2g",
-"-XX:NewSize=1g",
-"-XX:MaxNewSize=1g",
-"-XX:InitialCodeCacheSize=256m",
-"-XX:ReservedCodeCacheSize=256m",
-"-XX:-UseBiasedLocking",
-"-XX:+AlwaysPreTouch"
+  "-server",
+  "-Xms2g",
+  "-Xmx2g",
+  "-XX:NewSize=1g",
+  "-XX:MaxNewSize=1g",
+  "-XX:InitialCodeCacheSize=256m",
+  "-XX:ReservedCodeCacheSize=256m",
+  "-XX:+UseParallelGC",
+  "-XX:-UseBiasedLocking",
+  "-XX:+AlwaysPreTouch"
 ))
 class RTreeBenchmark {
   private[benchmark] var rtreeEntries: Array[RTreeEntry[PointOfInterest]] = _
@@ -39,13 +40,12 @@ class RTreeBenchmark {
     false
   }
 
-  @Param(Array("8", "16"))
-  var nodeCapacity = 16
+  val nodeCapacity = 16 // can be a param on demand
 
   @Param(Array("0.1", "10")) // number of overlaps in each of 4 directions (should be less than 0.5 for no overlap)
   var overlap = 0.1f
 
-  @Param(Array("10000", "1000000"))
+  @Param(Array("1", "10", "100", "1000", "10000", "100000", "1000000"))
   var size = 10000
 
   @Param(Array("false", "true"))
