@@ -56,7 +56,6 @@ lazy val commonSettings = Seq(
   ),
   resolvers += Resolver.jcenterRepo,
   scalaVersion := "2.12.6",
-  crossScalaVersions := Seq("2.13.0-M3", "2.12.6", "2.11.12"),
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
@@ -99,6 +98,7 @@ lazy val core = project
   .settings(mimaSettings: _*)
   .settings(publishSettings: _*)
   .settings(
+    crossScalaVersions := Seq("2.13.0-M3", "2.12.6", "2.11.12"),
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalacheck" %% "scalacheck" % "1.14.0" % Test,
@@ -112,14 +112,16 @@ lazy val benchmark = project
   .settings(commonSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(
+    crossScalaVersions := Seq("2.12.6", "2.11.12"),
     libraryDependencies ++= Seq(
+      "org.spire-math" %% "archery" % "0.6.0",
       "pl.project13.scala" % "sbt-jmh-extras" % "0.3.4",
       "org.scalatest" %% "scalatest" % "3.0.5-M1" % Test
     ),
     charts := Def.inputTaskDyn {
       val jmhParams = Def.spaceDelimited().parsed
       val targetDir = crossTarget.value
-      val jmhReport = targetDir / "rtree.json"
+      val jmhReport = targetDir / "benchmark.json"
       val runTask = run in Jmh
       Def.inputTask {
         val _ = runTask.evaluated

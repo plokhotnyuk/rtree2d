@@ -27,7 +27,7 @@ object Bencharts {
     */
   def apply(jmhReport: File, yAxisTitle: String, targetDir: File): Unit = {
     val allResults = readFromArray(IO.readBytes(jmhReport))
-    allResults.groupBy(_.benchmark).foreach { case (benchmark, results) =>
+    allResults.groupBy(benchmarkName).foreach { case (benchmark, results) =>
         val seriess = results.groupBy(otherParams).map { case (params, iterations) =>
             val ySeries = new YIntervalSeries(params)
             // each benchmark has been run with several sizes (10, 100, 1000, etc.)
@@ -56,8 +56,13 @@ object Bencharts {
       }
   }
 
-  private def otherParams(result: BenchmarkResult): String =
+  private def benchmarkName(result: BenchmarkResult): String =
+    result.benchmark.split("""\.""").last
+
+  private def otherParams(result: BenchmarkResult): String = {
+    val benchSuitName = result.benchmark.split("""\.""").reverse.tail.head
     result.params.filterKeys(_ != "size").map { case (k, v) =>
       s"$k=$v"
-    }.toSeq.sorted.mkString(",")
+    }.toSeq.sorted.mkString(s"$benchSuitName[", ",", "]")
+  }
 }
