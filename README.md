@@ -66,7 +66,7 @@ requests for the following parameters:
 
 [![searchByPoint](docs/searchByPoint.png)](docs/searchByPoint.png)
 
-Here is [representation of the same benchmark results that are plotted by JMH Visualizer](jmh.morethan.io/?source=https://raw.githubusercontent.com/Sizmek/rtree2d/master/docs/benchmark.json).
+Here is [a representation of the same benchmark results that are plotted by JMH Visualizer](jmh.morethan.io/?source=https://raw.githubusercontent.com/Sizmek/rtree2d/master/docs/benchmark.json).
 
 ## How to contribute
 
