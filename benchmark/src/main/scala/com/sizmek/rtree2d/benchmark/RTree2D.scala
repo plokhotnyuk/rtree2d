@@ -11,11 +11,12 @@ class RTree2D extends BenchmarkBase {
   private[benchmark] var entriesToAddOrRemove: Array[RTreeEntry[PointOfInterest]] = _
   private[this] var xys: Array[Float] = _
   private[this] var curr: Int = _
+  private[this] var eps: Float = _
 
   @Setup
   def setup(): Unit = {
     val points = genPoints
-    val eps = overlap / Math.sqrt(size).toFloat
+    eps = overlap / Math.sqrt(size).toFloat
     rtreeEntries = points.map(p => RTreeEntry(p.x - eps, p.y - eps, p.x + eps, p.y + eps, p))(breakOut)
     if (shuffle) doShuffle(rtreeEntries)
     rtree = RTree(rtreeEntries, nodeCapacity)
@@ -36,6 +37,16 @@ class RTree2D extends BenchmarkBase {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0
     rtree.searchAll(xys(i), xys(i + 1))
+  }
+
+  @Benchmark
+  def searchByRectangle: Seq[RTreeEntry[PointOfInterest]] = {
+    val i = curr
+    curr = if (i + 2 < xys.length) i + 2 else 0
+    val x = xys(i)
+    val y = xys(i + 1)
+    val e = eps
+    rtree.searchAll(x - e, y - e, x + e, y + e)
   }
 
   @Benchmark
