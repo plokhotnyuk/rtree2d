@@ -45,8 +45,12 @@ object Bencharts {
             ySeries
           }
         val plot = {
-          val xAxis = new LogarithmicAxis("Size")
-          val yAxis = new LogarithmicAxis(yAxisTitle)
+          val xAxis = new LogarithmicAxis("Size") {
+            setAllowNegativesFlag(true)
+          }
+          val yAxis = new LogarithmicAxis(yAxisTitle) {
+            setAllowNegativesFlag(true)
+          }
           val col = new YIntervalSeriesCollection
           val renderer = new XYErrorRenderer
           seriess.zipWithIndex.foreach { case (series, i) =>
