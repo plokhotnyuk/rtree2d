@@ -6,6 +6,6 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.6.0-M3")
 addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.3")
 addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "0.2.0")
 libraryDependencies ++= Seq(
-  "org.jfree" % "jfreechart" % "1.0.14",
-  "com.github.plokhotnyuk.jsoniter-scala" %% "macros" % "0.27.4"
+  "org.jfree" % "jfreechart" % "1.5.0",
+  "com.github.plokhotnyuk.jsoniter-scala" %% "macros" % "0.28.0"
 )
