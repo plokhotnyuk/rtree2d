@@ -11,7 +11,7 @@ case class PointOfInterest(x: Float, y: Float)
 @State(Scope.Thread)
 @BenchmarkMode(Array(Mode.AverageTime))
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, jvmArgs = Array(
   "-server",
@@ -32,11 +32,12 @@ abstract class BenchmarkBase {
   @Param(Array("false", "true"))
   var shuffle = true
 
+  @Param(Array("0.1", "5"))
+  var overlap = 0.1f // size of entries relative to interval between them
+
   var nodeCapacity = 16 // can be a param on demand
 
   var partToAddOrRemove = (1 - 0.3) / 2 // 0.3 here is a part of ASAP bidding
-
-  var overlap = 0.1f // number of overlaps in each of 4 directions (should be less than 0.5 for no overlap)
 
   def doShuffle[A](as: Array[A]): Unit = {
     val rnd = new util.Random(0)

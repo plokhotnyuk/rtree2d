@@ -5,9 +5,10 @@ import org.jfree.chart.plot.XYPlot
 import org.jfree.chart.renderer.xy.XYErrorRenderer
 import org.jfree.data.xy.{YIntervalSeries, YIntervalSeriesCollection}
 import sbt._
-
 import com.github.plokhotnyuk.jsoniter_scala.macros._
 import com.github.plokhotnyuk.jsoniter_scala.core._
+
+import scala.collection.SortedMap
 
 case class BenchmarkMetric(score: Double, scoreConfidence: (Double, Double))
 
@@ -28,7 +29,8 @@ object Bencharts {
   def apply(jmhReport: File, yAxisTitle: String, targetDir: File): Unit = {
     val allResults = readFromArray(IO.readBytes(jmhReport))
     allResults.groupBy(benchmarkName).foreach { case (benchmark, results) =>
-        val seriess = results.groupBy(otherParams).map { case (params, iterations) =>
+        val seriess = SortedMap(results.groupBy(otherParams).toSeq:_*)
+          .map { case (params, iterations) =>
             val ySeries = new YIntervalSeries(params)
             // each benchmark has been run with several sizes (10, 100, 1000, etc.)
             // we add a point for each of these iterations
@@ -42,15 +44,17 @@ object Bencharts {
             }
             ySeries
           }
-        val xAxis = new LogarithmicAxis("Size")
-        val yAxis = new LogarithmicAxis(yAxisTitle)
-        val col = new YIntervalSeriesCollection()
-        val renderer = new XYErrorRenderer
-        seriess.zipWithIndex.foreach { case (series, i) =>
-          col.addSeries(series)
-          renderer.setSeriesLinesVisible(i, true)
+        val plot = {
+          val xAxis = new LogarithmicAxis("Size")
+          val yAxis = new LogarithmicAxis(yAxisTitle)
+          val col = new YIntervalSeriesCollection
+          val renderer = new XYErrorRenderer
+          seriess.zipWithIndex.foreach { case (series, i) =>
+            col.addSeries(series)
+            renderer.setSeriesLinesVisible(i, true)
+          }
+          new XYPlot(col, xAxis, yAxis, renderer)
         }
-        val plot = new XYPlot(col, xAxis, yAxis, renderer)
         val chart = new JFreeChart(benchmark, JFreeChart.DEFAULT_TITLE_FONT, plot, true)
         ImageIO.write(chart.createBufferedImage(1024, 768), "png", targetDir / s"$benchmark.png")
       }
