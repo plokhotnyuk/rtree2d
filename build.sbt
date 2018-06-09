@@ -125,7 +125,7 @@ lazy val benchmark = project
       val runTask = run in Jmh
       Def.inputTask {
         val _ = runTask.evaluated
-        Bencharts(jmhReport, "Execution time (μs/op)", targetDir)
+        Bencharts(jmhReport, "Execution time (ns/op)", targetDir)
         targetDir
       }.toTask(s" -rf json -rff ${jmhReport.absolutePath} ${jmhParams.mkString(" ")}")
     }.evaluated

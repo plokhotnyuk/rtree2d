@@ -37,9 +37,9 @@ object Bencharts {
             iterations.foreach { iteration =>
               ySeries.add(
                 iteration.params.get("size").fold(0.0)(_.toDouble),
-                iteration.primaryMetric.score,
-                iteration.primaryMetric.scoreConfidence._1,
-                iteration.primaryMetric.scoreConfidence._2
+                Math.max(iteration.primaryMetric.score, 1.0),
+                Math.max(iteration.primaryMetric.scoreConfidence._1, 1.0),
+                Math.max(iteration.primaryMetric.scoreConfidence._2, 1.0)
               )
             }
             ySeries
