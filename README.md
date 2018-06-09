@@ -69,12 +69,15 @@ Charts below are latest results of benchmarks which compare RTree2D with [Archer
 [David Monten's rtree](https://github.com/davidmoten/rtree) libraries using JDK 8 on the following environment: 
 Intel® Core™ i7-7700HQ CPU @ 2.8GHz (max 3.8GHz), RAM 16Gb DDR4-2400, Ubuntu 18.04, latest versions of Oracle JDK 8.
 
+Main metric tested by benchmarks is an execution time in nanoseconds. So lesser values are better. Please, check out 
+the Run benchmarks section bellow how to test other metrics like allocations in bytes or number of some CPU events.     
+
 Benchmarks have the following parameters:
 - `size` is a number of entries in the R-tree
-- `shuffle`  is a flag to turn on/off shuffling of entries before R-tree building
-- `overlap`  is size of entries relative to interval between them 
+- `shuffle` is a flag to turn on/off shuffling of entries before R-tree building
+- `overlap` is a size of entries relative to interval between them 
 
-`apply` benchmarks test building of R-tries from a sequence of entires.
+The `apply` benchmark test building of R-tries from a sequence of entires.
 
 No overlapping of entries (`overlap` = 0.1):
 
@@ -84,7 +87,7 @@ Entries with lot of overlaps (`overlap` = 5):
 
 [![apply](docs/apply-overlap-5.png)](docs/apply-overlap-5.png)
 
-`searchByPoint` benchmarks test requests that search entries with intersects with the specified point.
+The `searchByPoint` benchmark test requests that search entries with intersects with the specified point.
 
 No overlapping of entries (`overlap` = 0.1):
 
@@ -170,5 +173,5 @@ sbt release
 ```
 
 Do not push changes to github until promoted artifacts for the new version are not available for download on 
-[jCenter](http://jcenter.bintray.com/com/sizmek/rtree2d/core_2.12/)
-to avoid binary compatibility check failures in triggered Travis CI builds. 
+[jCenter](http://jcenter.bintray.com/com/sizmek/rtree2d/core_2.12/) to avoid binary compatibility check failures in 
+triggered Travis CI builds. 
