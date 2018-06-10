@@ -81,23 +81,26 @@ The `apply` benchmark test building of R-tries from a sequence of entires.
 
 No overlapping of entries (`overlap` = 0.1):
 
-[![apply](docs/apply-overlap-0.1.png)](docs/apply-overlap-0.1.png)
+[![apply](docs/overlap-0.1/apply.png)](docs/overlap-0.1/apply.png)
 
 Entries with lot of overlaps (`overlap` = 5):
 
-[![apply](docs/apply-overlap-5.png)](docs/apply-overlap-5.png)
+[![apply](docs/overlap-5/apply.png)](docs/overlap-5/apply.png)
 
 The `searchByPoint` benchmark test requests that search entries with intersects with the specified point.
 
 No overlapping of entries (`overlap` = 0.1):
 
-[![searchByPoint](docs/searchByPoint-overlap-0.1.png)](docs/searchByPoint-overlap-0.1.png)
+[![searchByPoint](docs/overlap-0.1/searchByPoint.png)](docs/overlap-0.1/searchByPoint.png)
 
 Entries with lot of overlaps (`overlap` = 5):
 
-[![searchByPoint](docs/searchByPoint-overlap-5.png)](docs/searchByPoint-overlap-5.png)
+[![searchByPoint](docs/overlap-5/searchByPoint.png)](docs/overlap-5/searchByPoint.png)
 
-Other benchmarks tests returning entries back from R-tries, inserting and removing bulk of entries to/from them. 
+Other benchmarks tests searching by rectangles, returning entries back from R-tries, inserting and removing bulk of 
+entries to/from them.
+
+Charts with their results are available in subdirectories of the [docs](docs/) directory.  
 
 ## How to contribute
 
