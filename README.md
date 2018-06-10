@@ -17,10 +17,10 @@ at the same time some thread can build a new version of the R-tree reusing immut
 To archive these goals we have used:
 - STR packing that is a one of the most efficient packing method which produces balanced R-tree for the specified 
 sequence of entries
-- a memory representation which is aware of a cache hierarchy of contemporary CPUs (while it is not a final version and 
-can be improved further soon)
-- efficient implementations of search functions with minimum virtual calls and allocations (there are versions with zero 
-allocations)
+- a memory representation and access patterns to it which are aware of a cache hierarchy of contemporary CPUs (while it 
+is not a final version and can be improved further soon)
+- efficient implementations of search functions with minimum of virtual calls and allocations (there are versions with 
+zero allocations)
 
 ## How to use
 
@@ -133,7 +133,7 @@ URLs: `http://jmh.morethan.io/?source=<link to json file>` or `http://jmh.moreth
 
 Also, there is an ability to run benchmarks and visualize results with a `charts` command. It adds `-rf` and `-rff` 
 options to all passes options and supply them to `jmh:run` task, then group results per benchmark and plot main score 
-series to separated images. Here is an example how it can be called for specified version of JVM, value of thw `overlap`
+series to separated images. Here is an example how it can be called for specified version of JVM, value of the `overlap`
 parameter, and patterns of benchmark names:
 
 ```sh
