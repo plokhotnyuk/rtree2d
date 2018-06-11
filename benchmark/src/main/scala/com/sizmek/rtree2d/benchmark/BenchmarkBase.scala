@@ -35,7 +35,8 @@ abstract class BenchmarkBase {
   @Param(Array("0.1", "5"))
   var overlap = 0.1f // size of entries relative to interval between them
 
-  var nodeCapacity = 16 // can be a param on demand
+  @Param(Array("16"))
+  var nodeCapacity = 16
 
   var partToAddOrRemove = (1 - 0.3) / 2 // 0.3 here is a part of ASAP bidding
 
