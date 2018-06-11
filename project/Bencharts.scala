@@ -1,3 +1,5 @@
+import java.text.NumberFormat
+
 import javax.imageio.ImageIO
 import org.jfree.chart.JFreeChart
 import org.jfree.chart.axis.LogarithmicAxis
@@ -29,39 +31,36 @@ object Bencharts {
   def apply(jmhReport: File, yAxisTitle: String, targetDir: File): Unit = {
     val allResults = readFromArray(IO.readBytes(jmhReport))
     allResults.groupBy(benchmarkName).foreach { case (benchmark, results) =>
-        val seriess = SortedMap(results.groupBy(otherParams).toSeq:_*)
-          .map { case (params, iterations) =>
-            val ySeries = new YIntervalSeries(params)
-            // each benchmark has been run with several sizes (10, 100, 1000, etc.)
-            // we add a point for each of these iterations
-            iterations.foreach { iteration =>
-              ySeries.add(
-                iteration.params.get("size").fold(0.0)(_.toDouble),
-                Math.max(iteration.primaryMetric.score, 1.0),
-                Math.max(iteration.primaryMetric.scoreConfidence._1, 1.0),
-                Math.max(iteration.primaryMetric.scoreConfidence._2, 1.0)
-              )
-            }
-            ySeries
+      val seriess = SortedMap(results.groupBy(otherParams).toSeq:_*)
+        .map { case (params, iterations) =>
+          val ySeries = new YIntervalSeries(params)
+          // each benchmark has been run with several sizes (10, 100, 1000, etc.)
+          // we add a point for each of these iterations
+          iterations.foreach { iteration =>
+            ySeries.add(
+              iteration.params.get("size").fold(0.0)(_.toDouble),
+              Math.max(iteration.primaryMetric.score, 1.0),
+              Math.max(iteration.primaryMetric.scoreConfidence._1, 1.0),
+              Math.max(iteration.primaryMetric.scoreConfidence._2, 1.0)
+            )
           }
-        val plot = {
-          val xAxis = new LogarithmicAxis("Size") {
-            setAllowNegativesFlag(true)
-          }
-          val yAxis = new LogarithmicAxis(yAxisTitle) {
-            setAllowNegativesFlag(true)
-          }
-          val col = new YIntervalSeriesCollection
-          val renderer = new XYErrorRenderer
-          seriess.zipWithIndex.foreach { case (series, i) =>
-            col.addSeries(series)
-            renderer.setSeriesLinesVisible(i, true)
-          }
-          new XYPlot(col, xAxis, yAxis, renderer)
+          ySeries
         }
-        val chart = new JFreeChart(benchmark, JFreeChart.DEFAULT_TITLE_FONT, plot, true)
-        ImageIO.write(chart.createBufferedImage(1024, 768), "png", targetDir / s"$benchmark.png")
+      val col = new YIntervalSeriesCollection
+      val renderer = new XYErrorRenderer
+      seriess.zipWithIndex.foreach { case (series, i) =>
+        col.addSeries(series)
+        renderer.setSeriesLinesVisible(i, true)
       }
+      val plot = new XYPlot(col, axis("Size"), axis(yAxisTitle), renderer)
+      val chart = new JFreeChart(benchmark, JFreeChart.DEFAULT_TITLE_FONT, plot, true)
+      ImageIO.write(chart.createBufferedImage(1024, 768), "png", targetDir / s"$benchmark.png")
+    }
+  }
+
+  private def axis(title: String) = new LogarithmicAxis(title) {
+    setAllowNegativesFlag(true)
+    setNumberFormatOverride(NumberFormat.getInstance())
   }
 
   private def benchmarkName(result: BenchmarkResult): String =
