@@ -24,7 +24,7 @@ class DavidMotenRTree extends BenchmarkBase {
     eps = overlap / Math.sqrt(size).toFloat
     rtreeEntries = points.map(p => Entries.entry(p, rectangle(p.x - eps, p.y - eps, p.x + eps, p.y + eps)))(breakOut)
     if (shuffle) doShuffle(rtreeEntries)
-    rtree = RTree.minChildren(1).maxChildren(nodeCapacity).create(util.Arrays.asList(rtreeEntries:_*))
+    rtree = RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0).create(util.Arrays.asList(rtreeEntries:_*))
     doShuffle(points)
     xys = genRequests(points)
     curr = 0
@@ -33,7 +33,7 @@ class DavidMotenRTree extends BenchmarkBase {
 
   @Benchmark
   def apply: RTree[PointOfInterest, Rectangle] =
-    RTree.minChildren(1).maxChildren(nodeCapacity).create(util.Arrays.asList(rtreeEntries:_*))
+    RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0).create(util.Arrays.asList(rtreeEntries:_*))
 
   @Benchmark
   def entries: Seq[Entry[PointOfInterest, Rectangle]] = rtree.entries().toBlocking.toIterable.asScala.toSeq
@@ -57,11 +57,11 @@ class DavidMotenRTree extends BenchmarkBase {
 
   @Benchmark
   def insert: RTree[PointOfInterest, Rectangle] =
-    RTree.minChildren(1).maxChildren(nodeCapacity)
+    RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0)
       .create(util.Arrays.asList((rtreeEntries ++ entriesToAddOrRemove).toArray:_*))
 
   @Benchmark
   def remove: RTree[PointOfInterest, Rectangle] =
-    RTree.minChildren(1).maxChildren(nodeCapacity)
+    RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0)
       .create(util.Arrays.asList(rtreeEntries.diff(entriesToAddOrRemove).toArray:_*))
 }
