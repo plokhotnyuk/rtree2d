@@ -15,10 +15,10 @@ case class PointOfInterest(x: Float, y: Float)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, jvmArgs = Array(
   "-server",
-  "-Xms4g",
-  "-Xmx4g",
-  "-XX:NewSize=3g",
-  "-XX:MaxNewSize=3g",
+  "-Xms12g",
+  "-Xmx12g",
+  "-XX:NewSize=6g",
+  "-XX:MaxNewSize=6g",
   "-XX:InitialCodeCacheSize=256m",
   "-XX:ReservedCodeCacheSize=256m",
   "-XX:+UseParallelGC",
@@ -26,7 +26,7 @@ case class PointOfInterest(x: Float, y: Float)
   "-XX:+AlwaysPreTouch"
 ))
 abstract class BenchmarkBase {
-  @Param(Array("1", "10", "100", "1000", "10000", "100000", "1000000"))
+  @Param(Array("1", "10", "100", "1000", "10000", "100000", "1000000", "10000000"))
   var size = 1000
 
   @Param(Array("false", "true"))
