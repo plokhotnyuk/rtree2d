@@ -18,9 +18,7 @@ class Archery extends BenchmarkBase {
     rtreeEntries = points.map(p => Entry(Box(p.x - eps, p.y - eps, p.x + eps, p.y + eps), p))
     if (shuffle) doShuffle(rtreeEntries)
     rtree = RTree(rtreeEntries:_*)
-    if (!shuffle) {
-      rtreeEntries = rtree.entries.toArray.map(e => Entry(Box(e.geom.x, e.geom.y, e.geom.x2, e.geom.y2), e.value))
-    }
+    if (!shuffle) rtreeEntries = rtree.entries.toArray
     doShuffle(points)
     xys = genRequests(points)
     curr = 0
