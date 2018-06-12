@@ -21,15 +21,21 @@ class DavidMotenRTree extends BenchmarkBase {
   @Setup
   def setup(): Unit = {
     val points = genPoints
+    if (shuffle) doShuffle(points)
     eps = overlap / Math.sqrt(size).toFloat
-    rtreeEntries = points.map(p => entry(p, rectangle(p.x - eps, p.y - eps, p.x + eps, p.y + eps)))
-    if (shuffle) doShuffle(rtreeEntries)
+    rtreeEntries = new Array[Entry[PointOfInterest, Rectangle]](points.length)
+    var i = 0
+    while (i < points.length) {
+      val p = points(i)
+      rtreeEntries(i) = entry(p, rectangle(p.x - eps, p.y - eps, p.x + eps, p.y + eps))
+      i += 1
+    }
     rtree = RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0).create(util.Arrays.asList(rtreeEntries:_*))
-    if (!shuffle) rtreeEntries = rtree.entries().toBlocking.toIterable.asScala.toArray
     doShuffle(points)
     xys = genRequests(points)
     curr = 0
-    entriesToAddOrRemove = rtreeEntries.slice(0, (size * partToAddOrRemove).toInt)
+    if (!shuffle) rtreeEntries = rtree.entries().toBlocking.toIterable.asScala.toArray
+    entriesToAddOrRemove = java.util.Arrays.copyOf(rtreeEntries, (size * partToAddOrRemove).toInt)
   }
 
   @Benchmark

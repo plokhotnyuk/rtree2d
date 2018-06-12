@@ -38,7 +38,7 @@ abstract class BenchmarkBase {
   var partToAddOrRemove = (1 - 0.3) / 2 // 0.3 here is a part of ASAP bidding
 
   def doShuffle[A](as: Array[A]): Unit = {
-    val rnd = new util.Random(0)
+    val rnd = new util.Random(7777777)
     var i = as.length - 1
     while (i > 0) {
       val i1 = rnd.nextInt(i)
