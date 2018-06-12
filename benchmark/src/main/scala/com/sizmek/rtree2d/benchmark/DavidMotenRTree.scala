@@ -25,6 +25,7 @@ class DavidMotenRTree extends BenchmarkBase {
     rtreeEntries = points.map(p => Entries.entry(p, rectangle(p.x - eps, p.y - eps, p.x + eps, p.y + eps)))(breakOut)
     if (shuffle) doShuffle(rtreeEntries)
     rtree = RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0).create(util.Arrays.asList(rtreeEntries:_*))
+    if (!shuffle) rtreeEntries = rtree.entries().toBlocking.toIterable.asScala.toArray
     doShuffle(points)
     xys = genRequests(points)
     curr = 0

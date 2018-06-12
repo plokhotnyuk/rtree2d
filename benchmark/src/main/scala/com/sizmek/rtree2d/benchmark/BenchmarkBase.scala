@@ -35,8 +35,7 @@ abstract class BenchmarkBase {
   @Param(Array("0.1", "5"))
   var overlap = 0.1f // size of entries relative to interval between them
 
-  @Param(Array("16"))
-  var nodeCapacity = 16
+  var nodeCapacity = 16 // Archery use hard coded 50 for limiting a number of children nodes
 
   var partToAddOrRemove = (1 - 0.3) / 2 // 0.3 here is a part of ASAP bidding
 

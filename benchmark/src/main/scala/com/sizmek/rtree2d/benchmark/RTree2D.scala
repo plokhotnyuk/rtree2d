@@ -20,6 +20,7 @@ class RTree2D extends BenchmarkBase {
     rtreeEntries = points.map(p => RTreeEntry(p.x - eps, p.y - eps, p.x + eps, p.y + eps, p))(breakOut)
     if (shuffle) doShuffle(rtreeEntries)
     rtree = RTree(rtreeEntries, nodeCapacity)
+    if (!shuffle) rtreeEntries = rtree.entries.toArray
     doShuffle(points)
     xys = genRequests(points)
     curr = 0
