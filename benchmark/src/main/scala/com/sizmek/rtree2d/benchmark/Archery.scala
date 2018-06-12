@@ -3,8 +3,6 @@ package com.sizmek.rtree2d.benchmark
 import archery._
 import org.openjdk.jmh.annotations._
 
-import scala.collection.breakOut
-
 class Archery extends BenchmarkBase {
   private[benchmark] var rtree: RTree[PointOfInterest] = _
   private[benchmark] var rtreeEntries: Array[Entry[PointOfInterest]] = _
@@ -17,10 +15,12 @@ class Archery extends BenchmarkBase {
   def setup(): Unit = {
     val points = genPoints
     eps = overlap / Math.sqrt(size).toFloat
-    rtreeEntries = points.map(p => Entry(Box(p.x - eps, p.y - eps, p.x + eps, p.y + eps), p))(breakOut)
+    rtreeEntries = points.map(p => Entry(Box(p.x - eps, p.y - eps, p.x + eps, p.y + eps), p))
     if (shuffle) doShuffle(rtreeEntries)
     rtree = RTree(rtreeEntries:_*)
-    if (!shuffle) rtreeEntries = rtree.entries.toArray
+    if (!shuffle) {
+      rtreeEntries = rtree.entries.toArray.map(e => Entry(Box(e.geom.x, e.geom.y, e.geom.x2, e.geom.y2), e.value))
+    }
     doShuffle(points)
     xys = genRequests(points)
     curr = 0

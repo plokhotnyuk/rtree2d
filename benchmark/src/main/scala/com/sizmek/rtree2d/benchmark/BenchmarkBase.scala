@@ -4,8 +4,6 @@ import java.util.concurrent.TimeUnit
 
 import org.openjdk.jmh.annotations._
 
-import scala.collection.breakOut
-
 case class PointOfInterest(x: Float, y: Float)
 
 @State(Scope.Thread)
@@ -54,11 +52,15 @@ abstract class BenchmarkBase {
   def genPoints: Array[PointOfInterest] = {
     val l = Math.sqrt(size).toFloat
     val li = l.toInt
-    (0 to size).map { i =>
+    val points = new Array[PointOfInterest](size)
+    var i = 0
+    while (i < size) {
       val x = (i / li) / l
       val y = (i % li) / l
-      PointOfInterest(x, y)
-    }(breakOut)
+      points(i) = PointOfInterest(x, y)
+      i += 1
+    }
+    points
   }
 
   def genRequests(points: Array[PointOfInterest]): Array[Float] = {

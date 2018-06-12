@@ -2,13 +2,13 @@ package com.sizmek.rtree2d.benchmark
 
 import java.util
 
+import com.github.davidmoten.rtree.Entries._
 import com.github.davidmoten.rtree._
 import com.github.davidmoten.rtree.geometry.Geometries._
 import com.github.davidmoten.rtree.geometry._
 import org.openjdk.jmh.annotations._
 
 import collection.JavaConverters._
-import scala.collection.breakOut
 
 class DavidMotenRTree extends BenchmarkBase {
   private[benchmark] var rtreeEntries: Array[Entry[PointOfInterest, Rectangle]] = _
@@ -22,10 +22,13 @@ class DavidMotenRTree extends BenchmarkBase {
   def setup(): Unit = {
     val points = genPoints
     eps = overlap / Math.sqrt(size).toFloat
-    rtreeEntries = points.map(p => Entries.entry(p, rectangle(p.x - eps, p.y - eps, p.x + eps, p.y + eps)))(breakOut)
+    rtreeEntries = points.map(p => entry(p, rectangle(p.x - eps, p.y - eps, p.x + eps, p.y + eps)))
     if (shuffle) doShuffle(rtreeEntries)
     rtree = RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0).create(util.Arrays.asList(rtreeEntries:_*))
-    if (!shuffle) rtreeEntries = rtree.entries().toBlocking.toIterable.asScala.toArray
+    if (!shuffle) {
+      rtreeEntries = rtree.entries().toBlocking.toIterable.asScala.toArray
+        .map(e => entry(e.value, rectangle(e.geometry.x1, e.geometry.y1, e.geometry.x2, e.geometry.y2)))
+    }
     doShuffle(points)
     xys = genRequests(points)
     curr = 0
