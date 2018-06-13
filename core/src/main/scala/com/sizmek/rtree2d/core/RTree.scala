@@ -73,10 +73,10 @@ object RTree {
       var y2 = t.y2
       do {
         t = level(i)
-        x1 = min(x1, t.x1)
-        y1 = min(y1, t.y1)
-        x2 = max(x2, t.x2)
-        y2 = max(y2, t.y2)
+        if (x1 > t.x1) x1 = t.x1
+        if (y1 > t.y1) y1 = t.y1
+        if (x2 < t.x2) x2 = t.x2
+        if (y2 < t.y2) y2 = t.y2
         i += 1
       } while (i < to)
       new RTreeNode(x1, y1, x2, y2, level, from, to)
@@ -130,9 +130,14 @@ sealed trait RTree[A] {
   def searchAll(x: Float, y: Float): Seq[RTreeEntry[A]] =
     new mutable.ResizableArray[RTreeEntry[A]] {
       search(x, y) { v =>
-        if (size0 + 1 >= array.length) array = java.util.Arrays.copyOf(array, size0 << 1)
-        array(size0) = v.asInstanceOf[AnyRef]
-        size0 += 1
+        val n = size0
+        var vs = array
+        if (n + 1 >= vs.length) {
+          vs = java.util.Arrays.copyOf(vs, vs.length << 1)
+          array = vs
+        }
+        vs(n) = v.asInstanceOf[AnyRef]
+        size0 = n + 1
         false
       }
     }
@@ -149,9 +154,14 @@ sealed trait RTree[A] {
   def searchAll(x1: Float, y1: Float, x2: Float, y2: Float): Seq[RTreeEntry[A]] =
     new mutable.ResizableArray[RTreeEntry[A]] {
       search(x1, y1, x2, y2) { v =>
-        if (size0 + 1 >= array.length) array = java.util.Arrays.copyOf(array, size0 << 1)
-        array(size0) = v.asInstanceOf[AnyRef]
-        size0 += 1
+        val n = size0
+        var vs = array
+        if (n + 1 >= vs.length) {
+          vs = java.util.Arrays.copyOf(vs, vs.length << 1)
+          array = vs
+        }
+        vs(n) = v.asInstanceOf[AnyRef]
+        size0 = n + 1
         false
       }
     }
