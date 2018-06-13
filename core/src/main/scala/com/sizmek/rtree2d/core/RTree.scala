@@ -131,7 +131,7 @@ sealed trait RTree[A] {
     new mutable.ResizableArray[RTreeEntry[A]] {
       search(x, y) { v =>
         if (size0 + 1 >= array.length) array = java.util.Arrays.copyOf(array, size0 << 1)
-        array(size0) = v.asInstanceOf[AnyRef]
+        array(size0) = v
         size0 += 1
         false
       }
@@ -150,7 +150,7 @@ sealed trait RTree[A] {
     new mutable.ResizableArray[RTreeEntry[A]] {
       search(x1, y1, x2, y2) { v =>
         if (size0 + 1 >= array.length) array = java.util.Arrays.copyOf(array, size0 << 1)
-        array(size0) = v.asInstanceOf[AnyRef]
+        array(size0) = v
         size0 += 1
         false
       }
