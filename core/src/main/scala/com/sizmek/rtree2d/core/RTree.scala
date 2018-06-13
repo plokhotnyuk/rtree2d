@@ -130,14 +130,9 @@ sealed trait RTree[A] {
   def searchAll(x: Float, y: Float): Seq[RTreeEntry[A]] =
     new mutable.ResizableArray[RTreeEntry[A]] {
       search(x, y) { v =>
-        val n = size0
-        var vs = array
-        if (n + 1 >= vs.length) {
-          vs = java.util.Arrays.copyOf(vs, vs.length << 1)
-          array = vs
-        }
-        vs(n) = v.asInstanceOf[AnyRef]
-        size0 = n + 1
+        if (size0 + 1 >= array.length) array = java.util.Arrays.copyOf(array, size0 << 1)
+        array(size0) = v.asInstanceOf[AnyRef]
+        size0 += 1
         false
       }
     }
@@ -154,14 +149,9 @@ sealed trait RTree[A] {
   def searchAll(x1: Float, y1: Float, x2: Float, y2: Float): Seq[RTreeEntry[A]] =
     new mutable.ResizableArray[RTreeEntry[A]] {
       search(x1, y1, x2, y2) { v =>
-        val n = size0
-        var vs = array
-        if (n + 1 >= vs.length) {
-          vs = java.util.Arrays.copyOf(vs, vs.length << 1)
-          array = vs
-        }
-        vs(n) = v.asInstanceOf[AnyRef]
-        size0 = n + 1
+        if (size0 + 1 >= array.length) array = java.util.Arrays.copyOf(array, size0 << 1)
+        array(size0) = v.asInstanceOf[AnyRef]
+        size0 += 1
         false
       }
     }
