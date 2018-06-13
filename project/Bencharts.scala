@@ -1,9 +1,10 @@
+import java.awt.{Color, Paint}
 import java.text.NumberFormat
 
 import javax.imageio.ImageIO
 import org.jfree.chart.JFreeChart
 import org.jfree.chart.axis.LogarithmicAxis
-import org.jfree.chart.plot.XYPlot
+import org.jfree.chart.plot.{DefaultDrawingSupplier, XYPlot}
 import org.jfree.chart.renderer.xy.XYErrorRenderer
 import org.jfree.data.xy.{YIntervalSeries, YIntervalSeriesCollection}
 import sbt._
@@ -53,6 +54,13 @@ object Bencharts {
         renderer.setSeriesLinesVisible(i, true)
       }
       val plot = new XYPlot(col, axis("Size"), axis(yAxisTitle), renderer)
+      plot.setDrawingSupplier(new DefaultDrawingSupplier {
+        override def getNextPaint: Paint = super.getNextPaint match {
+          case x: Color if x.getRed > 200 && x.getGreen > 200 =>
+            new Color(x.getRed, (x.getGreen * 0.8).toInt, x.getBlue, x.getAlpha)
+          case x => x
+        }
+      })
       val chart = new JFreeChart(benchmark, JFreeChart.DEFAULT_TITLE_FONT, plot, true)
       ImageIO.write(chart.createBufferedImage(1024, 768), "png", targetDir / s"$benchmark.png")
     }
