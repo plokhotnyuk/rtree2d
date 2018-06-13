@@ -50,14 +50,14 @@ object RTree {
       var i, j = 0
       do {
         val sliceTo = min(i + sliceCapacity, l)
-        if (nodeCount > sliceCapacity) util.Arrays.sort(level, i, sliceTo, yComp)
+        util.Arrays.sort(level, i, sliceTo, yComp)
         do {
           val packTo = min(i + nodeCapacity, sliceTo)
           nextLevel(j) = packNode(level, i, packTo)
           j += 1
           i = packTo
         } while (i < sliceTo)
-      } while (j < nodeCount)
+      } while (i < l)
       pack(nextLevel, nodeCapacity, xComp, yComp)
     }
   }
