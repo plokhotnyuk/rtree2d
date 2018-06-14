@@ -38,7 +38,7 @@ class Archery extends BenchmarkBase {
   def apply: RTree[PointOfInterest] = RTree(rtreeEntries:_*)
 
   @Benchmark
-  def entries: Seq[Entry[PointOfInterest]] = rtree.entries.toSeq
+  def entries: Seq[Entry[PointOfInterest]] = rtree.entries.toArray
 
   @Benchmark
   def searchByPoint: Seq[Entry[PointOfInterest]] = {
@@ -58,8 +58,8 @@ class Archery extends BenchmarkBase {
   }
 
   @Benchmark
-  def insert: RTree[PointOfInterest] = rtree.insertAll(entriesToAddOrRemove)
+  def insert: RTree[PointOfInterest] = RTree(rtree.entries.toArray ++ entriesToAddOrRemove:_*)
 
   @Benchmark
-  def remove: RTree[PointOfInterest] = rtree.removeAll(entriesToAddOrRemove)
+  def remove: RTree[PointOfInterest] = RTree(rtree.entries.toArray.diff(entriesToAddOrRemove):_*)
 }
