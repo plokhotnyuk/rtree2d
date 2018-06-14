@@ -128,16 +128,16 @@ object RTree {
     var i = from + 1
     if (i == to) t
     else {
-      var x1 = t.x1
       var y1 = t.y1
-      var x2 = t.x2
       var y2 = t.y2
+      var x1 = t.x1
+      var x2 = t.x2
       do {
         t = level(i)
-        if (x1 > t.x1) x1 = t.x1
         if (y1 > t.y1) y1 = t.y1
-        if (x2 < t.x2) x2 = t.x2
         if (y2 < t.y2) y2 = t.y2
+        if (x1 > t.x1) x1 = t.x1
+        if (x2 < t.x2) x2 = t.x2
         i += 1
       } while (i < to)
       new RTreeNode(x1, y1, x2, y2, level, from, to)
@@ -299,10 +299,10 @@ final case class RTreeEntry[A] (x1: Float, y1: Float, x2: Float, y2: Float, valu
   if (!(y2 >= y1)) throw new IllegalArgumentException("y2 should be greater than y1 and any of them should not be NaN")
 
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Boolean): Boolean =
-    this.x1 <= x && x <= this.x2 && this.y1 <= y && y <= this.y2 && f(this)
+    this.y1 <= y && y <= this.y2 && this.x1 <= x && x <= this.x2 && f(this)
 
   def search(x1: Float, y1: Float, x2: Float, y2: Float)(f: RTreeEntry[A] => Boolean): Boolean =
-    this.x1 <= x2 && x1 <= this.x2 && this.y1 <= y2 && y1 <= this.y2 && f(this)
+    this.y1 <= y2 && y1 <= this.y2 && this.x1 <= x2 && x1 <= this.x2 && f(this)
 
   def pretty(sb: java.lang.StringBuilder, indent: Int): java.lang.StringBuilder =
     RTree.appendSpaces(sb, indent).append("RTreeEntry(").append(x1).append(',').append(y1).append(',')
@@ -329,7 +329,7 @@ object RTreeEntry {
 private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float,
                                       level: Array[RTree[A]], from: Int, to: Int) extends RTree[A] {
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Boolean): Boolean =
-    this.x1 <= x && x <= this.x2 && this.y1 <= y && y <= this.y2 && {
+    this.y1 <= y && y <= this.y2 && this.x1 <= x && x <= this.x2 && {
       val ts = level
       val l = to
       var i = from
@@ -341,7 +341,7 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
     }
 
   def search(x1: Float, y1: Float, x2: Float, y2: Float)(f: RTreeEntry[A] => Boolean): Boolean =
-    this.x1 <= x2 && x1 <= this.x2 && this.y1 <= y2 && y1 <= this.y2 && {
+    this.y1 <= y2 && y1 <= this.y2 && this.x1 <= x2 && x1 <= this.x2 && {
       val ts = level
       val l = to
       var i = from
