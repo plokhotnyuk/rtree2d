@@ -71,12 +71,8 @@ class DavidMotenRTree extends BenchmarkBase {
   }
 
   @Benchmark
-  def insert: RTree[PointOfInterest, Rectangle] =
-    RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0)
-      .create(util.Arrays.asList((rtreeEntries ++ entriesToAddOrRemove).toArray:_*))
+  def insert: RTree[PointOfInterest, Rectangle] = rtree.add(entriesToAddOrRemove.toIterable.asJava)
 
   @Benchmark
-  def remove: RTree[PointOfInterest, Rectangle] =
-    RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0)
-      .create(util.Arrays.asList(rtreeEntries.diff(entriesToAddOrRemove).toArray:_*))
+  def remove: RTree[PointOfInterest, Rectangle] = rtree.delete(entriesToAddOrRemove.toIterable.asJava)
 }
