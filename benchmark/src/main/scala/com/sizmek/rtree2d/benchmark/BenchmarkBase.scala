@@ -30,8 +30,11 @@ abstract class BenchmarkBase {
   @Param(Array("false", "true"))
   var shuffle = true
 
-  @Param(Array("0.1", "5"))
-  var overlap = 0.1f // size of entries relative to interval between them
+  @Param(Array("1", "10"))
+  var overlap = 1f // size of entries relative to interval between them
+
+  @Param(Array("10", "100"))
+  var rectSize = 10.0f // size of rect relative to interval between points
 
   var nodeCapacity = 16 // Archery use hard coded 50 for limiting a number of children nodes
 

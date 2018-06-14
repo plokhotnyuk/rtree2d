@@ -17,12 +17,15 @@ class DavidMotenRTree extends BenchmarkBase {
   private[this] var xys: Array[Float] = _
   private[this] var curr: Int = _
   private[this] var eps: Float = _
+  private[this] var rectEps: Float = _
 
   @Setup
   def setup(): Unit = {
     val points = genPoints
     if (shuffle) doShuffle(points)
-    eps = overlap / Math.sqrt(size).toFloat
+    val sizeX = Math.sqrt(size).toFloat
+    eps = overlap / (sizeX * 2)
+    rectEps = rectSize / (sizeX * 2)
     rtreeEntries = new Array[Entry[PointOfInterest, Rectangle]](points.length)
     var i = 0
     while (i < points.length) {
@@ -58,7 +61,7 @@ class DavidMotenRTree extends BenchmarkBase {
     curr = if (i + 2 < xys.length) i + 2 else 0
     val x = xys(i)
     val y = xys(i + 1)
-    val e = eps
+    val e = rectEps
     rtree.search(rectangle(x - e, y - e, x + e, y + e)).toBlocking.toIterable.asScala.toSeq
   }
 
