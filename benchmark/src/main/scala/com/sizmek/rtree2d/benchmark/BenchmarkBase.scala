@@ -25,10 +25,10 @@ case class PointOfInterest(x: Float, y: Float)
 ))
 abstract class BenchmarkBase {
   @Param(Array("1", "10", "100", "1000", "10000", "100000", "1000000", "10000000"))
-  var size = 1000
+  var size = 1000 // size of RTree
 
   @Param(Array("false", "true"))
-  var shuffle = true
+  var shuffle = true // shuffle entries or use them sorted by RTree
 
   @Param(Array("1", "10"))
   var overlap = 1f // size of entries relative to interval between them
@@ -36,9 +36,11 @@ abstract class BenchmarkBase {
   //@Param(Array("10", "100"))
   var rectSize = 10.0f // size of rect relative to interval between points
 
+  //@Param(Array("8", "16"))
   var nodeCapacity = 16 // Archery use hard coded 50 for limiting a number of children nodes
 
-  var partToAddOrRemove = (1 - 0.3) / 2 // 0.3 here is a part of ASAP bidding
+  //@Param(Array("0.01", "0.1"))
+  var partToAddOrRemove = 0.1f // part of RTree to add or remove
 
   def doShuffle[A](as: Array[A]): Unit = {
     val rnd = new util.Random(7777777)
