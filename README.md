@@ -34,7 +34,7 @@ resolvers += Resolver.jcenterRepo
 Add the library to a dependency list:
 
 ```sbt
-libraryDependencies += "com.sizmek.rtree2d" %% "core" % "0.1.0"
+libraryDependencies += "com.sizmek.rtree2d" %% "core" % "0.2.0"
  ```
 
 Entries of R-tree are represented by `RTreeEntry` instances which contains payload and 4 coordinates of the minimum 
