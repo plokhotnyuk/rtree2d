@@ -19,7 +19,7 @@ case class PointOfInterest(x: Float, y: Float)
   "-XX:MaxNewSize=6g",
   "-XX:InitialCodeCacheSize=256m",
   "-XX:ReservedCodeCacheSize=256m",
-  "-XX:+UseParallelGC",
+  "-XX:+UseParallelOldGC",
   "-XX:-UseBiasedLocking",
   "-XX:+AlwaysPreTouch"
 ))
