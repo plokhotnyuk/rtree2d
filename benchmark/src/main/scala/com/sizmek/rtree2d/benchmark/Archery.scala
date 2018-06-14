@@ -38,7 +38,10 @@ class Archery extends BenchmarkBase {
   def apply: RTree[PointOfInterest] = RTree(rtreeEntries:_*)
 
   @Benchmark
-  def entries: Seq[Entry[PointOfInterest]] = rtree.entries.toArray
+  def entries: Seq[Entry[PointOfInterest]] = {
+    val res = rtree.entries.toArray
+    res
+  }
 
   @Benchmark
   def searchByPoint: Seq[Entry[PointOfInterest]] = {
