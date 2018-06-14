@@ -8,7 +8,7 @@ class RTree2DTest extends WordSpec with Matchers {
   }
   "RTree2D" should {
     "return proper values" in {
-      benchmark.apply.entries.toList shouldBe benchmark.rtree.entries.toList
+      benchmark.apply.entries shouldBe benchmark.rtree.entries
       benchmark.entries should contain allElementsOf benchmark.rtreeEntries
       benchmark.insert.entries should contain allElementsOf (benchmark.rtreeEntries ++ benchmark.entriesToAddOrRemove)
       benchmark.remove.entries should contain allElementsOf benchmark.rtreeEntries.diff(benchmark.entriesToAddOrRemove)
