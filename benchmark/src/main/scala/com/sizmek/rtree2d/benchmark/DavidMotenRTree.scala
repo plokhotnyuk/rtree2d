@@ -46,13 +46,17 @@ class DavidMotenRTree extends BenchmarkBase {
     RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0).create(util.Arrays.asList(rtreeEntries:_*))
 
   @Benchmark
-  def entries: Seq[Entry[PointOfInterest, Rectangle]] = rtree.entries().toBlocking.toIterable.asScala.toSeq
+  def entries: Seq[Entry[PointOfInterest, Rectangle]] = {
+    val res = rtree.entries().toBlocking.toIterable.asScala.toArray
+    res
+  }
 
   @Benchmark
   def searchByPoint: Seq[Entry[PointOfInterest, Rectangle]] = {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0
-    rtree.search(point(xys(i), xys(i + 1))).toBlocking.toIterable.asScala.toSeq
+    val res = rtree.search(point(xys(i), xys(i + 1))).toBlocking.toIterable.asScala.toArray
+    res
   }
 
   @Benchmark
@@ -62,7 +66,8 @@ class DavidMotenRTree extends BenchmarkBase {
     val x = xys(i)
     val y = xys(i + 1)
     val e = rectEps
-    rtree.search(rectangle(x - e, y - e, x + e, y + e)).toBlocking.toIterable.asScala.toSeq
+    val res = rtree.search(rectangle(x - e, y - e, x + e, y + e)).toBlocking.toIterable.asScala.toArray
+    res
   }
 
   @Benchmark
