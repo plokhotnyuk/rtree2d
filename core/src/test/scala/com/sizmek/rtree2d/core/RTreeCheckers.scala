@@ -22,6 +22,25 @@ class RTreeCheckers extends WordSpec with Checkers {
   private val entryListGen = Gen.oneOf(0, 1, 10, 100, 1000, 10000).flatMap(n => Gen.listOfN(n, entryGen))
 
   "RTree" when {
+    "merge" should {
+      "build new rtree with all entries" in check {
+        forAll(entryListGen, entryListGen) {
+          (entries1: List[RTreeEntry[Int]], entries2: List[RTreeEntry[Int]]) =>
+            val expected = (entries1 ++ entries2).sorted
+            RTree.merge(RTree(entries1), entries2).entries.sorted ?= expected
+        }
+      }
+    }
+    "diff" should {
+      "withdraw matched entries from a rtree" in check {
+        forAll(entryListGen, entryListGen) {
+          (entries1: List[RTreeEntry[Int]], entries2: List[RTreeEntry[Int]]) =>
+            val entries = entries1 ++ entries2
+            val expected = entries1.sorted
+            RTree.diff(RTree(entries), entries2).entries.sorted ?= expected
+        }
+      }
+    }
     "asked for entries" should {
       "return all entries" in check {
         forAll(entryListGen) {

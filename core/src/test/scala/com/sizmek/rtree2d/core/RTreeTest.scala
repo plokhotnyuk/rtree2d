@@ -129,6 +129,18 @@ class RTreeTest extends FunSuite {
     assert(rtree.entries === entries)
   }
 
+  test("RTree.merge") {
+    val (entries1, entries2) = entries.splitAt(entries.size / 2)
+    assert(RTree.merge(RTree(entries1), entries2).entries.size === rtree.entries.size)
+    assert(RTree.merge(rtree, rtree.entries).entries.size === (rtree.entries ++ rtree.entries).size)
+  }
+
+  test("RTree.diff") {
+    val (entries1, entries2) = entries.splitAt(entries.size / 2)
+    assert(RTree.diff(rtree, entries1).entries.size === entries2.size)
+    assert(RTree.diff(RTree.merge(rtree, rtree.entries), entries1).entries.size === (rtree.entries ++ entries2).size)
+  }
+
   test("RTree.searchAll by point") {
     assert(rtree.searchAll(50, 50).map(_.value) === Seq(49, 50))
   }
