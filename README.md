@@ -87,7 +87,8 @@ The `searchByPoint` benchmark tests requests that search entries with intersects
 
 [![searchByPoint](docs/overlap-1/searchByPoint.png)](docs/overlap-1/searchByPoint.png)
 
-The `searchByRectangle` benchmark tests requests that search entries with intersects with the specified rectangle.
+The `searchByRectangle` benchmark tests requests that search entries with intersects with the specified rectangle that
+can intersect with up to 100 entries.
 
 [![searchByPoint](docs/overlap-1/searchByRectangle.png)](docs/overlap-1/searchByRectangle.png)
 
@@ -95,13 +96,9 @@ The `entries` benchmark tests returning of all entries that are indexed in the R
 
 [![searchByPoint](docs/overlap-1/entries.png)](docs/overlap-1/entries.png)
 
-The `insert` benchmark tests rebuild of R-tree with adding of +30% entries to it.
+The `update` benchmark tests rebuild of R-tree with removing of +10% entries and adding of +10% another entries to it.
 
-[![searchByPoint](docs/overlap-1/insert.png)](docs/overlap-1/insert.png)
-
-The `remove` benchmark tests rebuild of R-tree with removing of +30% entries from it.
-
-[![searchByPoint](docs/overlap-1/remove.png)](docs/overlap-1/remove.png)
+[![searchByPoint](docs/overlap-1/update.png)](docs/overlap-1/update.png)
 
 
 Charts with their results are available in subdirectories (each for different value of overlap parameter) of the

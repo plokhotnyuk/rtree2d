@@ -39,8 +39,8 @@ abstract class BenchmarkBase {
   //@Param(Array("8", "16"))
   var nodeCapacity = 16 // Archery use hard coded 50 for limiting a number of children nodes
 
-  //@Param(Array("0.1", "0.3"))
-  var partToAddOrRemove = 0.3f // part of RTree to add or remove
+  //@Param(Array("0.01", "0.1"))
+  var partToAddOrRemove = 0.1f // part of RTree to add or remove
 
   def doShuffle[A](as: Array[A]): Unit = {
     val rnd = new util.Random(7777777)

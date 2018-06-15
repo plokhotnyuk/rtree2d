@@ -13,7 +13,8 @@ import collection.JavaConverters._
 class DavidMotenRTree extends BenchmarkBase {
   private[benchmark] var rtreeEntries: Array[Entry[PointOfInterest, Rectangle]] = _
   private[benchmark] var rtree: RTree[PointOfInterest, Rectangle] = _
-  private[benchmark] var entriesToAddOrRemove: Array[Entry[PointOfInterest, Rectangle]] = _
+  private[benchmark] var entriesToAdd: Array[Entry[PointOfInterest, Rectangle]] = _
+  private[benchmark] var entriesToRemove: Array[Entry[PointOfInterest, Rectangle]] = _
   private[this] var xys: Array[Float] = _
   private[this] var curr: Int = _
   private[this] var eps: Float = _
@@ -38,7 +39,8 @@ class DavidMotenRTree extends BenchmarkBase {
     xys = genRequests(points)
     curr = 0
     if (!shuffle) rtreeEntries = rtree.entries().toBlocking.toIterable.asScala.toArray
-    entriesToAddOrRemove = java.util.Arrays.copyOf(rtreeEntries, (size * partToAddOrRemove).toInt)
+    entriesToAdd = java.util.Arrays.copyOf(rtreeEntries, (size * partToAddOrRemove).toInt)
+    entriesToRemove = rtreeEntries.slice(size - (size * partToAddOrRemove).toInt, size)
   }
 
   @Benchmark
@@ -71,12 +73,8 @@ class DavidMotenRTree extends BenchmarkBase {
   }
 
   @Benchmark
-  def insert: RTree[PointOfInterest, Rectangle] =
-    RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0)
-      .create(util.Arrays.asList(rtree.entries().toBlocking.toIterable.asScala.toArray ++ entriesToAddOrRemove:_*))
-
-  @Benchmark
-  def remove: RTree[PointOfInterest, Rectangle] =
-    RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0)
-      .create(util.Arrays.asList(rtree.entries().toBlocking.toIterable.asScala.toArray.diff(entriesToAddOrRemove):_*))
+  def update: RTree[PointOfInterest, Rectangle] = {
+    val es = rtree.entries().toBlocking.toIterable.asScala.toArray.diff(entriesToRemove) ++ entriesToAdd
+    RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0).create(util.Arrays.asList(es:_*))
+  }
 }

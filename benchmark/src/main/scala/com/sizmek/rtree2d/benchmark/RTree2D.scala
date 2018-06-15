@@ -6,7 +6,8 @@ import org.openjdk.jmh.annotations._
 class RTree2D extends BenchmarkBase {
   private[benchmark] var rtreeEntries: Array[RTreeEntry[PointOfInterest]] = _
   private[benchmark] var rtree: RTree[PointOfInterest] = _
-  private[benchmark] var entriesToAddOrRemove: Array[RTreeEntry[PointOfInterest]] = _
+  private[benchmark] var entriesToAdd: Array[RTreeEntry[PointOfInterest]] = _
+  private[benchmark] var entriesToRemove: Array[RTreeEntry[PointOfInterest]] = _
   private[this] var xys: Array[Float] = _
   private[this] var curr: Int = _
   private[this] var eps: Float = _
@@ -31,7 +32,8 @@ class RTree2D extends BenchmarkBase {
     xys = genRequests(points)
     curr = 0
     if (!shuffle) rtreeEntries = rtree.entries.toArray
-    entriesToAddOrRemove = java.util.Arrays.copyOf(rtreeEntries, (size * partToAddOrRemove).toInt)
+    entriesToAdd = java.util.Arrays.copyOf(rtreeEntries, (size * partToAddOrRemove).toInt)
+    entriesToRemove = rtreeEntries.slice(size - (size * partToAddOrRemove).toInt, size)
   }
 
   @Benchmark
@@ -58,8 +60,5 @@ class RTree2D extends BenchmarkBase {
   }
 
   @Benchmark
-  def insert: RTree[PointOfInterest] = RTree.update(rtree, Nil, insert = entriesToAddOrRemove, nodeCapacity)
-
-  @Benchmark
-  def remove: RTree[PointOfInterest] = RTree.update(rtree, remove = entriesToAddOrRemove, Nil, nodeCapacity)
+  def update: RTree[PointOfInterest] = RTree.update(rtree, entriesToRemove, entriesToAdd, nodeCapacity)
 }
