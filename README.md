@@ -79,23 +79,23 @@ Benchmarks have the following parameters:
 
 The `apply` benchmark test building of R-tries from a sequence of entires.
 
-No overlapping of entries (`overlap` = 0.1):
+No overlapping of entries (`overlap` = 1):
 
-[![apply](docs/overlap-0.1/apply.png)](docs/overlap-0.1/apply.png)
+[![apply](docs/overlap-1/apply.png)](docs/overlap-1/apply.png)
 
-Entries with lot of overlaps (`overlap` = 5):
+Entries with lot of overlaps (`overlap` = 10):
 
-[![apply](docs/overlap-5/apply.png)](docs/overlap-5/apply.png)
+[![apply](docs/overlap-10/apply.png)](docs/overlap-10/apply.png)
 
 The `searchByPoint` benchmark test requests that search entries with intersects with the specified point.
 
-No overlapping of entries (`overlap` = 0.1):
+No overlapping of entries (`overlap` = 1):
 
-[![searchByPoint](docs/overlap-0.1/searchByPoint.png)](docs/overlap-0.1/searchByPoint.png)
+[![searchByPoint](docs/overlap-1/searchByPoint.png)](docs/overlap-1/searchByPoint.png)
 
-Entries with lot of overlaps (`overlap` = 5):
+Entries with lot of overlaps (`overlap` = 10):
 
-[![searchByPoint](docs/overlap-5/searchByPoint.png)](docs/overlap-5/searchByPoint.png)
+[![searchByPoint](docs/overlap-10/searchByPoint.png)](docs/overlap-10/searchByPoint.png)
 
 Other benchmarks tests searching by rectangles, returning entries back from R-tries, inserting and removing bulk of 
 entries to/from them.
@@ -137,7 +137,7 @@ series to separated images. Here is an example how it can be called for specifie
 parameter, and patterns of benchmark names:
 
 ```sh
-sbt 'charts -jvm /usr/lib/jvm/java-8-oracle/bin/java -p overlap=0.1 .*apply.* .*search.*'
+sbt 'charts -jvm /usr/lib/jvm/java-8-oracle/bin/java -p overlap=1 .*apply.* .*search.*'
 ```
 
 Results will be places in a cross-build suffixed subdirectory of the `benchmark/target` directory in `*.png` files:
