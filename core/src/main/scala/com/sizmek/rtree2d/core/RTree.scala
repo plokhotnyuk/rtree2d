@@ -22,53 +22,36 @@ object RTree {
   }
 
   /**
-    * Merge an RTree with a sequence of entries using STR packing.
+    * Update an RTree by withdrawing matched entries specified by the `remove` argument and adding entries from the
+    * `insert` argument, than repack resulting entries to a new RTree using STR packing.
     *
     * @param rtree the RTree
-    * @param entries the sequence of entries
+    * @param remove the sequence of entries to remove
+    * @param insert the sequence of entries to insert
     * @param nodeCapacity the maximum number of children nodes (16 by default)
     * @tparam A a type of values being put in the tree
     * @return an RTree instance
     */
-  def merge[A](rtree: RTree[A], entries: Traversable[RTreeEntry[A]], nodeCapacity: Int = 16): RTree[A] = {
-    val es1 = RTree.lastLevel(rtree)
-    val es2 = entries.toArray[RTree[A]]
-    val l1 = es1.length
-    val l2 = es2.length
-    if (l2 == 0) rtree
-    else if (l1 == 0) pack(es2, nodeCapacity, xComparator[A], yComparator[A])
-    else {
-      val es = util.Arrays.copyOf(es1, l1 + l2)
-      System.arraycopy(es2, 0, es, l1, l2)
+  def update[A](rtree: RTree[A], remove: Traversable[RTreeEntry[A]] = Nil, insert: Traversable[RTreeEntry[A]] = Nil,
+                nodeCapacity: Int = 16): RTree[A] =
+    if ((rtree.isEmpty || remove.isEmpty) && insert.isEmpty) rtree
+    else if (rtree.isEmpty && remove.isEmpty) {
+      pack(insert.toArray[RTree[A]], nodeCapacity, xComparator[A], yComparator[A])
+    } else if (remove.isEmpty) {
+      val es1 = RTree.lastLevel(rtree)
+      val l1 = es1.length
+      val es = util.Arrays.copyOf(es1, l1 + insert.size)
+      insert.copyToArray(es, l1)
       pack(es, nodeCapacity, xComparator[A], yComparator[A])
-    }
-  }
-
-  /**
-    * Withdraw matched entries from the specified RTree and repack them to a new RTree using STR packing.
-    *
-    * @param rtree the RTree
-    * @param entries the sequence of entries
-    * @param nodeCapacity the maximum number of children nodes (16 by default)
-    * @tparam A a type of values being put in the tree
-    * @return an RTree instance
-    */
-  def diff[A](rtree: RTree[A], entries: Traversable[RTreeEntry[A]], nodeCapacity: Int = 16): RTree[A] = {
-    val es1 = RTree.lastLevel(rtree)
-    val es2 = entries.toArray[RTree[A]]
-    val l1 = es1.length
-    val l2 = es2.length
-    if (l1 == 0 || l2 == 0) rtree
-    else {
-      val cs = new mutable.OpenHashMap[RTree[A], DejaVuCounter](max(8, l2))
+    } else {
+      val cs = new mutable.OpenHashMap[RTree[A], DejaVuCounter](max(8, remove.size))
+      remove.foreach(e => cs.getOrElseUpdate(e, new DejaVuCounter).inc())
+      val es1 = RTree.lastLevel(rtree)
+      val l1 = es1.length
+      var n = insert.size
+      val es = new Array[RTree[A]](l1 + n)
+      insert.copyToArray(es, 0)
       var i = 0
-      while (i < l2) {
-        cs.getOrElseUpdate(es2(i), new DejaVuCounter).inc()
-        i += 1
-      }
-      val es = new Array[RTree[A]](l1)
-      var n = 0
-      i = 0
       while (i < l1) {
         val e = es1(i)
         val optC = cs.get(e)
@@ -78,9 +61,8 @@ object RTree {
         }
         i += 1
       }
-      pack(util.Arrays.copyOf(es, n), nodeCapacity, xComparator[A], yComparator[A])
+      pack(if (es.length == n) es else util.Arrays.copyOf(es, n), nodeCapacity, xComparator[A], yComparator[A])
     }
-  }
 
   @tailrec
   private[core] def lastLevel[A](t: RTree[A]): Array[RTree[A]] = t match {
@@ -181,6 +163,8 @@ sealed trait RTree[A] {
     */
   def y2: Float
 
+  def isEmpty: Boolean
+
   /**
     * Returns a sequence of all entries in the R-tree whose MBR contains the given point.
     *
@@ -276,6 +260,8 @@ private final case class RTreeNil[A]() extends RTree[A] {
 
   def y2: Float = throw new UnsupportedOperationException
 
+  def isEmpty: Boolean = true
+
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Boolean): Boolean = false
 
   def search(x1: Float, y1: Float, x2: Float, y2: Float)(f: RTreeEntry[A] => Boolean): Boolean = false
@@ -297,6 +283,8 @@ private final case class RTreeNil[A]() extends RTree[A] {
 final case class RTreeEntry[A] (x1: Float, y1: Float, x2: Float, y2: Float, value: A) extends RTree[A] {
   if (!(x2 >= x1)) throw new IllegalArgumentException("x2 should be greater than x1 and any of them should not be NaN")
   if (!(y2 >= y1)) throw new IllegalArgumentException("y2 should be greater than y1 and any of them should not be NaN")
+
+  def isEmpty: Boolean = false
 
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Boolean): Boolean =
     this.y1 <= y && y <= this.y2 && this.x1 <= x && x <= this.x2 && f(this)
@@ -328,6 +316,8 @@ object RTreeEntry {
 
 private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float,
                                       level: Array[RTree[A]], from: Int, to: Int) extends RTree[A] {
+  def isEmpty: Boolean = false
+
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Boolean): Boolean =
     this.y1 <= y && y <= this.y2 && this.x1 <= x && x <= this.x2 && {
       val ts = level

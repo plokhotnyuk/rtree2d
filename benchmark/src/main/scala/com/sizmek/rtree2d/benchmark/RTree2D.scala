@@ -58,8 +58,8 @@ class RTree2D extends BenchmarkBase {
   }
 
   @Benchmark
-  def insert: RTree[PointOfInterest] = RTree.merge(rtree, entriesToAddOrRemove, nodeCapacity)
+  def insert: RTree[PointOfInterest] = RTree.update(rtree, Nil, insert = entriesToAddOrRemove, nodeCapacity)
 
   @Benchmark
-  def remove: RTree[PointOfInterest] = RTree.diff(rtree, entriesToAddOrRemove, nodeCapacity)
+  def remove: RTree[PointOfInterest] = RTree.update(rtree, remove = entriesToAddOrRemove, Nil, nodeCapacity)
 }

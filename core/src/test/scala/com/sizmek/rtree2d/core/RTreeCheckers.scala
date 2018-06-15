@@ -19,25 +19,31 @@ class RTreeCheckers extends WordSpec with Checkers {
     w <- positiveFloatGen
     h <- positiveFloatGen
   } yield RTreeEntry(x, y, x + w, y + h, lastId.getAndIncrement())
-  private val entryListGen = Gen.oneOf(0, 1, 10, 100, 1000, 10000).flatMap(n => Gen.listOfN(n, entryGen))
+  private val entryListGen = Gen.oneOf(0, 1, 10, 100, 1000).flatMap(n => Gen.listOfN(n, entryGen))
 
   "RTree" when {
-    "merge" should {
-      "build new rtree with all entries" in check {
-        forAll(entryListGen, entryListGen) {
-          (entries1: List[RTreeEntry[Int]], entries2: List[RTreeEntry[Int]]) =>
-            val expected = (entries1 ++ entries2).sorted
-            RTree.merge(RTree(entries1), entries2).entries.sorted ?= expected
-        }
-      }
-    }
-    "diff" should {
+    "update" should {
       "withdraw matched entries from a rtree" in check {
         forAll(entryListGen, entryListGen) {
           (entries1: List[RTreeEntry[Int]], entries2: List[RTreeEntry[Int]]) =>
-            val entries = entries1 ++ entries2
+            val entries12 = entries1 ++ entries2
             val expected = entries1.sorted
-            RTree.diff(RTree(entries), entries2).entries.sorted ?= expected
+            RTree.update(RTree(entries12), entries2, Nil).entries.sorted ?= expected
+        }
+      }
+      "build new rtree with old and inserted entries" in check {
+        forAll(entryListGen, entryListGen) {
+          (entries1: List[RTreeEntry[Int]], entries3: List[RTreeEntry[Int]]) =>
+            val expected = (entries1 ++ entries3).sorted
+            RTree.update(RTree(entries1), Nil, entries3).entries.sorted ?= expected
+        }
+      }
+      "remove and insert at the same time properly" in check {
+        forAll(entryListGen, entryListGen, entryListGen) {
+          (entries1: List[RTreeEntry[Int]], entries2: List[RTreeEntry[Int]], entries3: List[RTreeEntry[Int]]) =>
+            val entries12 = entries1 ++ entries2
+            val expected = (entries1 ++ entries3).sorted
+            RTree.update(RTree(entries12), entries2, entries3).entries.sorted ?= expected
         }
       }
     }
