@@ -72,7 +72,10 @@ lazy val commonSettings = Seq(
 
 lazy val noPublishSettings = Seq(
   skip in publish := true,
-  publishArtifact := false
+  publishArtifact := false,
+  bintrayRelease := ((): Unit),
+  bintrayEnsureBintrayPackageExists := ((): Unit),
+  bintrayEnsureLicenses := ((): Unit)
 )
 
 lazy val publishSettings = Seq(
