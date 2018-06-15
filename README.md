@@ -79,27 +79,27 @@ Benchmarks have the following parameters:
 - `shuffle` is a flag to turn on/off shuffling of entries before R-tree building
 - `overlap` is a size of entries relative to interval between them 
 
-The `apply` benchmark test building of R-tries from a sequence of entires.
+The `apply` benchmark tests building of R-tries from a sequence of entires.
 
 [![apply](docs/overlap-1/apply.png)](docs/overlap-1/apply.png)
 
-The `searchByPoint` benchmark test requests that search entries with intersects with the specified point.
+The `searchByPoint` benchmark tests requests that search entries with intersects with the specified point.
 
 [![searchByPoint](docs/overlap-1/searchByPoint.png)](docs/overlap-1/searchByPoint.png)
 
-The `searchByRectangle` benchmark test requests that search entries with intersects with the specified rectangle.
+The `searchByRectangle` benchmark tests requests that search entries with intersects with the specified rectangle.
 
 [![searchByPoint](docs/overlap-1/searchByRectangle.png)](docs/overlap-1/searchByRectangle.png)
 
-The `entries` benchmark test returning of all entries that are indexed in the R-tree.
+The `entries` benchmark tests returning of all entries that are indexed in the R-tree.
 
 [![searchByPoint](docs/overlap-1/entries.png)](docs/overlap-1/entries.png)
 
-The `insert` benchmark test rebuild of R-tree with adding of +30% entries to it.
+The `insert` benchmark tests rebuild of R-tree with adding of +30% entries to it.
 
 [![searchByPoint](docs/overlap-1/insert.png)](docs/overlap-1/insert.png)
 
-The `remove` benchmark test rebuild of R-tree with removing of +30% entries from it.
+The `remove` benchmark tests rebuild of R-tree with removing of +30% entries from it.
 
 [![searchByPoint](docs/overlap-1/insert.png)](docs/overlap-1/insert.png)
 
