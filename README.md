@@ -4,7 +4,8 @@
 [![codecov](https://codecov.io/gh/Sizmek/rtree2d/branch/master/graph/badge.svg)](https://codecov.io/gh/Sizmek/rtree2d)
 
 RTree2D is a 2D immutable [R-tree](https://en.wikipedia.org/wiki/R-tree) with 
-[STR (Sort-Tile-Recursive)](https://archive.org/details/DTIC_ADA324493) packing.
+[STR (Sort-Tile-Recursive)](https://archive.org/details/DTIC_ADA324493) packing for ultra-fast search by point or 
+rectangle requests.
 
 ## Goals
 
@@ -19,6 +20,7 @@ To archive these goals we have used:
 sequence of entries
 - a memory representation and access patterns to it which are aware of a cache hierarchy of contemporary CPUs (while it 
 is not a final version and can be improved further soon)
+- an efficient TimSort version of merge sorting from Java which minimize access to memory. 
 - efficient implementations of search functions with minimum of virtual calls and allocations (there are versions with 
 zero allocations)
 
@@ -79,28 +81,31 @@ Benchmarks have the following parameters:
 
 The `apply` benchmark test building of R-tries from a sequence of entires.
 
-No overlapping of entries (`overlap` = 1):
-
 [![apply](docs/overlap-1/apply.png)](docs/overlap-1/apply.png)
-
-Entries with lot of overlaps (`overlap` = 10):
-
-[![apply](docs/overlap-10/apply.png)](docs/overlap-10/apply.png)
 
 The `searchByPoint` benchmark test requests that search entries with intersects with the specified point.
 
-No overlapping of entries (`overlap` = 1):
-
 [![searchByPoint](docs/overlap-1/searchByPoint.png)](docs/overlap-1/searchByPoint.png)
 
-Entries with lot of overlaps (`overlap` = 10):
+The `searchByRectangle` benchmark test requests that search entries with intersects with the specified rectangle.
 
-[![searchByPoint](docs/overlap-10/searchByPoint.png)](docs/overlap-10/searchByPoint.png)
+[![searchByPoint](docs/overlap-1/searchByRectangle.png)](docs/overlap-1/searchByRectangle.png)
 
-Other benchmarks tests searching by rectangles, returning entries back from R-tries, inserting and removing bulk of 
-entries to/from them.
+The `entries` benchmark test returning of all entries that are indexed in the R-tree.
 
-Charts with their results are available in subdirectories of the [docs](docs/) directory.  
+[![searchByPoint](docs/overlap-1/entries.png)](docs/overlap-1/entries.png)
+
+The `insert` benchmark test rebuild of R-tree with adding of +30% entries to it.
+
+[![searchByPoint](docs/overlap-1/insert.png)](docs/overlap-1/insert.png)
+
+The `remove` benchmark test rebuild of R-tree with removing of +30% entries from it.
+
+[![searchByPoint](docs/overlap-1/insert.png)](docs/overlap-1/insert.png)
+
+
+Charts with their results are available in subdirectories (each for different value of overlap parameter) of the
+ [docs](docs/) directory.  
 
 ## How to contribute
 
