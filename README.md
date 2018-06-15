@@ -101,7 +101,7 @@ The `insert` benchmark tests rebuild of R-tree with adding of +30% entries to it
 
 The `remove` benchmark tests rebuild of R-tree with removing of +30% entries from it.
 
-[![searchByPoint](docs/overlap-1/insert.png)](docs/overlap-1/insert.png)
+[![searchByPoint](docs/overlap-1/remove.png)](docs/overlap-1/remove.png)
 
 
 Charts with their results are available in subdirectories (each for different value of overlap parameter) of the
