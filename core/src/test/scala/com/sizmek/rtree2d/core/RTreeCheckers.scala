@@ -12,7 +12,7 @@ class RTreeCheckers extends WordSpec with Checkers {
     PropertyCheckConfiguration(minSuccessful = 100)
   private val lastId = new AtomicInteger
   private val floatGen = Gen.choose[Float](-1000, 1000)
-  private val positiveFloatGen = Gen.choose[Float](0, 333)
+  private val positiveFloatGen = Gen.choose[Float](0, 200)
   private val entryGen = for {
     x <- floatGen
     y <- floatGen
@@ -53,6 +53,38 @@ class RTreeCheckers extends WordSpec with Checkers {
           (entries: List[RTreeEntry[Int]]) =>
             val expected = entries.sorted
             RTree(entries).entries.sorted ?= expected
+        }
+      }
+    }
+    "asked for nearest" should {
+      "return any of entries which intersects by point" in check {
+        forAll(entryListGen, floatGen, floatGen) {
+          (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
+            import EuclideanDistanceCalculator._
+            val sorted = entries.map(e => (calculator.distance(x, y, e), e)).sortBy(_._1)
+            propBoolean(sorted.nonEmpty && sorted.exists { case (d, e) => d == 0.0f }) ==> {
+              val result = RTree(entries).nearest(x, y)
+              sorted.map(Some(_)).contains(result)
+            }
+        }
+      }
+      "return the nearest entry if point is out of all entries" in check {
+        forAll(entryListGen, floatGen, floatGen) {
+          (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
+            import EuclideanDistanceCalculator._
+            val sorted = entries.map(e => (calculator.distance(x, y, e), e)).sortBy(_._1)
+            propBoolean(sorted.nonEmpty && !sorted.exists { case (d, e) => d == 0.0f }) ==> {
+              RTree(entries).nearest(x, y) ?= sorted.headOption
+            }
+        }
+      }
+      "don't return any entry for empty tree" in check {
+        forAll(entryListGen, floatGen, floatGen) {
+          (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
+            import EuclideanDistanceCalculator._
+            propBoolean(entries.isEmpty) ==> {
+              RTree(entries).nearest(x, y) ?= None
+            }
         }
       }
     }

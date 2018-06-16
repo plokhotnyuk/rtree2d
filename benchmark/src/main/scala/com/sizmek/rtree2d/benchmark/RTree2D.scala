@@ -4,6 +4,8 @@ import com.sizmek.rtree2d.core._
 import org.openjdk.jmh.annotations._
 
 class RTree2D extends BenchmarkBase {
+  import EuclideanDistanceCalculator._
+
   private[benchmark] var rtreeEntries: Array[RTreeEntry[PointOfInterest]] = _
   private[benchmark] var rtree: RTree[PointOfInterest] = _
   private[benchmark] var entriesToAdd: Array[RTreeEntry[PointOfInterest]] = _
@@ -41,6 +43,13 @@ class RTree2D extends BenchmarkBase {
 
   @Benchmark
   def entries: Seq[RTreeEntry[PointOfInterest]] = rtree.entries
+
+  @Benchmark
+  def nearest: Option[RTreeEntry[PointOfInterest]] = {
+    val i = curr
+    curr = if (i + 2 < xys.length) i + 2 else 0
+    rtree.nearest(xys(i), xys(i + 1)).map(_._2)
+  }
 
   @Benchmark
   def searchByPoint: Seq[RTreeEntry[PointOfInterest]] = {

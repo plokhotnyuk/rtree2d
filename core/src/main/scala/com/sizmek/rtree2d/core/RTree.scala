@@ -201,6 +201,9 @@ sealed trait RTree[A] {
       }
     }
 
+  def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
+             (implicit distCalc: DistanceCalculator): Option[(Float, RTreeEntry[A])]
+
   /**
     * Call the provided `f` function with entries whose MBR contains the given point,
     * until the function returns true.
@@ -262,6 +265,9 @@ private final case class RTreeNil[A]() extends RTree[A] {
 
   def isEmpty: Boolean = true
 
+  def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
+             (implicit distCalc: DistanceCalculator): Option[(Float, RTreeEntry[A])] = None
+
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Boolean): Boolean = false
 
   def search(x1: Float, y1: Float, x2: Float, y2: Float)(f: RTreeEntry[A] => Boolean): Boolean = false
@@ -285,6 +291,13 @@ final case class RTreeEntry[A] (x1: Float, y1: Float, x2: Float, y2: Float, valu
   if (!(y2 >= y1)) throw new IllegalArgumentException("y2 should be greater than y1 and any of them should not be NaN")
 
   def isEmpty: Boolean = false
+
+  def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
+             (implicit distCalc: DistanceCalculator): Option[(Float, RTreeEntry[A])] = {
+    val dist = distCalc.distance(x, y, this)
+    if (dist <= maxDist) Some((dist, this))
+    else None
+  }
 
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Boolean): Boolean =
     this.y1 <= y && y <= this.y2 && this.x1 <= x && x <= this.x2 && f(this)
@@ -317,6 +330,42 @@ object RTreeEntry {
 private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float,
                                       level: Array[RTree[A]], from: Int, to: Int) extends RTree[A] {
   def isEmpty: Boolean = false
+
+  def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
+             (implicit distCalc: DistanceCalculator): Option[(Float, RTreeEntry[A])] = {
+    var result: Option[(Float, RTreeEntry[A])] = None
+    var minDist = maxDist
+    val n = to - from
+    val ps = new Array[Long](n)
+    var i = 0
+    while (i < n) {
+      val tn = level(i + from)
+      val d = distCalc.distance(x, y, tn)
+      ps(i) = (java.lang.Float.floatToRawIntBits(d).toLong << 32) | (i + from)
+      i += 1
+    }
+    java.util.Arrays.sort(ps)
+    i = 0
+    while (i < n && {
+      val p = ps(i)
+      val d = java.lang.Float.intBitsToFloat((p >> 32).toInt)
+      d <= minDist && {
+        level(p.toInt) match {
+          case e: RTreeEntry[A] =>
+            minDist = d
+            result = Some((d, e))
+          case tn =>
+            val r = tn.nearest(x, y, minDist)
+            if (r.isDefined) {
+              minDist = r.get._1
+              result = r
+            }
+        }
+        true
+      }
+    }) i += 1
+    result
+  }
 
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Boolean): Boolean =
     this.y1 <= y && y <= this.y2 && this.x1 <= x && x <= this.x2 && {
@@ -358,6 +407,20 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
   override def equals(that: Any): Boolean = throw new UnsupportedOperationException
 
   override def hashCode(): Int = throw new UnsupportedOperationException
+}
+
+trait DistanceCalculator {
+  def distance[A](x: Float, y: Float, t: RTree[A]): Float
+}
+
+object EuclideanDistanceCalculator {
+  implicit val calculator: DistanceCalculator = new DistanceCalculator {
+    override def distance[A](x: Float, y: Float, t: RTree[A]): Float = {
+      val dx = if (x < t.x1) t.x1 - x else if (x < t.x2) 0f else x - t.x2
+      val dy = if (y < t.y1) t.y1 - y else if (y < t.y2) 0f else y - t.y2
+      sqrt(dx * dx + dy * dy).toFloat
+    }
+  }
 }
 
 private class DejaVuCounter {
