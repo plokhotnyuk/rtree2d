@@ -1,5 +1,6 @@
 package com.sizmek.rtree2d.core
 
+import java.lang.Float.{intBitsToFloat, floatToRawIntBits}
 import java.lang.Math._
 import java.util
 import java.util.Comparator
@@ -127,13 +128,11 @@ object RTree {
   }
 
   private[this] def xComparator[A]: Comparator[RTree[A]] = new Comparator[RTree[A]] {
-    override def compare(t1: RTree[A], t2: RTree[A]): Int =
-      java.lang.Float.floatToRawIntBits((t1.x1 + t1.x2) - (t2.x1 + t2.x2))
+    override def compare(t1: RTree[A], t2: RTree[A]): Int = floatToRawIntBits((t1.x1 + t1.x2) - (t2.x1 + t2.x2))
   }
 
   private[this] def yComparator[A]: Comparator[RTree[A]] = new Comparator[RTree[A]] {
-    override def compare(t1: RTree[A], t2: RTree[A]): Int =
-      java.lang.Float.floatToRawIntBits((t1.y1 + t1.y2) - (t2.y1 + t2.y2))
+    override def compare(t1: RTree[A], t2: RTree[A]): Int = floatToRawIntBits((t1.y1 + t1.y2) - (t2.y1 + t2.y2))
   }
 }
 
@@ -335,20 +334,21 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
              (implicit distCalc: DistanceCalculator): Option[(Float, RTreeEntry[A])] = {
     var result: Option[(Float, RTreeEntry[A])] = None
     var minDist = maxDist
-    val n = to - from
+    var j = from
+    val n = to - j
     val ps = new Array[Long](n)
+    val ts = level
     var i = 0
     while (i < n) {
-      val tn = level(i + from)
-      val d = distCalc.distance(x, y, tn)
-      ps(i) = (java.lang.Float.floatToRawIntBits(d).toLong << 32) | (i + from)
+      ps(i) = (floatToRawIntBits(distCalc.distance(x, y, ts(j))).toLong << 32) | j
       i += 1
+      j += 1
     }
     java.util.Arrays.sort(ps)
     i = 0
     while (i < n && {
       val p = ps(i)
-      val d = java.lang.Float.intBitsToFloat((p >> 32).toInt)
+      val d = intBitsToFloat((p >> 32).toInt)
       d < minDist && {
         level(p.toInt) match {
           case e: RTreeEntry[A] =>
