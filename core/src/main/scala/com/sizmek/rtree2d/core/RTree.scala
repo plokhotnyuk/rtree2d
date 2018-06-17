@@ -414,10 +414,10 @@ trait DistanceCalculator {
 object EuclideanDistanceCalculator {
   implicit val calculator: DistanceCalculator = new DistanceCalculator {
     override def distance[A](x: Float, y: Float, t: RTree[A]): Float = {
-      val dx = if (x < t.x1) t.x1 - x else if (x < t.x2) 0 else x - t.x2
       val dy = if (y < t.y1) t.y1 - y else if (y < t.y2) 0 else y - t.y2
-      if (dx == 0) dy
-      else if (dy == 0) dx
+      val dx = if (x < t.x1) t.x1 - x else if (x < t.x2) 0 else x - t.x2
+      if (dy == 0) dx
+      else if (dx == 0) dy
       else sqrt(dx * dx + dy * dy).toFloat
     }
   }
