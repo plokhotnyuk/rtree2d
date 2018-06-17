@@ -214,4 +214,10 @@ class RTreeTest extends FunSuite {
   test("RTree.hashCode") {
     intercept[UnsupportedOperationException](RTree(entries).hashCode())
   }
+
+  test("EuclideanDistanceCalculator.calculator.distance") {
+    import EuclideanDistanceCalculator._
+    assert(calculator.distance(0, 0, RTreeEntry(1, 1, 2, 2, 3)) === 1.4142135f)
+    assert(calculator.distance(0, 0, RTreeEntry(-1, -1, 1, 1, 3)) === 0.0f)
+  }
 }

@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import org.scalacheck.Prop._
 import org.scalacheck.Gen
+import org.scalatest.Matchers._
 import org.scalatest.WordSpec
 import org.scalatest.prop.Checkers
 
@@ -164,6 +165,31 @@ class RTreeCheckers extends WordSpec with Checkers {
       }
     }
   }
+  "EuclideanDistanceCalculator.calculator" when {
+    "asked to calculate distance from point to an RTree" should {
+      "return a distance to the RTree bounding box in case point is out of it" in check {
+        forAll(entryListGen, floatGen, floatGen) {
+          (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
+            val t = RTree(entries)
+            propBoolean(entries.nonEmpty && !intersects(t, x, y)) ==> {
+              val dx = Math.max(Math.abs((t.x1 + t.x2) / 2 - x) - (t.x2 - t.x1) / 2, 0)
+              val dy = Math.max(Math.abs((t.y1 + t.y2) / 2 - y) - (t.y2 - t.y1) / 2, 0)
+              val expected = Math.sqrt(dx * dx + dy * dy).toFloat
+              EuclideanDistanceCalculator.calculator.distance(x, y, t) === expected +- 0.001f
+            }
+        }
+      }
+      "return 0 in case point is intersects with RTree bounding box" in check {
+        forAll(entryListGen, floatGen, floatGen) {
+          (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
+            val t = RTree(entries)
+            propBoolean(entries.nonEmpty && intersects(t, x, y)) ==> {
+              EuclideanDistanceCalculator.calculator.distance(x, y, t) ?= 0
+            }
+        }
+      }
+    }
+  }
 
   private def intersects[T](es: Seq[RTreeEntry[T]], x: Float, y: Float): Seq[RTreeEntry[T]] =
     intersects(es, x, y, x, y)
@@ -171,7 +197,10 @@ class RTreeCheckers extends WordSpec with Checkers {
   private def intersects[T](es: Seq[RTreeEntry[T]], x1: Float, y1: Float, x2: Float, y2: Float): Seq[RTreeEntry[T]] =
     es.filter(e => intersects(e, x1, y1, x2, y2))
 
-  private def intersects[T](e: RTreeEntry[T], x1: Float, y1: Float, x2: Float, y2: Float): Boolean =
+  private def intersects[T](e: RTree[T], x: Float, y: Float): Boolean =
+    e.x1 <= x && x <= e.x2 && e.y1 <= y && y <= e.y2
+
+  private def intersects[T](e: RTree[T], x1: Float, y1: Float, x2: Float, y2: Float): Boolean =
     e.x1 <= x2 && x1 <= e.x2 && e.y1 <= y2 && y1 <= e.y2
 
   implicit private def orderingByName[A <: RTreeEntry[Int]]: Ordering[A] =
