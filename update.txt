@@ -1,0 +1,1383 @@
+[info] Loading settings from idea.sbt ...
+[info] Loading global plugins from /home/andriy/.sbt/1.0/plugins
+[info] Loading settings from plugins.sbt ...
+[info] Loading project definition from /home/andriy/Projects/com/github/Sizmek/rtree2d/project
+[info] Loading settings from release.sbt,build.sbt,version.sbt ...
+[info] Set current project to rtree2d (in build file:/home/andriy/Projects/com/github/Sizmek/rtree2d/)
+[success] Total time: 0 s, completed Jun 15, 2018 12:46:21 PM
+[info] Updating core...
+[info] Done updating.
+[info] Updating benchmark...
+[info] Done updating.
+[info] Compiling 1 Scala source to /home/andriy/Projects/com/github/Sizmek/rtree2d/core/target/scala-2.12/classes ...
+[info] Done compiling.
+[info] Compiling 4 Scala sources to /home/andriy/Projects/com/github/Sizmek/rtree2d/benchmark/target/scala-2.12/classes ...
+[info] Packaging /home/andriy/Projects/com/github/Sizmek/rtree2d/core/target/scala-2.12/core_2.12-0.3.0-SNAPSHOT.jar ...
+[info] Done packaging.
+[info] Done compiling.
+[info] Packaging /home/andriy/Projects/com/github/Sizmek/rtree2d/benchmark/target/scala-2.12/benchmark_2.12-0.3.0-SNAPSHOT.jar ...
+[info] Done packaging.
+Processing 6 classes from /home/andriy/Projects/com/github/Sizmek/rtree2d/benchmark/target/scala-2.12/classes with "reflection" generator
+Writing out Java source to /home/andriy/Projects/com/github/Sizmek/rtree2d/benchmark/target/scala-2.12/src_managed/jmh and resources to /home/andriy/Projects/com/github/Sizmek/rtree2d/benchmark/target/scala-2.12/resource_managed/jmh
+[info] Compiling 3 Scala sources to /home/andriy/Projects/com/github/Sizmek/rtree2d/benchmark/target/scala-2.12/test-classes ...
+[info] Compiling 27 Java sources to /home/andriy/Projects/com/github/Sizmek/rtree2d/benchmark/target/scala-2.12/classes ...
+[info] Done compiling.
+[info] Packaging /home/andriy/Projects/com/github/Sizmek/rtree2d/benchmark/target/scala-2.12/benchmark_2.12-0.3.0-SNAPSHOT-tests.jar ...
+[info] Done packaging.
+[info] Done compiling.
+[info] Packaging /home/andriy/Projects/com/github/Sizmek/rtree2d/benchmark/target/scala-2.12/benchmark_2.12-0.3.0-SNAPSHOT-jmh.jar ...
+[info] Done packaging.
+[info] Running (fork) org.openjdk.jmh.Main -rf json -rff /home/andriy/Projects/com/github/Sizmek/rtree2d/benchmark/target/scala-2.12/benchmark.json -jvm /usr/lib/jvm/java-8-oracle/bin/java -p overlap=10 .*update.*
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 1)
+[info] # Run progress: 0.00% complete, ETA 00:08:00
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 430.470 ns/op
+[info] # Warmup Iteration   2: 363.396 ns/op
+[info] # Warmup Iteration   3: 373.547 ns/op
+[info] # Warmup Iteration   4: 358.421 ns/op
+[info] # Warmup Iteration   5: 357.971 ns/op
+[info] Iteration   1: 356.945 ns/op
+[info] Iteration   2: 363.922 ns/op
+[info] Iteration   3: 369.333 ns/op
+[info] Iteration   4: 369.297 ns/op
+[info] Iteration   5: 372.127 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   366.325 ±(99.9%) 23.208 ns/op [Average]
+[info]   (min, avg, max) = (356.945, 366.325, 372.127), stdev = 6.027
+[info]   CI (99.9%): [343.117, 389.532] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 10)
+[info] # Run progress: 2.08% complete, ETA 00:10:41
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 1657.741 ns/op
+[info] # Warmup Iteration   2: 1394.212 ns/op
+[info] # Warmup Iteration   3: 1365.767 ns/op
+[info] # Warmup Iteration   4: 1369.149 ns/op
+[info] # Warmup Iteration   5: 1363.599 ns/op
+[info] Iteration   1: 1367.392 ns/op
+[info] Iteration   2: 1372.644 ns/op
+[info] Iteration   3: 1365.412 ns/op
+[info] Iteration   4: 1367.602 ns/op
+[info] Iteration   5: 1430.170 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   1380.644 ±(99.9%) 107.104 ns/op [Average]
+[info]   (min, avg, max) = (1365.412, 1380.644, 1430.170), stdev = 27.814
+[info]   CI (99.9%): [1273.541, 1487.748] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 100)
+[info] # Run progress: 4.17% complete, ETA 00:10:28
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 38274.368 ns/op
+[info] # Warmup Iteration   2: 29118.174 ns/op
+[info] # Warmup Iteration   3: 29087.906 ns/op
+[info] # Warmup Iteration   4: 29124.773 ns/op
+[info] # Warmup Iteration   5: 29565.876 ns/op
+[info] Iteration   1: 30167.716 ns/op
+[info] Iteration   2: 30132.262 ns/op
+[info] Iteration   3: 30239.547 ns/op
+[info] Iteration   4: 30620.656 ns/op
+[info] Iteration   5: 28750.674 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   29982.171 ±(99.9%) 2754.923 ns/op [Average]
+[info]   (min, avg, max) = (28750.674, 29982.171, 30620.656), stdev = 715.445
+[info]   CI (99.9%): [27227.248, 32737.094] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 1000)
+[info] # Run progress: 6.25% complete, ETA 00:10:14
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 852591.252 ns/op
+[info] # Warmup Iteration   2: 673373.139 ns/op
+[info] # Warmup Iteration   3: 661783.362 ns/op
+[info] # Warmup Iteration   4: 650804.112 ns/op
+[info] # Warmup Iteration   5: 648390.898 ns/op
+[info] Iteration   1: 640175.004 ns/op
+[info] Iteration   2: 642955.667 ns/op
+[info] Iteration   3: 662291.687 ns/op
+[info] Iteration   4: 643750.387 ns/op
+[info] Iteration   5: 642034.159 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   646241.381 ±(99.9%) 34928.277 ns/op [Average]
+[info]   (min, avg, max) = (640175.004, 646241.381, 662291.687), stdev = 9070.763
+[info]   CI (99.9%): [611313.104, 681169.658] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 10000)
+[info] # Run progress: 8.33% complete, ETA 00:10:00
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 12703263.633 ns/op
+[info] # Warmup Iteration   2: 9591722.019 ns/op
+[info] # Warmup Iteration   3: 9556339.571 ns/op
+[info] # Warmup Iteration   4: 9452560.604 ns/op
+[info] # Warmup Iteration   5: 9453560.085 ns/op
+[info] Iteration   1: 9394378.804 ns/op
+[info] Iteration   2: 9410149.879 ns/op
+[info] Iteration   3: 9444805.236 ns/op
+[info] Iteration   4: 9424909.047 ns/op
+[info] Iteration   5: 9446823.396 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   9424213.272 ±(99.9%) 86609.648 ns/op [Average]
+[info]   (min, avg, max) = (9394378.804, 9424213.272, 9446823.396), stdev = 22492.250
+[info]   CI (99.9%): [9337603.624, 9510822.920] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 100000)
+[info] # Run progress: 10.42% complete, ETA 00:09:47
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 145427602.286 ns/op
+[info] # Warmup Iteration   2: 128406418.750 ns/op
+[info] # Warmup Iteration   3: 129262703.625 ns/op
+[info] # Warmup Iteration   4: 129386276.375 ns/op
+[info] # Warmup Iteration   5: 129799692.875 ns/op
+[info] Iteration   1: 129535472.250 ns/op
+[info] Iteration   2: 129401793.750 ns/op
+[info] Iteration   3: 129422178.625 ns/op
+[info] Iteration   4: 129105938.250 ns/op
+[info] Iteration   5: 128742562.375 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   129241589.050 ±(99.9%) 1235922.098 ns/op [Average]
+[info]   (min, avg, max) = (128742562.375, 129241589.050, 129535472.250), stdev = 320965.044
+[info]   CI (99.9%): [128005666.952, 130477511.148] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 1000000)
+[info] # Run progress: 12.50% complete, ETA 00:09:38
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 1800664843.000 ns/op
+[info] # Warmup Iteration   2: 1620681440.000 ns/op
+[info] # Warmup Iteration   3: 1662723518.000 ns/op
+[info] # Warmup Iteration   4: 1571771775.000 ns/op
+[info] # Warmup Iteration   5: 1642458293.000 ns/op
+[info] Iteration   1: 1586095481.000 ns/op
+[info] Iteration   2: 1649242025.000 ns/op
+[info] Iteration   3: 1636502668.000 ns/op
+[info] Iteration   4: 1668141372.000 ns/op
+[info] Iteration   5: 1602026435.000 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   1628401596.200 ±(99.9%) 130079076.815 ns/op [Average]
+[info]   (min, avg, max) = (1586095481.000, 1628401596.200, 1668141372.000), stdev = 33781123.165
+[info]   CI (99.9%): [1498322519.385, 1758480673.015] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 10000000)
+[info] # Run progress: 14.58% complete, ETA 00:10:13
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 20314167876.000 ns/op
+[info] # Warmup Iteration   2: 19408795051.000 ns/op
+[info] # Warmup Iteration   3: 19602555322.000 ns/op
+[info] # Warmup Iteration   4: 19755114851.000 ns/op
+[info] # Warmup Iteration   5: 22600684775.000 ns/op
+[info] Iteration   1: 26556697045.000 ns/op
+[info] Iteration   2: 23419325784.000 ns/op
+[info] Iteration   3: 21824425235.000 ns/op
+[info] Iteration   4: 20472432469.000 ns/op
+[info] Iteration   5: 19916750902.000 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   22437926287.000 ±(99.9%) 10282605921.658 ns/op [Average]
+[info]   (min, avg, max) = (19916750902.000, 22437926287.000, 26556697045.000), stdev = 2670360104.040
+[info]   CI (99.9%): [12155320365.342, 32720532208.658] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 1)
+[info] # Run progress: 16.67% complete, ETA 00:28:32
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 445.529 ns/op
+[info] # Warmup Iteration   2: 373.210 ns/op
+[info] # Warmup Iteration   3: 360.150 ns/op
+[info] # Warmup Iteration   4: 360.153 ns/op
+[info] # Warmup Iteration   5: 360.331 ns/op
+[info] Iteration   1: 360.271 ns/op
+[info] Iteration   2: 359.117 ns/op
+[info] Iteration   3: 358.550 ns/op
+[info] Iteration   4: 358.142 ns/op
+[info] Iteration   5: 360.382 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   359.292 ±(99.9%) 3.875 ns/op [Average]
+[info]   (min, avg, max) = (358.142, 359.292, 360.382), stdev = 1.006
+[info]   CI (99.9%): [355.417, 363.167] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 10)
+[info] # Run progress: 18.75% complete, ETA 00:25:43
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 1643.879 ns/op
+[info] # Warmup Iteration   2: 1355.723 ns/op
+[info] # Warmup Iteration   3: 1336.907 ns/op
+[info] # Warmup Iteration   4: 1337.501 ns/op
+[info] # Warmup Iteration   5: 1366.534 ns/op
+[info] Iteration   1: 1333.771 ns/op
+[info] Iteration   2: 1343.152 ns/op
+[info] Iteration   3: 1411.807 ns/op
+[info] Iteration   4: 1414.026 ns/op
+[info] Iteration   5: 1325.711 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   1365.693 ±(99.9%) 167.715 ns/op [Average]
+[info]   (min, avg, max) = (1325.711, 1365.693, 1414.026), stdev = 43.555
+[info]   CI (99.9%): [1197.978, 1533.409] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 100)
+[info] # Run progress: 20.83% complete, ETA 00:23:24
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 56857.535 ns/op
+[info] # Warmup Iteration   2: 42566.125 ns/op
+[info] # Warmup Iteration   3: 42735.204 ns/op
+[info] # Warmup Iteration   4: 42472.811 ns/op
+[info] # Warmup Iteration   5: 42682.890 ns/op
+[info] Iteration   1: 42652.202 ns/op
+[info] Iteration   2: 42143.985 ns/op
+[info] Iteration   3: 42176.300 ns/op
+[info] Iteration   4: 42745.794 ns/op
+[info] Iteration   5: 42435.147 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   42430.686 ±(99.9%) 1046.234 ns/op [Average]
+[info]   (min, avg, max) = (42143.985, 42430.686, 42745.794), stdev = 271.704
+[info]   CI (99.9%): [41384.451, 43476.920] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 1000)
+[info] # Run progress: 22.92% complete, ETA 00:21:29
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 795324.312 ns/op
+[info] # Warmup Iteration   2: 638182.608 ns/op
+[info] # Warmup Iteration   3: 652331.659 ns/op
+[info] # Warmup Iteration   4: 654261.288 ns/op
+[info] # Warmup Iteration   5: 640525.709 ns/op
+[info] Iteration   1: 624980.786 ns/op
+[info] Iteration   2: 628271.725 ns/op
+[info] Iteration   3: 626123.153 ns/op
+[info] Iteration   4: 627072.591 ns/op
+[info] Iteration   5: 626836.509 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   626656.953 ±(99.9%) 4679.350 ns/op [Average]
+[info]   (min, avg, max) = (624980.786, 626656.953, 628271.725), stdev = 1215.212
+[info]   CI (99.9%): [621977.603, 631336.302] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 10000)
+[info] # Run progress: 25.00% complete, ETA 00:19:51
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 13394805.373 ns/op
+[info] # Warmup Iteration   2: 10287540.816 ns/op
+[info] # Warmup Iteration   3: 10236131.673 ns/op
+[info] # Warmup Iteration   4: 10106145.444 ns/op
+[info] # Warmup Iteration   5: 9995034.208 ns/op
+[info] Iteration   1: 9993280.000 ns/op
+[info] Iteration   2: 9953662.634 ns/op
+[info] Iteration   3: 9986475.970 ns/op
+[info] Iteration   4: 9943990.376 ns/op
+[info] Iteration   5: 9966789.050 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   9968839.606 ±(99.9%) 80781.051 ns/op [Average]
+[info]   (min, avg, max) = (9943990.376, 9968839.606, 9993280.000), stdev = 20978.583
+[info]   CI (99.9%): [9888058.555, 10049620.657] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 100000)
+[info] # Run progress: 27.08% complete, ETA 00:18:25
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 179393825.000 ns/op
+[info] # Warmup Iteration   2: 162940905.571 ns/op
+[info] # Warmup Iteration   3: 161033789.857 ns/op
+[info] # Warmup Iteration   4: 151127180.000 ns/op
+[info] # Warmup Iteration   5: 151543114.571 ns/op
+[info] Iteration   1: 151738516.000 ns/op
+[info] Iteration   2: 150625055.857 ns/op
+[info] Iteration   3: 151370052.143 ns/op
+[info] Iteration   4: 151040205.857 ns/op
+[info] Iteration   5: 150699068.143 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   151094579.600 ±(99.9%) 1796210.417 ns/op [Average]
+[info]   (min, avg, max) = (150625055.857, 151094579.600, 151738516.000), stdev = 466470.141
+[info]   CI (99.9%): [149298369.183, 152890790.017] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 1000000)
+[info] # Run progress: 29.17% complete, ETA 00:17:13
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 2327880868.000 ns/op
+[info] # Warmup Iteration   2: 2099282978.000 ns/op
+[info] # Warmup Iteration   3: 2110354473.000 ns/op
+[info] # Warmup Iteration   4: 2117509795.000 ns/op
+[info] # Warmup Iteration   5: 2095229916.000 ns/op
+[info] Iteration   1: 2084734061.000 ns/op
+[info] Iteration   2: 2122069307.000 ns/op
+[info] Iteration   3: 2094207186.000 ns/op
+[info] Iteration   4: 2072527543.000 ns/op
+[info] Iteration   5: 2077262462.000 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   2090160111.800 ±(99.9%) 75586346.109 ns/op [Average]
+[info]   (min, avg, max) = (2072527543.000, 2090160111.800, 2122069307.000), stdev = 19629534.050
+[info]   CI (99.9%): [2014573765.691, 2165746457.909] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.Archery.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 10000000)
+[info] # Run progress: 31.25% complete, ETA 00:16:38
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 27788057563.000 ns/op
+[info] # Warmup Iteration   2: 27081242979.000 ns/op
+[info] # Warmup Iteration   3: 26515175151.000 ns/op
+[info] # Warmup Iteration   4: 29323269016.000 ns/op
+[info] # Warmup Iteration   5: 28029323236.000 ns/op
+[info] Iteration   1: 27062002505.000 ns/op
+[info] Iteration   2: 27040091720.000 ns/op
+[info] Iteration   3: 27339857853.000 ns/op
+[info] Iteration   4: 26799784602.000 ns/op
+[info] Iteration   5: 27116579631.000 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.Archery.update":
+[info]   27071663262.200 ±(99.9%) 743069318.553 ns/op [Average]
+[info]   (min, avg, max) = (26799784602.000, 27071663262.200, 27339857853.000), stdev = 192972742.310
+[info]   CI (99.9%): [26328593943.647, 27814732580.753] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 1)
+[info] # Run progress: 33.33% complete, ETA 00:26:07
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 1661.565 ns/op
+[info] # Warmup Iteration   2: 1283.150 ns/op
+[info] # Warmup Iteration   3: 1258.401 ns/op
+[info] # Warmup Iteration   4: 1252.870 ns/op
+[info] # Warmup Iteration   5: 1255.373 ns/op
+[info] Iteration   1: 1263.969 ns/op
+[info] Iteration   2: 1257.552 ns/op
+[info] Iteration   3: 1258.130 ns/op
+[info] Iteration   4: 1254.777 ns/op
+[info] Iteration   5: 1259.642 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   1258.814 ±(99.9%) 13.004 ns/op [Average]
+[info]   (min, avg, max) = (1254.777, 1258.814, 1263.969), stdev = 3.377
+[info]   CI (99.9%): [1245.810, 1271.818] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 10)
+[info] # Run progress: 35.42% complete, ETA 00:24:13
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 4565.490 ns/op
+[info] # Warmup Iteration   2: 3693.127 ns/op
+[info] # Warmup Iteration   3: 3641.245 ns/op
+[info] # Warmup Iteration   4: 3617.192 ns/op
+[info] # Warmup Iteration   5: 3659.128 ns/op
+[info] Iteration   1: 3659.460 ns/op
+[info] Iteration   2: 3645.348 ns/op
+[info] Iteration   3: 3631.699 ns/op
+[info] Iteration   4: 3666.300 ns/op
+[info] Iteration   5: 3636.300 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   3647.821 ±(99.9%) 56.975 ns/op [Average]
+[info]   (min, avg, max) = (3631.699, 3647.821, 3666.300), stdev = 14.796
+[info]   CI (99.9%): [3590.847, 3704.796] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 100)
+[info] # Run progress: 37.50% complete, ETA 00:22:31
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 52665.584 ns/op
+[info] # Warmup Iteration   2: 37142.664 ns/op
+[info] # Warmup Iteration   3: 37236.048 ns/op
+[info] # Warmup Iteration   4: 37303.079 ns/op
+[info] # Warmup Iteration   5: 37445.027 ns/op
+[info] Iteration   1: 36928.587 ns/op
+[info] Iteration   2: 37062.471 ns/op
+[info] Iteration   3: 37054.659 ns/op
+[info] Iteration   4: 37052.261 ns/op
+[info] Iteration   5: 36953.223 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   37010.240 ±(99.9%) 246.449 ns/op [Average]
+[info]   (min, avg, max) = (36928.587, 37010.240, 37062.471), stdev = 64.002
+[info]   CI (99.9%): [36763.791, 37256.689] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 1000)
+[info] # Run progress: 39.58% complete, ETA 00:20:58
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 774112.190 ns/op
+[info] # Warmup Iteration   2: 599944.198 ns/op
+[info] # Warmup Iteration   3: 596288.650 ns/op
+[info] # Warmup Iteration   4: 596816.587 ns/op
+[info] # Warmup Iteration   5: 595794.862 ns/op
+[info] Iteration   1: 589119.692 ns/op
+[info] Iteration   2: 589485.882 ns/op
+[info] Iteration   3: 588880.519 ns/op
+[info] Iteration   4: 575760.144 ns/op
+[info] Iteration   5: 575867.161 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   583822.679 ±(99.9%) 28165.472 ns/op [Average]
+[info]   (min, avg, max) = (575760.144, 583822.679, 589485.882), stdev = 7314.484
+[info]   CI (99.9%): [555657.207, 611988.152] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 10000)
+[info] # Run progress: 41.67% complete, ETA 00:19:33
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 7014449.713 ns/op
+[info] # Warmup Iteration   2: 5663088.215 ns/op
+[info] # Warmup Iteration   3: 5606307.162 ns/op
+[info] # Warmup Iteration   4: 5565478.617 ns/op
+[info] # Warmup Iteration   5: 5588887.872 ns/op
+[info] Iteration   1: 5582170.633 ns/op
+[info] Iteration   2: 5577718.283 ns/op
+[info] Iteration   3: 5579853.483 ns/op
+[info] Iteration   4: 5590355.782 ns/op
+[info] Iteration   5: 5569981.800 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   5580015.996 ±(99.9%) 28397.332 ns/op [Average]
+[info]   (min, avg, max) = (5569981.800, 5580015.996, 5590355.782), stdev = 7374.697
+[info]   CI (99.9%): [5551618.664, 5608413.329] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 100000)
+[info] # Run progress: 43.75% complete, ETA 00:18:15
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 79243841.154 ns/op
+[info] # Warmup Iteration   2: 63864513.375 ns/op
+[info] # Warmup Iteration   3: 62790102.813 ns/op
+[info] # Warmup Iteration   4: 62741516.688 ns/op
+[info] # Warmup Iteration   5: 63196188.000 ns/op
+[info] Iteration   1: 63082077.500 ns/op
+[info] Iteration   2: 63383225.000 ns/op
+[info] Iteration   3: 62677008.563 ns/op
+[info] Iteration   4: 63098166.750 ns/op
+[info] Iteration   5: 63200237.625 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   63088143.088 ±(99.9%) 998214.702 ns/op [Average]
+[info]   (min, avg, max) = (62677008.563, 63088143.088, 63383225.000), stdev = 259233.188
+[info]   CI (99.9%): [62089928.386, 64086357.789] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 1000000)
+[info] # Run progress: 45.83% complete, ETA 00:17:02
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 830919615.500 ns/op
+[info] # Warmup Iteration   2: 765801744.500 ns/op
+[info] # Warmup Iteration   3: 765861323.500 ns/op
+[info] # Warmup Iteration   4: 786548765.000 ns/op
+[info] # Warmup Iteration   5: 769152946.000 ns/op
+[info] Iteration   1: 767356315.500 ns/op
+[info] Iteration   2: 767931305.500 ns/op
+[info] Iteration   3: 784672301.500 ns/op
+[info] Iteration   4: 764744348.500 ns/op
+[info] Iteration   5: 765652754.500 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   770071405.100 ±(99.9%) 31813865.325 ns/op [Average]
+[info]   (min, avg, max) = (764744348.500, 770071405.100, 784672301.500), stdev = 8261959.796
+[info]   CI (99.9%): [738257539.775, 801885270.425] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 10000000)
+[info] # Run progress: 47.92% complete, ETA 00:16:02
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 8444478170.000 ns/op
+[info] # Warmup Iteration   2: 8412894896.000 ns/op
+[info] # Warmup Iteration   3: 8587022940.000 ns/op
+[info] # Warmup Iteration   4: 9026310430.000 ns/op
+[info] # Warmup Iteration   5: 8800983665.000 ns/op
+[info] Iteration   1: 8605966161.000 ns/op
+[info] Iteration   2: 8537125803.000 ns/op
+[info] Iteration   3: 8587466568.000 ns/op
+[info] Iteration   4: 8573643416.000 ns/op
+[info] Iteration   5: 8530500245.000 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   8566940438.600 ±(99.9%) 124865094.775 ns/op [Average]
+[info]   (min, avg, max) = (8530500245.000, 8566940438.600, 8605966161.000), stdev = 32427068.587
+[info]   CI (99.9%): [8442075343.825, 8691805533.375] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 1)
+[info] # Run progress: 50.00% complete, ETA 00:16:19
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 1776.763 ns/op
+[info] # Warmup Iteration   2: 1301.731 ns/op
+[info] # Warmup Iteration   3: 1294.691 ns/op
+[info] # Warmup Iteration   4: 1302.688 ns/op
+[info] # Warmup Iteration   5: 1286.345 ns/op
+[info] Iteration   1: 1280.389 ns/op
+[info] Iteration   2: 1278.943 ns/op
+[info] Iteration   3: 1276.698 ns/op
+[info] Iteration   4: 1283.353 ns/op
+[info] Iteration   5: 1280.609 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   1279.998 ±(99.9%) 9.389 ns/op [Average]
+[info]   (min, avg, max) = (1276.698, 1279.998, 1283.353), stdev = 2.438
+[info]   CI (99.9%): [1270.610, 1289.387] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 10)
+[info] # Run progress: 52.08% complete, ETA 00:15:13
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 5171.780 ns/op
+[info] # Warmup Iteration   2: 3867.078 ns/op
+[info] # Warmup Iteration   3: 3800.407 ns/op
+[info] # Warmup Iteration   4: 3768.307 ns/op
+[info] # Warmup Iteration   5: 3775.751 ns/op
+[info] Iteration   1: 3768.407 ns/op
+[info] Iteration   2: 3753.093 ns/op
+[info] Iteration   3: 3758.183 ns/op
+[info] Iteration   4: 3763.015 ns/op
+[info] Iteration   5: 3773.225 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   3763.184 ±(99.9%) 30.743 ns/op [Average]
+[info]   (min, avg, max) = (3753.093, 3763.184, 3773.225), stdev = 7.984
+[info]   CI (99.9%): [3732.441, 3793.928] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 100)
+[info] # Run progress: 54.17% complete, ETA 00:14:11
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 54849.595 ns/op
+[info] # Warmup Iteration   2: 37347.998 ns/op
+[info] # Warmup Iteration   3: 37427.902 ns/op
+[info] # Warmup Iteration   4: 37549.058 ns/op
+[info] # Warmup Iteration   5: 37629.912 ns/op
+[info] Iteration   1: 37191.065 ns/op
+[info] Iteration   2: 37033.447 ns/op
+[info] Iteration   3: 37062.731 ns/op
+[info] Iteration   4: 37112.121 ns/op
+[info] Iteration   5: 37085.710 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   37097.015 ±(99.9%) 231.180 ns/op [Average]
+[info]   (min, avg, max) = (37033.447, 37097.015, 37191.065), stdev = 60.037
+[info]   CI (99.9%): [36865.834, 37328.195] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 1000)
+[info] # Run progress: 56.25% complete, ETA 00:13:13
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 896936.581 ns/op
+[info] # Warmup Iteration   2: 622442.665 ns/op
+[info] # Warmup Iteration   3: 618463.621 ns/op
+[info] # Warmup Iteration   4: 623255.622 ns/op
+[info] # Warmup Iteration   5: 614075.193 ns/op
+[info] Iteration   1: 605020.311 ns/op
+[info] Iteration   2: 602527.127 ns/op
+[info] Iteration   3: 602791.764 ns/op
+[info] Iteration   4: 602344.974 ns/op
+[info] Iteration   5: 603601.674 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   603257.170 ±(99.9%) 4222.130 ns/op [Average]
+[info]   (min, avg, max) = (602344.974, 603257.170, 605020.311), stdev = 1096.474
+[info]   CI (99.9%): [599035.040, 607479.300] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 10000)
+[info] # Run progress: 58.33% complete, ETA 00:12:18
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 8103843.629 ns/op
+[info] # Warmup Iteration   2: 6269708.556 ns/op
+[info] # Warmup Iteration   3: 6203880.451 ns/op
+[info] # Warmup Iteration   4: 6157356.773 ns/op
+[info] # Warmup Iteration   5: 6007575.731 ns/op
+[info] Iteration   1: 5651209.610 ns/op
+[info] Iteration   2: 5636914.612 ns/op
+[info] Iteration   3: 5637377.865 ns/op
+[info] Iteration   4: 5642469.961 ns/op
+[info] Iteration   5: 5640248.635 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   5641644.137 ±(99.9%) 22345.115 ns/op [Average]
+[info]   (min, avg, max) = (5636914.612, 5641644.137, 5651209.610), stdev = 5802.955
+[info]   CI (99.9%): [5619299.022, 5663989.252] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 100000)
+[info] # Run progress: 60.42% complete, ETA 00:11:25
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 126454612.000 ns/op
+[info] # Warmup Iteration   2: 93100464.636 ns/op
+[info] # Warmup Iteration   3: 91190713.364 ns/op
+[info] # Warmup Iteration   4: 90934544.500 ns/op
+[info] # Warmup Iteration   5: 91906942.545 ns/op
+[info] Iteration   1: 91994573.000 ns/op
+[info] Iteration   2: 85757392.250 ns/op
+[info] Iteration   3: 71109860.133 ns/op
+[info] Iteration   4: 71098964.600 ns/op
+[info] Iteration   5: 71098258.600 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   78211809.717 ±(99.9%) 38435774.936 ns/op [Average]
+[info]   (min, avg, max) = (71098258.600, 78211809.717, 91994573.000), stdev = 9981648.693
+[info]   CI (99.9%): [39776034.780, 116647584.653] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 1000000)
+[info] # Run progress: 62.50% complete, ETA 00:10:36
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 1298841000.000 ns/op
+[info] # Warmup Iteration   2: 1180554305.000 ns/op
+[info] # Warmup Iteration   3: 1180022541.000 ns/op
+[info] # Warmup Iteration   4: 1179200636.000 ns/op
+[info] # Warmup Iteration   5: 1205394265.000 ns/op
+[info] Iteration   1: 1176887439.000 ns/op
+[info] Iteration   2: 1177114124.000 ns/op
+[info] Iteration   3: 796251550.000 ns/op
+[info] Iteration   4: 732218903.000 ns/op
+[info] Iteration   5: 735779572.500 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   923650317.700 ±(99.9%) 895936510.731 ns/op [Average]
+[info]   (min, avg, max) = (732218903.000, 923650317.700, 1177114124.000), stdev = 232671866.668
+[info]   CI (99.9%): [27713806.969, 1819586828.431] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.DavidMotenRTree.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 10000000)
+[info] # Run progress: 64.58% complete, ETA 00:09:51
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 10854720466.000 ns/op
+[info] # Warmup Iteration   2: 9071768244.000 ns/op
+[info] # Warmup Iteration   3: 9236841639.000 ns/op
+[info] # Warmup Iteration   4: 9001569820.000 ns/op
+[info] # Warmup Iteration   5: 9104563643.000 ns/op
+[info] Iteration   1: 9039278748.000 ns/op
+[info] Iteration   2: 8884063233.000 ns/op
+[info] Iteration   3: 8804581485.000 ns/op
+[info] Iteration   4: 8789094057.000 ns/op
+[info] Iteration   5: 8719781829.000 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.DavidMotenRTree.update":
+[info]   8847359870.400 ±(99.9%) 470350459.160 ns/op [Average]
+[info]   (min, avg, max) = (8719781829.000, 8847359870.400, 9039278748.000), stdev = 122148520.582
+[info]   CI (99.9%): [8377009411.240, 9317710329.560] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 1)
+[info] # Run progress: 66.67% complete, ETA 00:09:50
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 6.307 ns/op
+[info] # Warmup Iteration   2: 6.397 ns/op
+[info] # Warmup Iteration   3: 5.536 ns/op
+[info] # Warmup Iteration   4: 5.551 ns/op
+[info] # Warmup Iteration   5: 5.548 ns/op
+[info] Iteration   1: 5.550 ns/op
+[info] Iteration   2: 5.830 ns/op
+[info] Iteration   3: 5.864 ns/op
+[info] Iteration   4: 5.861 ns/op
+[info] Iteration   5: 5.854 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   5.792 ±(99.9%) 0.523 ns/op [Average]
+[info]   (min, avg, max) = (5.550, 5.792, 5.864), stdev = 0.136
+[info]   CI (99.9%): [5.268, 6.315] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 10)
+[info] # Run progress: 68.75% complete, ETA 00:09:03
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 529.947 ns/op
+[info] # Warmup Iteration   2: 501.641 ns/op
+[info] # Warmup Iteration   3: 471.124 ns/op
+[info] # Warmup Iteration   4: 470.421 ns/op
+[info] # Warmup Iteration   5: 472.965 ns/op
+[info] Iteration   1: 471.428 ns/op
+[info] Iteration   2: 472.264 ns/op
+[info] Iteration   3: 471.643 ns/op
+[info] Iteration   4: 473.046 ns/op
+[info] Iteration   5: 471.618 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   472.000 ±(99.9%) 2.557 ns/op [Average]
+[info]   (min, avg, max) = (471.428, 472.000, 473.046), stdev = 0.664
+[info]   CI (99.9%): [469.443, 474.557] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 100)
+[info] # Run progress: 70.83% complete, ETA 00:08:17
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 10213.012 ns/op
+[info] # Warmup Iteration   2: 8604.458 ns/op
+[info] # Warmup Iteration   3: 8562.057 ns/op
+[info] # Warmup Iteration   4: 8565.372 ns/op
+[info] # Warmup Iteration   5: 8552.712 ns/op
+[info] Iteration   1: 8560.107 ns/op
+[info] Iteration   2: 8571.711 ns/op
+[info] Iteration   3: 8559.719 ns/op
+[info] Iteration   4: 8548.216 ns/op
+[info] Iteration   5: 8563.459 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   8560.642 ±(99.9%) 32.560 ns/op [Average]
+[info]   (min, avg, max) = (8548.216, 8560.642, 8571.711), stdev = 8.456
+[info]   CI (99.9%): [8528.082, 8593.203] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 1000)
+[info] # Run progress: 72.92% complete, ETA 00:07:34
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 154310.426 ns/op
+[info] # Warmup Iteration   2: 120977.690 ns/op
+[info] # Warmup Iteration   3: 120718.121 ns/op
+[info] # Warmup Iteration   4: 120683.398 ns/op
+[info] # Warmup Iteration   5: 120748.166 ns/op
+[info] Iteration   1: 120832.902 ns/op
+[info] Iteration   2: 120903.401 ns/op
+[info] Iteration   3: 120923.348 ns/op
+[info] Iteration   4: 120689.835 ns/op
+[info] Iteration   5: 120787.267 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   120827.351 ±(99.9%) 362.999 ns/op [Average]
+[info]   (min, avg, max) = (120689.835, 120827.351, 120923.348), stdev = 94.270
+[info]   CI (99.9%): [120464.351, 121190.350] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 10000)
+[info] # Run progress: 75.00% complete, ETA 00:06:52
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 1349495.062 ns/op
+[info] # Warmup Iteration   2: 1082303.417 ns/op
+[info] # Warmup Iteration   3: 1080936.013 ns/op
+[info] # Warmup Iteration   4: 1087007.105 ns/op
+[info] # Warmup Iteration   5: 1081708.575 ns/op
+[info] Iteration   1: 1079539.945 ns/op
+[info] Iteration   2: 1084496.805 ns/op
+[info] Iteration   3: 1080919.908 ns/op
+[info] Iteration   4: 1079315.863 ns/op
+[info] Iteration   5: 1080858.371 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   1081026.179 ±(99.9%) 7989.221 ns/op [Average]
+[info]   (min, avg, max) = (1079315.863, 1081026.179, 1084496.805), stdev = 2074.775
+[info]   CI (99.9%): [1073036.958, 1089015.399] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 100000)
+[info] # Run progress: 77.08% complete, ETA 00:06:11
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 16004520.317 ns/op
+[info] # Warmup Iteration   2: 12447607.901 ns/op
+[info] # Warmup Iteration   3: 12766762.228 ns/op
+[info] # Warmup Iteration   4: 12792033.582 ns/op
+[info] # Warmup Iteration   5: 12764294.646 ns/op
+[info] Iteration   1: 12767070.025 ns/op
+[info] Iteration   2: 12745723.038 ns/op
+[info] Iteration   3: 12758078.405 ns/op
+[info] Iteration   4: 12758201.861 ns/op
+[info] Iteration   5: 12749522.266 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   12755719.119 ±(99.9%) 32153.219 ns/op [Average]
+[info]   (min, avg, max) = (12745723.038, 12755719.119, 12767070.025), stdev = 8350.089
+[info]   CI (99.9%): [12723565.900, 12787872.338] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 1000000)
+[info] # Run progress: 79.17% complete, ETA 00:05:32
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 170628013.167 ns/op
+[info] # Warmup Iteration   2: 134290018.375 ns/op
+[info] # Warmup Iteration   3: 129818463.375 ns/op
+[info] # Warmup Iteration   4: 129665486.375 ns/op
+[info] # Warmup Iteration   5: 131013791.250 ns/op
+[info] Iteration   1: 130907547.625 ns/op
+[info] Iteration   2: 130336373.750 ns/op
+[info] Iteration   3: 131020788.500 ns/op
+[info] Iteration   4: 130724113.375 ns/op
+[info] Iteration   5: 130269608.250 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   130651686.300 ±(99.9%) 1294917.184 ns/op [Average]
+[info]   (min, avg, max) = (130269608.250, 130651686.300, 131020788.500), stdev = 336285.880
+[info]   CI (99.9%): [129356769.116, 131946603.484] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = false, size = 10000000)
+[info] # Run progress: 81.25% complete, ETA 00:04:54
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 2116902586.000 ns/op
+[info] # Warmup Iteration   2: 2066602268.000 ns/op
+[info] # Warmup Iteration   3: 1985013613.000 ns/op
+[info] # Warmup Iteration   4: 1986995177.000 ns/op
+[info] # Warmup Iteration   5: 2017695459.000 ns/op
+[info] Iteration   1: 2016764450.000 ns/op
+[info] Iteration   2: 2018277151.000 ns/op
+[info] Iteration   3: 2016458470.000 ns/op
+[info] Iteration   4: 2022144848.000 ns/op
+[info] Iteration   5: 2017528060.000 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   2018234595.800 ±(99.9%) 8845388.332 ns/op [Average]
+[info]   (min, avg, max) = (2016458470.000, 2018234595.800, 2022144848.000), stdev = 2297119.260
+[info]   CI (99.9%): [2009389207.468, 2027079984.132] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 1)
+[info] # Run progress: 83.33% complete, ETA 00:04:20
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 6.549 ns/op
+[info] # Warmup Iteration   2: 6.464 ns/op
+[info] # Warmup Iteration   3: 5.812 ns/op
+[info] # Warmup Iteration   4: 5.816 ns/op
+[info] # Warmup Iteration   5: 5.813 ns/op
+[info] Iteration   1: 5.803 ns/op
+[info] Iteration   2: 5.801 ns/op
+[info] Iteration   3: 5.800 ns/op
+[info] Iteration   4: 5.797 ns/op
+[info] Iteration   5: 5.802 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   5.800 ±(99.9%) 0.008 ns/op [Average]
+[info]   (min, avg, max) = (5.797, 5.800, 5.803), stdev = 0.002
+[info]   CI (99.9%): [5.792, 5.809] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 10)
+[info] # Run progress: 85.42% complete, ETA 00:03:44
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 449.541 ns/op
+[info] # Warmup Iteration   2: 433.741 ns/op
+[info] # Warmup Iteration   3: 430.121 ns/op
+[info] # Warmup Iteration   4: 429.928 ns/op
+[info] # Warmup Iteration   5: 429.718 ns/op
+[info] Iteration   1: 433.096 ns/op
+[info] Iteration   2: 429.643 ns/op
+[info] Iteration   3: 430.674 ns/op
+[info] Iteration   4: 429.701 ns/op
+[info] Iteration   5: 430.236 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   430.670 ±(99.9%) 5.469 ns/op [Average]
+[info]   (min, avg, max) = (429.643, 430.670, 433.096), stdev = 1.420
+[info]   CI (99.9%): [425.201, 436.139] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 100)
+[info] # Run progress: 87.50% complete, ETA 00:03:09
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 11202.023 ns/op
+[info] # Warmup Iteration   2: 9537.936 ns/op
+[info] # Warmup Iteration   3: 9503.791 ns/op
+[info] # Warmup Iteration   4: 9530.554 ns/op
+[info] # Warmup Iteration   5: 9507.185 ns/op
+[info] Iteration   1: 9503.460 ns/op
+[info] Iteration   2: 9501.544 ns/op
+[info] Iteration   3: 9496.244 ns/op
+[info] Iteration   4: 9501.797 ns/op
+[info] Iteration   5: 9501.765 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   9500.962 ±(99.9%) 10.577 ns/op [Average]
+[info]   (min, avg, max) = (9496.244, 9500.962, 9503.460), stdev = 2.747
+[info]   CI (99.9%): [9490.386, 9511.539] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 1000)
+[info] # Run progress: 89.58% complete, ETA 00:02:36
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 251519.578 ns/op
+[info] # Warmup Iteration   2: 187661.416 ns/op
+[info] # Warmup Iteration   3: 187295.397 ns/op
+[info] # Warmup Iteration   4: 187385.903 ns/op
+[info] # Warmup Iteration   5: 187253.855 ns/op
+[info] Iteration   1: 192091.658 ns/op
+[info] Iteration   2: 187217.291 ns/op
+[info] Iteration   3: 187263.178 ns/op
+[info] Iteration   4: 189128.208 ns/op
+[info] Iteration   5: 187321.045 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   188604.276 ±(99.9%) 8124.150 ns/op [Average]
+[info]   (min, avg, max) = (187217.291, 188604.276, 192091.658), stdev = 2109.816
+[info]   CI (99.9%): [180480.126, 196728.426] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 10000)
+[info] # Run progress: 91.67% complete, ETA 00:02:03
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 2205163.683 ns/op
+[info] # Warmup Iteration   2: 1771947.358 ns/op
+[info] # Warmup Iteration   3: 1769091.088 ns/op
+[info] # Warmup Iteration   4: 1767625.625 ns/op
+[info] # Warmup Iteration   5: 1769326.876 ns/op
+[info] Iteration   1: 1768809.571 ns/op
+[info] Iteration   2: 1768059.090 ns/op
+[info] Iteration   3: 1788371.455 ns/op
+[info] Iteration   4: 1767225.643 ns/op
+[info] Iteration   5: 1773212.297 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   1773135.611 ±(99.9%) 33983.446 ns/op [Average]
+[info]   (min, avg, max) = (1767225.643, 1773135.611, 1788371.455), stdev = 8825.393
+[info]   CI (99.9%): [1739152.165, 1807119.057] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 100000)
+[info] # Run progress: 93.75% complete, ETA 00:01:31
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 26204302.667 ns/op
+[info] # Warmup Iteration   2: 22355283.600 ns/op
+[info] # Warmup Iteration   3: 22315382.533 ns/op
+[info] # Warmup Iteration   4: 22220001.087 ns/op
+[info] # Warmup Iteration   5: 22284556.178 ns/op
+[info] Iteration   1: 22261560.844 ns/op
+[info] Iteration   2: 22234854.400 ns/op
+[info] Iteration   3: 22176841.935 ns/op
+[info] Iteration   4: 22214268.457 ns/op
+[info] Iteration   5: 22144537.283 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   22206412.584 ±(99.9%) 178702.225 ns/op [Average]
+[info]   (min, avg, max) = (22144537.283, 22206412.584, 22261560.844), stdev = 46408.400
+[info]   CI (99.9%): [22027710.359, 22385114.809] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 1000000)
+[info] # Run progress: 95.83% complete, ETA 00:01:00
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 391797067.000 ns/op
+[info] # Warmup Iteration   2: 352664314.667 ns/op
+[info] # Warmup Iteration   3: 359271710.000 ns/op
+[info] # Warmup Iteration   4: 351041430.000 ns/op
+[info] # Warmup Iteration   5: 351362355.333 ns/op
+[info] Iteration   1: 350608211.667 ns/op
+[info] Iteration   2: 350683576.667 ns/op
+[info] Iteration   3: 351063282.000 ns/op
+[info] Iteration   4: 350928566.000 ns/op
+[info] Iteration   5: 353430317.333 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   351342790.733 ±(99.9%) 4548670.081 ns/op [Average]
+[info]   (min, avg, max) = (350608211.667, 351342790.733, 353430317.333), stdev = 1181275.175
+[info]   CI (99.9%): [346794120.652, 355891460.815] (assumes normal distribution)
+[info] # JMH version: 1.21
+[info] # VM version: JDK 1.8.0_171, Java HotSpot(TM) 64-Bit Server VM, 25.171-b11
+[info] # VM invoker: /usr/lib/jvm/java-8-oracle/bin/java
+[info] # VM options: -server -Xms12g -Xmx12g -XX:NewSize=6g -XX:MaxNewSize=6g -XX:InitialCodeCacheSize=256m -XX:ReservedCodeCacheSize=256m -XX:+UseParallelOldGC -XX:-UseBiasedLocking -XX:+AlwaysPreTouch
+[info] # Warmup: 5 iterations, 1 s each
+[info] # Measurement: 5 iterations, 1 s each
+[info] # Timeout: 10 min per iteration
+[info] # Threads: 1 thread, will synchronize iterations
+[info] # Benchmark mode: Average time, time/op
+[info] # Benchmark: com.sizmek.rtree2d.benchmark.RTree2D.update
+[info] # Parameters: (overlap = 10, shuffle = true, size = 10000000)
+[info] # Run progress: 97.92% complete, ETA 00:00:29
+[info] # Fork: 1 of 1
+[info] # Warmup Iteration   1: 4645703558.000 ns/op
+[info] # Warmup Iteration   2: 4606767550.000 ns/op
+[info] # Warmup Iteration   3: 4527944154.000 ns/op
+[info] # Warmup Iteration   4: 4528731547.000 ns/op
+[info] # Warmup Iteration   5: 4530456750.000 ns/op
+[info] Iteration   1: 4525376547.000 ns/op
+[info] Iteration   2: 4525573939.000 ns/op
+[info] Iteration   3: 4524079954.000 ns/op
+[info] Iteration   4: 4524733000.000 ns/op
+[info] Iteration   5: 4533083034.000 ns/op
+[info] Result "com.sizmek.rtree2d.benchmark.RTree2D.update":
+[info]   4526569294.800 ±(99.9%) 14201905.538 ns/op [Average]
+[info]   (min, avg, max) = (4524079954.000, 4526569294.800, 4533083034.000), stdev = 3688189.768
+[info]   CI (99.9%): [4512367389.262, 4540771200.338] (assumes normal distribution)
+[info] # Run complete. Total time: 00:24:14
+[info] REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+[info] why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+[info] experiments, perform baseline and negative tests that provide experimental control, make sure
+[info] the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+[info] Do not assume the numbers tell you what you want them to tell.
+[info] Benchmark               (overlap)  (shuffle)    (size)  Mode  Cnt            Score             Error  Units
+[info] Archery.update                 10      false         1  avgt    5          366.325 ±          23.208  ns/op
+[info] Archery.update                 10      false        10  avgt    5         1380.644 ±         107.104  ns/op
+[info] Archery.update                 10      false       100  avgt    5        29982.171 ±        2754.923  ns/op
+[info] Archery.update                 10      false      1000  avgt    5       646241.381 ±       34928.277  ns/op
+[info] Archery.update                 10      false     10000  avgt    5      9424213.272 ±       86609.648  ns/op
+[info] Archery.update                 10      false    100000  avgt    5    129241589.050 ±     1235922.098  ns/op
+[info] Archery.update                 10      false   1000000  avgt    5   1628401596.200 ±   130079076.815  ns/op
+[info] Archery.update                 10      false  10000000  avgt    5  22437926287.000 ± 10282605921.658  ns/op
+[info] Archery.update                 10       true         1  avgt    5          359.292 ±           3.875  ns/op
+[info] Archery.update                 10       true        10  avgt    5         1365.693 ±         167.715  ns/op
+[info] Archery.update                 10       true       100  avgt    5        42430.686 ±        1046.234  ns/op
+[info] Archery.update                 10       true      1000  avgt    5       626656.953 ±        4679.350  ns/op
+[info] Archery.update                 10       true     10000  avgt    5      9968839.606 ±       80781.051  ns/op
+[info] Archery.update                 10       true    100000  avgt    5    151094579.600 ±     1796210.417  ns/op
+[info] Archery.update                 10       true   1000000  avgt    5   2090160111.800 ±    75586346.109  ns/op
+[info] Archery.update                 10       true  10000000  avgt    5  27071663262.200 ±   743069318.553  ns/op
+[info] DavidMotenRTree.update         10      false         1  avgt    5         1258.814 ±          13.004  ns/op
+[info] DavidMotenRTree.update         10      false        10  avgt    5         3647.821 ±          56.975  ns/op
+[info] DavidMotenRTree.update         10      false       100  avgt    5        37010.240 ±         246.449  ns/op
+[info] DavidMotenRTree.update         10      false      1000  avgt    5       583822.679 ±       28165.472  ns/op
+[info] DavidMotenRTree.update         10      false     10000  avgt    5      5580015.996 ±       28397.332  ns/op
+[info] DavidMotenRTree.update         10      false    100000  avgt    5     63088143.088 ±      998214.702  ns/op
+[info] DavidMotenRTree.update         10      false   1000000  avgt    5    770071405.100 ±    31813865.325  ns/op
+[info] DavidMotenRTree.update         10      false  10000000  avgt    5   8566940438.600 ±   124865094.775  ns/op
+[info] DavidMotenRTree.update         10       true         1  avgt    5         1279.998 ±           9.389  ns/op
+[info] DavidMotenRTree.update         10       true        10  avgt    5         3763.184 ±          30.743  ns/op
+[info] DavidMotenRTree.update         10       true       100  avgt    5        37097.015 ±         231.180  ns/op
+[info] DavidMotenRTree.update         10       true      1000  avgt    5       603257.170 ±        4222.130  ns/op
+[info] DavidMotenRTree.update         10       true     10000  avgt    5      5641644.137 ±       22345.115  ns/op
+[info] DavidMotenRTree.update         10       true    100000  avgt    5     78211809.717 ±    38435774.936  ns/op
+[info] DavidMotenRTree.update         10       true   1000000  avgt    5    923650317.700 ±   895936510.731  ns/op
+[info] DavidMotenRTree.update         10       true  10000000  avgt    5   8847359870.400 ±   470350459.160  ns/op
+[info] RTree2D.update                 10      false         1  avgt    5            5.792 ±           0.523  ns/op
+[info] RTree2D.update                 10      false        10  avgt    5          472.000 ±           2.557  ns/op
+[info] RTree2D.update                 10      false       100  avgt    5         8560.642 ±          32.560  ns/op
+[info] RTree2D.update                 10      false      1000  avgt    5       120827.351 ±         362.999  ns/op
+[info] RTree2D.update                 10      false     10000  avgt    5      1081026.179 ±        7989.221  ns/op
+[info] RTree2D.update                 10      false    100000  avgt    5     12755719.119 ±       32153.219  ns/op
+[info] RTree2D.update                 10      false   1000000  avgt    5    130651686.300 ±     1294917.184  ns/op
+[info] RTree2D.update                 10      false  10000000  avgt    5   2018234595.800 ±     8845388.332  ns/op
+[info] RTree2D.update                 10       true         1  avgt    5            5.800 ±           0.008  ns/op
+[info] RTree2D.update                 10       true        10  avgt    5          430.670 ±           5.469  ns/op
+[info] RTree2D.update                 10       true       100  avgt    5         9500.962 ±          10.577  ns/op
+[info] RTree2D.update                 10       true      1000  avgt    5       188604.276 ±        8124.150  ns/op
+[info] RTree2D.update                 10       true     10000  avgt    5      1773135.611 ±       33983.446  ns/op
+[info] RTree2D.update                 10       true    100000  avgt    5     22206412.584 ±      178702.225  ns/op
+[info] RTree2D.update                 10       true   1000000  avgt    5    351342790.733 ±     4548670.081  ns/op
+[info] RTree2D.update                 10       true  10000000  avgt    5   4526569294.800 ±    14201905.538  ns/op
+[info] Benchmark result is saved to /home/andriy/Projects/com/github/Sizmek/rtree2d/benchmark/target/scala-2.12/benchmark.json
+[success] Total time: 1473 s, completed Jun 15, 2018 1:10:54 PM

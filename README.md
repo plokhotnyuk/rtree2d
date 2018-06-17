@@ -4,8 +4,8 @@
 [![codecov](https://codecov.io/gh/Sizmek/rtree2d/branch/master/graph/badge.svg)](https://codecov.io/gh/Sizmek/rtree2d)
 
 RTree2D is a 2D immutable [R-tree](https://en.wikipedia.org/wiki/R-tree) with 
-[STR (Sort-Tile-Recursive)](https://archive.org/details/DTIC_ADA324493) packing for ultra-fast search by point or 
-rectangle requests.
+[STR (Sort-Tile-Recursive)](https://archive.org/details/DTIC_ADA324493) packing for ultra-fast nearest search or 
+intersection search requests.
 
 ## Goals
 
@@ -42,10 +42,11 @@ libraryDependencies += "com.sizmek.rtree2d" %% "core" % "0.2.0"
 Entries of R-tree are represented by `RTreeEntry` instances which contains payload and 4 coordinates of the minimum 
 bounding rectangle (MBR) for it.
 
-Add import, create entries, build an R-tree from them, and use it for search by point or rectangle requests:
+Add import, create entries, build an R-tree from them, and use it for nearest search or intersection search requests:
 
 ```scala
 import com.sizmek.rtree2d.core._
+import EuclideanDistanceCalculator._
 
 val poi1 = RTreeEntry(1.0f, 1.0f, 2.0f, 2.0f, "point of interest 1")
 val poi2 = RTreeEntry(2.0f, 2.0f, 3.0f, 3.0f, "point of interest 2")
@@ -54,6 +55,8 @@ val entries = Seq(poi1, poi2)
 val rtree = RTree(entries)
 
 assert(rtree.entries == entries)
+assert(rtree.nearest(0.0f, 0.0f) == Some((1.4142135f, poi1)))
+assert(rtree.nearest(1.5f, 1.5f) == Some((0.0f, poi1)))
 assert(rtree.searchAll(0.0f, 0.0f) == Nil)
 assert(rtree.searchAll(1.5f, 1.5f) == Seq(poi1))
 assert(rtree.searchAll(2.5f, 2.5f) == Seq(poi2))
