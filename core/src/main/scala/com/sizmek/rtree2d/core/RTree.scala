@@ -231,11 +231,11 @@ sealed trait RTree[A] {
     * @return a sequence of all entries
     */
   def entries: Seq[RTreeEntry[A]] = new IndexedSeq[RTreeEntry[A]] {
-    private[this] val ts: Array[RTree[A]] = RTree.lastLevel(RTree.this)
+    private[this] val entries: Array[RTree[A]] = RTree.lastLevel(RTree.this)
 
-    override def length: Int = ts.length
+    override def length: Int = entries.length
 
-    override def apply(idx: Int): RTreeEntry[A] = ts(idx).asInstanceOf[RTreeEntry[A]]
+    override def apply(idx: Int): RTreeEntry[A] = entries(idx).asInstanceOf[RTreeEntry[A]]
   }
 
   /**
@@ -373,38 +373,32 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
 
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Boolean): Boolean =
     this.y1 <= y && y <= this.y2 && this.x1 <= x && x <= this.x2 && {
-      val ts = level
-      val l = to
       var i = from
-      do {
-        if (ts(i).search(x, y)(f)) return true
+      while (i < to) {
+        if (level(i).search(x, y)(f)) return true
         i += 1
-      } while (i < l)
+      }
       false
     }
 
   def search(x1: Float, y1: Float, x2: Float, y2: Float)(f: RTreeEntry[A] => Boolean): Boolean =
     this.y1 <= y2 && y1 <= this.y2 && this.x1 <= x2 && x1 <= this.x2 && {
-      val ts = level
-      val l = to
       var i = from
-      do {
-        if (ts(i).search(x1, y1, x2, y2)(f)) return true
+      while (i < to) {
+        if (level(i).search(x1, y1, x2, y2)(f)) return true
         i += 1
-      } while (i < l)
+      }
       false
     }
 
   def pretty(sb: java.lang.StringBuilder, indent: Int): java.lang.StringBuilder = {
     RTree.appendSpaces(sb, indent).append("RTreeNode(").append(x1).append(',').append(y1).append(',')
       .append(x2).append(',').append(y2).append(")\n")
-    val ts = level
-    val l = to
     var i = from
-    do {
-      ts(i).pretty(sb, indent + 2)
+    while (i < to) {
+      level(i).pretty(sb, indent + 2)
       i += 1
-    } while (i < l)
+    }
     sb
   }
 
