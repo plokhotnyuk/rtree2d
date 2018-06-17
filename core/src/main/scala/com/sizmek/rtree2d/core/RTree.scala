@@ -337,10 +337,9 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
     var j = from
     val n = to - j
     val ps = new Array[Long](n)
-    val ts = level
     var i = 0
     while (i < n) {
-      ps(i) = (floatToRawIntBits(distCalc.distance(x, y, ts(j))).toLong << 32) | j
+      ps(i) = (floatToRawIntBits(distCalc.distance(x, y, level(j))).toLong << 32) | j
       i += 1
       j += 1
     }
