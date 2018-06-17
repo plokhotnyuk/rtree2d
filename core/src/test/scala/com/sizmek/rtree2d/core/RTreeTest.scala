@@ -219,5 +219,6 @@ class RTreeTest extends FunSuite {
     import EuclideanDistanceCalculator._
     assert(calculator.distance(0, 0, RTreeEntry(1, 1, 2, 2, 3)) === 1.4142135f)
     assert(calculator.distance(0, 0, RTreeEntry(-1, -1, 1, 1, 3)) === 0.0f)
+    intercept[UnsupportedOperationException](calculator.distance(0, 0, RTree[Int](Nil)))
   }
 }
