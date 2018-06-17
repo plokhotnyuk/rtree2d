@@ -332,38 +332,43 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
 
   def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
              (implicit distCalc: DistanceCalculator): Option[(Float, RTreeEntry[A])] = {
-    var result: Option[(Float, RTreeEntry[A])] = None
     var minDist = maxDist
-    var j = from
-    val n = to - j
-    val ps = new Array[Long](n)
+    val n = to - from
     var i = 0
-    while (i < n) {
-      ps(i) = (floatToRawIntBits(distCalc.distance(x, y, level(j))).toLong << 32) | j
-      i += 1
-      j += 1
-    }
-    java.util.Arrays.sort(ps)
-    i = 0
-    while (i < n && {
-      val p = ps(i)
-      val d = intBitsToFloat((p >> 32).toInt)
-      d < minDist && {
-        level(p.toInt) match {
-          case e: RTreeEntry[A] =>
-            minDist = d
-            result = Some((d, e))
-          case tn =>
-            val r = tn.nearest(x, y, minDist)
-            if (r.isDefined) {
-              minDist = r.get._1
-              result = r
-            }
+    if (level(from).isInstanceOf[RTreeEntry[A]]) {
+      var re: RTreeEntry[A] = null
+      while (i < n) {
+        val e = level(from + i).asInstanceOf[RTreeEntry[A]]
+        val d = distCalc.distance(x, y, e)
+        if (d < minDist) {
+          minDist = d
+          re = e
         }
-        true
+        i += 1
       }
-    }) i += 1
-    result
+      if (re eq null) None else Some((minDist, re))
+    } else {
+      val ps = new Array[Long](n)
+      while (i < n) {
+        ps(i) = (from + i) | (floatToRawIntBits(distCalc.distance(x, y, level(from + i))).toLong << 32)
+        i += 1
+      }
+      java.util.Arrays.sort(ps)
+      i = 0
+      var result: Option[(Float, RTreeEntry[A])] = None
+      while (i < n && {
+        val d = intBitsToFloat((ps(i) >> 32).toInt)
+        d < minDist && {
+          val r = level(ps(i).toInt).nearest(x, y, minDist)
+          if (r.isDefined) {
+            minDist = r.get._1
+            result = r
+          }
+          true
+        }
+      }) i += 1
+      result
+    }
   }
 
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Boolean): Boolean =
