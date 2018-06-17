@@ -349,7 +349,7 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
     while (i < n && {
       val p = ps(i)
       val d = java.lang.Float.intBitsToFloat((p >> 32).toInt)
-      d <= minDist && {
+      d < minDist && {
         level(p.toInt) match {
           case e: RTreeEntry[A] =>
             minDist = d
@@ -416,9 +416,11 @@ trait DistanceCalculator {
 object EuclideanDistanceCalculator {
   implicit val calculator: DistanceCalculator = new DistanceCalculator {
     override def distance[A](x: Float, y: Float, t: RTree[A]): Float = {
-      val dx = if (x < t.x1) t.x1 - x else if (x < t.x2) 0f else x - t.x2
-      val dy = if (y < t.y1) t.y1 - y else if (y < t.y2) 0f else y - t.y2
-      sqrt(dx * dx + dy * dy).toFloat
+      val dx = if (x < t.x1) t.x1 - x else if (x < t.x2) 0 else x - t.x2
+      val dy = if (y < t.y1) t.y1 - y else if (y < t.y2) 0 else y - t.y2
+      if (dx == 0) dy
+      else if (dy == 0) dx
+      else sqrt(dx * dx + dy * dy).toFloat
     }
   }
 }
