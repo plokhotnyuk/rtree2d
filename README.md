@@ -12,15 +12,14 @@ queries.
 Main our requirements was:
 - efficiency: we wanted the R-Tree to be able to search millions of points efficiently even in case of highly overlapped 
 entries, also, we needed to be able to quickly rebuild R-tries with a per minute rate producing minimum pressure on GC
-- immutability: different threads needed to be able to work with the same R-tree without problems, 
+- immutability: different threads needed to be able to work with the same R-tree without problems,
 at the same time some thread can build a new version of the R-tree reusing immutable entries from the previous version
 
 To archive these goals we have used:
-- STR packing that is a one of the most efficient packing method which produces balanced R-tree for the specified 
-sequence of entries
+- STR packing that is a one of the most efficient packing method which produces balanced R-tree
 - a memory representation and access patterns to it which are aware of a cache hierarchy of contemporary CPUs (while it 
 is not a final version and can be improved further soon)
-- an efficient TimSort version of merge sorting from Java which minimize access to memory. 
+- an efficient TimSort version of merge sorting from Java which minimize access to memory
 - efficient implementations of search functions with minimum of virtual calls and allocations (there are versions with 
 zero allocations)
 
