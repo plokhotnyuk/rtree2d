@@ -4,8 +4,8 @@
 [![codecov](https://codecov.io/gh/Sizmek/rtree2d/branch/master/graph/badge.svg)](https://codecov.io/gh/Sizmek/rtree2d)
 
 RTree2D is a 2D immutable [R-tree](https://en.wikipedia.org/wiki/R-tree) with 
-[STR (Sort-Tile-Recursive)](https://archive.org/details/DTIC_ADA324493) packing for ultra-fast search by point or 
-rectangle requests.
+[STR (Sort-Tile-Recursive)](https://archive.org/details/DTIC_ADA324493) packing for ultra-fast nearest and intersection 
+queries.
 
 ## Goals
 
@@ -42,10 +42,12 @@ libraryDependencies += "com.sizmek.rtree2d" %% "core" % "0.2.0"
 Entries of R-tree are represented by `RTreeEntry` instances which contains payload and 4 coordinates of the minimum 
 bounding rectangle (MBR) for it.
 
-Add import, create entries, build an R-tree from them, and use it for search by point or rectangle requests:
+Add import, create entries, build an R-tree from them, and use it for search a nearest entry or search intersections 
+by point or rectangle requests:
 
 ```scala
 import com.sizmek.rtree2d.core._
+import EuclideanDistanceCalculator._
 
 val poi1 = RTreeEntry(1.0f, 1.0f, 2.0f, 2.0f, "point of interest 1")
 val poi2 = RTreeEntry(2.0f, 2.0f, 3.0f, 3.0f, "point of interest 2")
@@ -54,9 +56,14 @@ val entries = Seq(poi1, poi2)
 val rtree = RTree(entries)
 
 assert(rtree.entries == entries)
+assert(rtree.nearest(0.0f, 0.0f) == Some((1.4142135f, poi1)))
+assert(rtree.nearest(0.0f, 0.0f, 1.0f) == None)
+assert(rtree.nearest(1.5f, 1.5f) == Some((0.0f, poi1)))
 assert(rtree.searchAll(0.0f, 0.0f) == Nil)
 assert(rtree.searchAll(1.5f, 1.5f) == Seq(poi1))
 assert(rtree.searchAll(2.5f, 2.5f) == Seq(poi2))
+assert(rtree.searchAll(2.0f, 2.0f) == Seq(poi1, poi2))
+assert(rtree.searchAll(2.5f, 2.5f, 3.5f, 3.5f) == Seq(poi2))
 assert(rtree.searchAll(1.5f, 1.5f, 2.5f, 2.5f).forall(entries.contains))
 ```
 
@@ -90,15 +97,19 @@ The `searchByPoint` benchmark tests requests that search entries with intersects
 The `searchByRectangle` benchmark tests requests that search entries with intersects with the specified rectangle that
 can intersect with up to 100 entries.
 
-[![searchByPoint](docs/overlap-1/searchByRectangle.png)](docs/overlap-1/searchByRectangle.png)
+[![searchByRectangle](docs/overlap-1/searchByRectangle.png)](docs/overlap-1/searchByRectangle.png)
+
+The `nearest` benchmark tests search an entry of the R-tree that a nearest to the specified point.
+
+[![nearest](docs/overlap-1/nearest.png)](docs/overlap-1/nearest.png)
 
 The `entries` benchmark tests returning of all entries that are indexed in the R-tree.
 
-[![searchByPoint](docs/overlap-1/entries.png)](docs/overlap-1/entries.png)
+[![entries](docs/overlap-1/entries.png)](docs/overlap-1/entries.png)
 
 The `update` benchmark tests rebuild of R-tree with removing of +10% entries and adding of +10% another entries to it.
 
-[![searchByPoint](docs/overlap-1/update.png)](docs/overlap-1/update.png)
+[![update](docs/overlap-1/update.png)](docs/overlap-1/update.png)
 
 
 Charts with their results are available in subdirectories (each for different value of overlap parameter) of the

@@ -26,6 +26,11 @@ class RTreeTest extends FunSuite {
     assert(RTree[Int](Nil).entries === Seq())
   }
 
+  test("RTreeNil.nearest") {
+    import EuclideanDistanceCalculator._
+    assert(RTree[Int](Nil).nearest(0, 0) === None)
+  }
+
   test("RTreeNil.searchAll by point") {
     assert(RTree[Int](Nil).searchAll(0, 0) === Seq())
   }
@@ -73,6 +78,12 @@ class RTreeTest extends FunSuite {
 
   test("RTreeEntry.entries") {
     assert(RTreeEntry(1, 2, 1, 2, 5).entries === Seq(RTreeEntry(1, 2, 5)))
+  }
+
+  test("RTreeEntry.nearest") {
+    import EuclideanDistanceCalculator._
+    assert(RTreeEntry(1, 2, 1, 2, 5).nearest(0, 0) === Some((2.236068f, RTreeEntry(1, 2, 1, 2, 5))))
+    assert(RTreeEntry(1, 2, 1, 2, 5).nearest(1, 2) === Some((0.0f, RTreeEntry(1, 2, 1, 2, 5))))
   }
 
   test("RTreeEntry.searchAll by point") {
@@ -127,6 +138,12 @@ class RTreeTest extends FunSuite {
 
   test("RTree.entries") {
     assert(rtree.entries === entries)
+  }
+
+  test("RTree.nearest") {
+    import EuclideanDistanceCalculator._
+    assert(rtree.nearest(0, 0) === Some((1.4142135f, entries.head)))
+    assert(rtree.nearest(100, 100) === Some((0.0f, entries.init.init.last)))
   }
 
   test("RTree.update") {
@@ -196,5 +213,12 @@ class RTreeTest extends FunSuite {
 
   test("RTree.hashCode") {
     intercept[UnsupportedOperationException](RTree(entries).hashCode())
+  }
+
+  test("EuclideanDistanceCalculator.calculator.distance") {
+    import EuclideanDistanceCalculator._
+    assert(calculator.distance(0, 0, RTreeEntry(1, 1, 2, 2, 3)) === 1.4142135f)
+    assert(calculator.distance(0, 0, RTreeEntry(-1, -1, 1, 1, 3)) === 0.0f)
+    intercept[UnsupportedOperationException](calculator.distance(0, 0, RTree[Int](Nil)))
   }
 }

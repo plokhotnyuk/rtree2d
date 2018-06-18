@@ -46,6 +46,13 @@ class Archery extends BenchmarkBase {
   }
 
   @Benchmark
+  def nearest: Option[Entry[PointOfInterest]] = {
+    val i = curr
+    curr = if (i + 2 < xys.length) i + 2 else 0
+    rtree.nearest(Point(xys(i), xys(i + 1)))
+  }
+
+  @Benchmark
   def searchByPoint: Seq[Entry[PointOfInterest]] = {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0

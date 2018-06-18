@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import org.scalacheck.Prop._
 import org.scalacheck.Gen
+import org.scalatest.Matchers._
 import org.scalatest.WordSpec
 import org.scalatest.prop.Checkers
 
@@ -12,7 +13,7 @@ class RTreeCheckers extends WordSpec with Checkers {
     PropertyCheckConfiguration(minSuccessful = 100)
   private val lastId = new AtomicInteger
   private val floatGen = Gen.choose[Float](-1000, 1000)
-  private val positiveFloatGen = Gen.choose[Float](0, 333)
+  private val positiveFloatGen = Gen.choose[Float](0, 200)
   private val entryGen = for {
     x <- floatGen
     y <- floatGen
@@ -53,6 +54,49 @@ class RTreeCheckers extends WordSpec with Checkers {
           (entries: List[RTreeEntry[Int]]) =>
             val expected = entries.sorted
             RTree(entries).entries.sorted ?= expected
+        }
+      }
+    }
+    "asked for nearest" should {
+      "return any of entries which intersects by point" in check {
+        forAll(entryListGen, floatGen, floatGen) {
+          (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
+            import EuclideanDistanceCalculator._
+            val sorted = entries.map(e => (calculator.distance(x, y, e), e)).sortBy(_._1)
+            propBoolean(sorted.nonEmpty && sorted.exists { case (d, e) => d == 0.0f }) ==> {
+              val result = RTree(entries).nearest(x, y)
+              sorted.map(Some(_)).contains(result)
+            }
+        }
+      }
+      "return the nearest entry if point is out of all entries" in check {
+        forAll(entryListGen, floatGen, floatGen) {
+          (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
+            import EuclideanDistanceCalculator._
+            val sorted = entries.map(e => (calculator.distance(x, y, e), e)).sortBy(_._1)
+            propBoolean(sorted.nonEmpty && !sorted.exists { case (d, e) => d == 0.0f }) ==> {
+              RTree(entries).nearest(x, y) ?= Some(sorted.head)
+            }
+        }
+      }
+      "return the nearest entry with in a specified distance limit or none if all entries are out of the limit" in check {
+        forAll(entryListGen, floatGen, floatGen, floatGen) {
+          (entries: List[RTreeEntry[Int]], x: Float, y: Float, maxDist: Float) =>
+            import EuclideanDistanceCalculator._
+            val sorted = entries.map(e => (calculator.distance(x, y, e), e)).filter(_._1 < maxDist).sortBy(_._1)
+            propBoolean(sorted.nonEmpty) ==> {
+              val result = RTree(entries).nearest(x, y, maxDist)
+              sorted.map(Some(_)).contains(result)
+            }
+        }
+      }
+      "don't return any entry for empty tree" in check {
+        forAll(entryListGen, floatGen, floatGen) {
+          (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
+            import EuclideanDistanceCalculator._
+            propBoolean(entries.isEmpty) ==> {
+              RTree(entries).nearest(x, y) ?= None
+            }
         }
       }
     }
@@ -132,6 +176,20 @@ class RTreeCheckers extends WordSpec with Checkers {
       }
     }
   }
+  "EuclideanDistanceCalculator.calculator" when {
+    "asked to calculate distance from point to an RTree" should {
+      "return a distance to a nearest part of the RTree bounding box or 0 if the point is inside it" in check {
+        forAll(entryListGen, floatGen, floatGen) {
+          (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
+            val t = RTree(entries)
+            propBoolean(entries.nonEmpty && !intersects(t, x, y)) ==> {
+              val expected = euclideanDistance(x, y, t)
+              EuclideanDistanceCalculator.calculator.distance(x, y, t) === expected +- 0.001f
+            }
+        }
+      }
+    }
+  }
 
   private def intersects[T](es: Seq[RTreeEntry[T]], x: Float, y: Float): Seq[RTreeEntry[T]] =
     intersects(es, x, y, x, y)
@@ -139,8 +197,17 @@ class RTreeCheckers extends WordSpec with Checkers {
   private def intersects[T](es: Seq[RTreeEntry[T]], x1: Float, y1: Float, x2: Float, y2: Float): Seq[RTreeEntry[T]] =
     es.filter(e => intersects(e, x1, y1, x2, y2))
 
-  private def intersects[T](e: RTreeEntry[T], x1: Float, y1: Float, x2: Float, y2: Float): Boolean =
+  private def intersects[T](e: RTree[T], x: Float, y: Float): Boolean =
+    e.x1 <= x && x <= e.x2 && e.y1 <= y && y <= e.y2
+
+  private def intersects[T](e: RTree[T], x1: Float, y1: Float, x2: Float, y2: Float): Boolean =
     e.x1 <= x2 && x1 <= e.x2 && e.y1 <= y2 && y1 <= e.y2
+
+  private def euclideanDistance[T](x: Float, y: Float, t: RTree[T]): Float = {
+    val dx = Math.max(Math.abs((t.x1 + t.x2) / 2 - x) - (t.x2 - t.x1) / 2, 0)
+    val dy = Math.max(Math.abs((t.y1 + t.y2) / 2 - y) - (t.y2 - t.y1) / 2, 0)
+    Math.sqrt(dx * dx + dy * dy).toFloat
+  }
 
   implicit private def orderingByName[A <: RTreeEntry[Int]]: Ordering[A] =
     Ordering.by(e => (e.x1, e.y1, e.x2, e.y2, e.value))
