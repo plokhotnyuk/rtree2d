@@ -67,7 +67,7 @@ assert(rtree.searchAll(1.5f, 1.5f, 2.5f, 2.5f).forall(entries.contains))
 ```
 
 RTree2D can be used for indexing spherical coordinates, where X-axis is used for latitudes, and Y-axis for longitudes
-in grades. Result distances are in kilometers:
+in degrees. Result distances are in kilometers:
  
 ```scala
 import com.sizmek.rtree2d.core._
