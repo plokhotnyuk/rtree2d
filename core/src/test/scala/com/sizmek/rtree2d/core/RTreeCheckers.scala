@@ -167,7 +167,7 @@ class RTreeCheckers extends WordSpec with Checkers {
   }
   "EuclideanDistanceCalculator.calculator" when {
     "asked to calculate distance from point to an RTree" should {
-      "return a distance to the RTree bounding box in case point is out of it" in check {
+      "return a distance to a nearest part of the RTree bounding box or 0 if the point is inside it" in check {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
             val t = RTree(entries)
@@ -176,15 +176,6 @@ class RTreeCheckers extends WordSpec with Checkers {
               val dy = Math.max(Math.abs((t.y1 + t.y2) / 2 - y) - (t.y2 - t.y1) / 2, 0)
               val expected = Math.sqrt(dx * dx + dy * dy).toFloat
               EuclideanDistanceCalculator.calculator.distance(x, y, t) === expected +- 0.001f
-            }
-        }
-      }
-      "return 0 in case point is intersects with RTree bounding box" in check {
-        forAll(entryListGen, floatGen, floatGen) {
-          (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
-            val t = RTree(entries)
-            propBoolean(entries.nonEmpty && intersects(t, x, y)) ==> {
-              EuclideanDistanceCalculator.calculator.distance(x, y, t) ?= 0
             }
         }
       }
