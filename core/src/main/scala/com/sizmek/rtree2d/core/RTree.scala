@@ -200,6 +200,17 @@ sealed trait RTree[A] {
       }
     }
 
+  /**
+    * Returns an option of of the nearest R-tree entry and the distance to it for the given point
+    * and a specified distance calculator.
+    *
+    * Search distance can be limited by `maxDist` parameter.
+    *
+    * @param x x value of the given point
+    * @param y y value of the given point
+    * @param maxDist limit of the distance (infinity by default)
+    * @return an found option of the nearest entry and the distance to it
+    */
   def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
              (implicit distCalc: DistanceCalculator): Option[(Float, RTreeEntry[A])]
 
@@ -407,11 +418,28 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
   override def hashCode(): Int = throw new UnsupportedOperationException
 }
 
+/**
+  * A type class for distance calculations that can be used for `nearest` requests
+  * to an R-tree instances.
+  */
 trait DistanceCalculator {
+  /**
+    * Returns a distance from the given point to a boinding box of the specified RTree.
+    *
+    * @param x x value of the given point
+    * @param y y value of the given point
+    * @param t an RTree instance
+    * @tparam A a type of th value being put in the tree
+    * @return return a distance value
+    */
   def distance[A](x: Float, y: Float, t: RTree[A]): Float
 }
 
 object EuclideanDistanceCalculator {
+  /**
+    * An instance of the `DistanceCalculator` type class which use Euclidean geometry
+    * to calculate distances.
+    */
   implicit val calculator: DistanceCalculator = new DistanceCalculator {
     override def distance[A](x: Float, y: Float, t: RTree[A]): Float = {
       val dy = if (y < t.y1) t.y1 - y else if (y < t.y2) 0 else y - t.y2
