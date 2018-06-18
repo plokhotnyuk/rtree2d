@@ -61,7 +61,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       "return any of entries which intersects by point" in check {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
-            import EuclideanDistanceCalculator._
+            import EuclideanPlaneDistanceCalculator._
             val sorted = entries.map(e => (calculator.distance(x, y, e), e)).sortBy(_._1)
             propBoolean(sorted.nonEmpty && sorted.exists { case (d, e) => d == 0.0f }) ==> {
               val result = RTree(entries).nearest(x, y)
@@ -72,7 +72,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       "return the nearest entry if point is out of all entries" in check {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
-            import EuclideanDistanceCalculator._
+            import EuclideanPlaneDistanceCalculator._
             val sorted = entries.map(e => (calculator.distance(x, y, e), e)).sortBy(_._1)
             propBoolean(sorted.nonEmpty && !sorted.exists { case (d, e) => d == 0.0f }) ==> {
               RTree(entries).nearest(x, y) ?= Some(sorted.head)
@@ -82,7 +82,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       "return the nearest entry with in a specified distance limit or none if all entries are out of the limit" in check {
         forAll(entryListGen, floatGen, floatGen, floatGen) {
           (entries: List[RTreeEntry[Int]], x: Float, y: Float, maxDist: Float) =>
-            import EuclideanDistanceCalculator._
+            import EuclideanPlaneDistanceCalculator._
             val sorted = entries.map(e => (calculator.distance(x, y, e), e)).filter(_._1 < maxDist).sortBy(_._1)
             propBoolean(sorted.nonEmpty) ==> {
               val result = RTree(entries).nearest(x, y, maxDist)
@@ -93,7 +93,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       "don't return any entry for empty tree" in check {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
-            import EuclideanDistanceCalculator._
+            import EuclideanPlaneDistanceCalculator._
             propBoolean(entries.isEmpty) ==> {
               RTree(entries).nearest(x, y) ?= None
             }
@@ -176,7 +176,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       }
     }
   }
-  "EuclideanDistanceCalculator.calculator" when {
+  "EuclideanPlaneDistanceCalculator.calculator" when {
     "asked to calculate distance from point to an RTree" should {
       "return a distance to a nearest part of the RTree bounding box or 0 if the point is inside it" in check {
         forAll(entryListGen, floatGen, floatGen) {
@@ -184,7 +184,7 @@ class RTreeCheckers extends WordSpec with Checkers {
             val t = RTree(entries)
             propBoolean(entries.nonEmpty && !intersects(t, x, y)) ==> {
               val expected = euclideanDistance(x, y, t)
-              EuclideanDistanceCalculator.calculator.distance(x, y, t) === expected +- 0.001f
+              EuclideanPlaneDistanceCalculator.calculator.distance(x, y, t) === expected +- 0.001f
             }
         }
       }

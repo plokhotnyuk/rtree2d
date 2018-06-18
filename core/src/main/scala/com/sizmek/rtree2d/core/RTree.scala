@@ -435,7 +435,7 @@ trait DistanceCalculator {
   def distance[A](x: Float, y: Float, t: RTree[A]): Float
 }
 
-object EuclideanDistanceCalculator {
+object EuclideanPlaneDistanceCalculator {
   /**
     * An instance of the `DistanceCalculator` type class which use Euclidean geometry
     * to calculate distances.
@@ -449,6 +449,47 @@ object EuclideanDistanceCalculator {
       else sqrt(dx * dx + dy * dy).toFloat
     }
   }
+}
+
+object SphericalDistanceCalculator {
+  /**
+    * Creates an instance of the `DistanceCalculator` type class which use the haversine formula to determine
+    * the great-circle distance between a point and a rounding box of R-tree on a sphere with specified radius given
+    * their longitudes and latitudes.
+    *
+    * To simplify creation of entries and queries X-axis is used for latitudes an and Y-axis for longitudes.
+    */
+  def calculator(radius: Double): DistanceCalculator = new DistanceCalculator {
+    private[this] val diameter = radius * 2
+    private[this] val radPerDeg = PI / 180
+    private[this] val halfRadPerDeg = PI / 360
+
+    override def distance[A](lat: Float, lon: Float, t: RTree[A]): Float = ({
+      val dy = if (lon < t.y1) t.y1 - lon else if (lon < t.y2) 0 else lon - t.y2
+      val dx = if (lat < t.x1) t.x1 - lat else if (lat < t.x2) 0 else lat - t.x2
+      if (dy == 0) dx * halfRadPerDeg
+      else if (dx == 0) asin(cos(lat * radPerDeg) * sin(dy * halfRadPerDeg))
+      else {
+        val radLat1 = lat * radPerDeg
+        val radLat2 = (if (lat < t.x1) t.x1 else t.x2) * radPerDeg
+        val shdy = sin(dy * halfRadPerDeg)
+        val shdx = sin(dx * halfRadPerDeg)
+        asin(sqrt(cos(radLat1) * cos(radLat2) * shdy * shdy + shdx * shdx))
+      }
+    } * diameter).toFloat
+  }
+}
+
+object SphericalEarthDistanceCalculator {
+  /**
+    * An instance of the `DistanceCalculator` type class which use a spherical model of the Earth to calculate distances
+    * that are represented in kilometers.
+    *
+    * 6371.0088 is a mean radius in kilometers, see: https://en.wikipedia.org/wiki/Earth_radius#Mean_radius
+    * It allows to get +0.2% accuracy on poles, -0.1% on equator, and lesser than ±0.05% on medium latitudes.
+    * Precision of calculations allow to get distances with an error ±0.5 meters.
+    */
+  implicit val calculator: DistanceCalculator = SphericalDistanceCalculator.calculator(6371.0088)
 }
 
 private class DejaVuCounter {

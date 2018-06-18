@@ -4,7 +4,7 @@ import com.sizmek.rtree2d.core._
 import org.openjdk.jmh.annotations._
 
 class RTree2D extends BenchmarkBase {
-  import EuclideanDistanceCalculator._
+  import EuclideanPlaneDistanceCalculator._
 
   private[benchmark] var rtreeEntries: Array[RTreeEntry[PointOfInterest]] = _
   private[benchmark] var rtree: RTree[PointOfInterest] = _

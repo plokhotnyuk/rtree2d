@@ -1,6 +1,7 @@
 package com.sizmek.rtree2d.core
 
 import org.scalatest.FunSuite
+import org.scalatest.Matchers._
 
 class RTreeTest extends FunSuite {
   private val entries = ((1 to 100) :+ 100).map(x => RTreeEntry(x1 = x, y1 = x, x2 = x + 1.9f, y2 = x + 1.9f, value = x))
@@ -27,7 +28,7 @@ class RTreeTest extends FunSuite {
   }
 
   test("RTreeNil.nearest") {
-    import EuclideanDistanceCalculator._
+    import EuclideanPlaneDistanceCalculator._
     assert(RTree[Int](Nil).nearest(0, 0) === None)
   }
 
@@ -81,7 +82,7 @@ class RTreeTest extends FunSuite {
   }
 
   test("RTreeEntry.nearest") {
-    import EuclideanDistanceCalculator._
+    import EuclideanPlaneDistanceCalculator._
     assert(RTreeEntry(1, 2, 1, 2, 5).nearest(0, 0) === Some((2.236068f, RTreeEntry(1, 2, 1, 2, 5))))
     assert(RTreeEntry(1, 2, 1, 2, 5).nearest(1, 2) === Some((0.0f, RTreeEntry(1, 2, 1, 2, 5))))
   }
@@ -141,7 +142,7 @@ class RTreeTest extends FunSuite {
   }
 
   test("RTree.nearest") {
-    import EuclideanDistanceCalculator._
+    import EuclideanPlaneDistanceCalculator._
     assert(rtree.nearest(0, 0) === Some((1.4142135f, entries.head)))
     assert(rtree.nearest(100, 100) === Some((0.0f, entries.init.init.last)))
   }
@@ -215,10 +216,29 @@ class RTreeTest extends FunSuite {
     intercept[UnsupportedOperationException](RTree(entries).hashCode())
   }
 
-  test("EuclideanDistanceCalculator.calculator.distance") {
-    import EuclideanDistanceCalculator._
-    assert(calculator.distance(0, 0, RTreeEntry(1, 1, 2, 2, 3)) === 1.4142135f)
-    assert(calculator.distance(0, 0, RTreeEntry(-1, -1, 1, 1, 3)) === 0.0f)
-    intercept[UnsupportedOperationException](calculator.distance(0, 0, RTree[Int](Nil)))
+  test("EuclideanPlaneDistanceCalculator.calculator.distance") {
+    import EuclideanPlaneDistanceCalculator.calculator._
+    assert(distance(0, 0, RTreeEntry(0, 0, 3)) === 0.0f)
+    assert(distance(0, 0, RTreeEntry(-1, -1, 1, 1, 3)) === 0.0f)
+    assert(distance(0, 0, RTreeEntry(3, 4, 5, 6, 3)) === 5f)
+    intercept[UnsupportedOperationException](distance(0, 0, RTree[Int](Nil)))
+  }
+
+  test("GeodesicShpereDistanceCalculator.calculator") {
+    import SphericalEarthDistanceCalculator.calculator._
+    assert(distance(0, 0, RTreeEntry(0, 0, 3)) === 0.0f)
+    assert(distance(0, 0, RTreeEntry(-10, -10, 10, 10, 3)) === 0.0f)
+    assert(distance(0, 0, RTreeEntry(10, 10, 20, 20, 3)) === distance(0, 0, RTreeEntry(10, 10, 3)))
+    assert(distance(0, 0, RTreeEntry(-20, -20, -10, -10, 3)) === distance(0, 0, RTreeEntry(-10, -10, 3)))
+    assert(distance(0, 0, RTreeEntry(10, -20, 20, -10, 3)) === distance(0, 0, RTreeEntry(10, -10, 3)))
+    assert(distance(0, 0, RTreeEntry(-20, 10, -10, 20, 3)) === distance(0, 0, RTreeEntry(-10, 10, 3)))
+    assert(distance(0, 0, RTreeEntry(10, -10, 20, 10, 3)) === distance(0, 0, RTreeEntry(10, 0, 3)))
+    assert(distance(0, 0, RTreeEntry(-20, -10, -10, 10, 3)) === distance(0, 0, RTreeEntry(-10, 0, 3)))
+    assert(distance(0, 0, RTreeEntry(-10, 10, 10, 20, 3)) === distance(0, 0, RTreeEntry(0, 10, 3)))
+    assert(distance(0, 0, RTreeEntry(-10, -20, 10, -10, 3)) === distance(0, 0, RTreeEntry(0, -10, 3)))
+    assert(distance(0, 0, RTreeEntry(0, 180, 3)) === distance(-90, 0, RTreeEntry(90, 0, 3)))
+    assert(distance(0, 0, RTreeEntry(0, 0, 3)) === distance(0, -180, RTreeEntry(0, 180, 3)) +- 0.5f)
+    assert(distance(50.4500f, 30.5233f, RTreeEntry(50.0614f, 19.9383f, 3)) === 753.0f +- 0.5f) // Kraków <-> Kyiv, in km
+    intercept[UnsupportedOperationException](distance(0, 0, RTree[Int](Nil)))
   }
 }

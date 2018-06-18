@@ -46,25 +46,49 @@ by point or rectangle requests:
 
 ```scala
 import com.sizmek.rtree2d.core._
-import EuclideanDistanceCalculator._
+import EuclideanPlaneDistanceCalculator._
 
-val poi1 = RTreeEntry(1.0f, 1.0f, 2.0f, 2.0f, "point of interest 1")
-val poi2 = RTreeEntry(2.0f, 2.0f, 3.0f, 3.0f, "point of interest 2")
-val entries = Seq(poi1, poi2)
+val box1 = RTreeEntry(1.0f, 1.0f, 2.0f, 2.0f, "Box 1")
+val box2 = RTreeEntry(2.0f, 2.0f, 3.0f, 3.0f, "Box 2")
+val entries = Seq(box1, box2)
 
 val rtree = RTree(entries)
 
 assert(rtree.entries == entries)
-assert(rtree.nearest(0.0f, 0.0f) == Some((1.4142135f, poi1)))
+assert(rtree.nearest(0.0f, 0.0f) == Some((1.4142135f, box1)))
 assert(rtree.nearest(0.0f, 0.0f, 1.0f) == None)
-assert(rtree.nearest(1.5f, 1.5f) == Some((0.0f, poi1)))
+assert(rtree.nearest(1.5f, 1.5f) == Some((0.0f, box1)))
 assert(rtree.searchAll(0.0f, 0.0f) == Nil)
-assert(rtree.searchAll(1.5f, 1.5f) == Seq(poi1))
-assert(rtree.searchAll(2.5f, 2.5f) == Seq(poi2))
-assert(rtree.searchAll(2.0f, 2.0f) == Seq(poi1, poi2))
-assert(rtree.searchAll(2.5f, 2.5f, 3.5f, 3.5f) == Seq(poi2))
+assert(rtree.searchAll(1.5f, 1.5f) == Seq(box1))
+assert(rtree.searchAll(2.5f, 2.5f) == Seq(box2))
+assert(rtree.searchAll(2.0f, 2.0f) == Seq(box1, box2))
+assert(rtree.searchAll(2.5f, 2.5f, 3.5f, 3.5f) == Seq(box2))
 assert(rtree.searchAll(1.5f, 1.5f, 2.5f, 2.5f).forall(entries.contains))
 ```
+
+RTree2D can be used for indexing spherical coordinates, where X-axis is used for latitudes, and Y-axis for longitudes
+in grades. Result distances will be in kilometers:
+ 
+```scala
+import com.sizmek.rtree2d.core._
+import SphericalEarthDistanceCalculator._
+
+val city1 = RTreeEntry(50.0614f, 19.9383f, "Kraków")
+val city2 = RTreeEntry(50.4500f, 30.5233f, "Kyiv")
+val entries = Seq(city1, city2)
+
+val rtree = RTree(entries)
+
+assert(rtree.entries == entries)
+assert(rtree.nearest(0.0f, 0.0f) == Some((5879.9897f, city1)))
+assert(rtree.nearest(50f, 20f, 1.0f) == None)
+assert(rtree.nearest(50f, 20f) == Some((8.126432f, city1)))
+assert(rtree.searchAll(50f, 30f, 51f, 31f) == Seq(city2))
+assert(rtree.searchAll(0f, -180f, 90f, 180f).forall(entries.contains))
+```
+
+Used spherical model of the Earth with the mean radius allows to get +0.2% accuracy on poles, -0.1% on equator, and 
+lesser than ±0.05% on medium latitudes. Precision of calculations allow to get distances with an error ±0.5 meters.
 
 Please, check out
 [Scala docs in sources](https://github.com/Sizmek/rtree2d/blob/master/core/src/main/scala/com/sizmek/rtree2d/core/RTree.scala) 
