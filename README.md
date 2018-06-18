@@ -57,10 +57,13 @@ val rtree = RTree(entries)
 
 assert(rtree.entries == entries)
 assert(rtree.nearest(0.0f, 0.0f) == Some((1.4142135f, poi1)))
+assert(rtree.nearest(0.0f, 0.0f, 1.0f) == None)
 assert(rtree.nearest(1.5f, 1.5f) == Some((0.0f, poi1)))
 assert(rtree.searchAll(0.0f, 0.0f) == Nil)
 assert(rtree.searchAll(1.5f, 1.5f) == Seq(poi1))
 assert(rtree.searchAll(2.5f, 2.5f) == Seq(poi2))
+assert(rtree.searchAll(2.0f, 2.0f) == Seq(poi1, poi2))
+assert(rtree.searchAll(2.5f, 2.5f, 3.5f, 3.5f) == Seq(poi2))
 assert(rtree.searchAll(1.5f, 1.5f, 2.5f, 2.5f).forall(entries.contains))
 ```
 
