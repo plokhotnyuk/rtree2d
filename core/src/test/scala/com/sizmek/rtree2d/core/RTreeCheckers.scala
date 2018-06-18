@@ -75,7 +75,18 @@ class RTreeCheckers extends WordSpec with Checkers {
             import EuclideanDistanceCalculator._
             val sorted = entries.map(e => (calculator.distance(x, y, e), e)).sortBy(_._1)
             propBoolean(sorted.nonEmpty && !sorted.exists { case (d, e) => d == 0.0f }) ==> {
-              RTree(entries).nearest(x, y) ?= sorted.headOption
+              RTree(entries).nearest(x, y) ?= Some(sorted.head)
+            }
+        }
+      }
+      "return the nearest entry with in a specified distance limit or none if all entries are out of the limit" in check {
+        forAll(entryListGen, floatGen, floatGen, floatGen) {
+          (entries: List[RTreeEntry[Int]], x: Float, y: Float, maxDist: Float) =>
+            import EuclideanDistanceCalculator._
+            val sorted = entries.map(e => (calculator.distance(x, y, e), e)).filter(_._1 < maxDist).sortBy(_._1)
+            propBoolean(sorted.nonEmpty) ==> {
+              val result = RTree(entries).nearest(x, y, maxDist)
+              sorted.map(Some(_)).contains(result)
             }
         }
       }
@@ -172,9 +183,7 @@ class RTreeCheckers extends WordSpec with Checkers {
           (entries: List[RTreeEntry[Int]], x: Float, y: Float) =>
             val t = RTree(entries)
             propBoolean(entries.nonEmpty && !intersects(t, x, y)) ==> {
-              val dx = Math.max(Math.abs((t.x1 + t.x2) / 2 - x) - (t.x2 - t.x1) / 2, 0)
-              val dy = Math.max(Math.abs((t.y1 + t.y2) / 2 - y) - (t.y2 - t.y1) / 2, 0)
-              val expected = Math.sqrt(dx * dx + dy * dy).toFloat
+              val expected = euclideanDistance(x, y, t)
               EuclideanDistanceCalculator.calculator.distance(x, y, t) === expected +- 0.001f
             }
         }
@@ -193,6 +202,12 @@ class RTreeCheckers extends WordSpec with Checkers {
 
   private def intersects[T](e: RTree[T], x1: Float, y1: Float, x2: Float, y2: Float): Boolean =
     e.x1 <= x2 && x1 <= e.x2 && e.y1 <= y2 && y1 <= e.y2
+
+  private def euclideanDistance[T](x: Float, y: Float, t: RTree[T]): Float = {
+    val dx = Math.max(Math.abs((t.x1 + t.x2) / 2 - x) - (t.x2 - t.x1) / 2, 0)
+    val dy = Math.max(Math.abs((t.y1 + t.y2) / 2 - y) - (t.y2 - t.y1) / 2, 0)
+    Math.sqrt(dx * dx + dy * dy).toFloat
+  }
 
   implicit private def orderingByName[A <: RTreeEntry[Int]]: Ordering[A] =
     Ordering.by(e => (e.x1, e.y1, e.x2, e.y2, e.value))

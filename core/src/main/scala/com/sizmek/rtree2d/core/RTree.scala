@@ -208,7 +208,7 @@ sealed trait RTree[A] {
     *
     * @param x x value of the given point
     * @param y y value of the given point
-    * @param maxDist limit of the distance (infinity by default)
+    * @param maxDist an exclusive limit of the distance (infinity by default)
     * @return an found option of the nearest entry and the distance to it
     */
   def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
