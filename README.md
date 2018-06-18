@@ -67,7 +67,7 @@ assert(rtree.searchAll(1.5f, 1.5f, 2.5f, 2.5f).forall(entries.contains))
 ```
 
 RTree2D can be used for indexing spherical coordinates, where X-axis is used for latitudes, and Y-axis for longitudes
-in grades. Result distances will be in kilometers:
+in grades. Result distances are in kilometers:
  
 ```scala
 import com.sizmek.rtree2d.core._
@@ -87,8 +87,8 @@ assert(rtree.searchAll(50f, 30f, 51f, 31f) == Seq(city2))
 assert(rtree.searchAll(0f, -180f, 90f, 180f).forall(entries.contains))
 ```
 
-Used spherical model of the Earth with the mean radius allows to get +0.2% accuracy on poles, -0.1% on equator, and 
-lesser than ±0.05% on medium latitudes. Precision of calculations allow to get distances with an error ±0.5 meters.
+Used spherical model of the Earth with the mean radius allows to get +0.2% accuracy on poles, -0.1% on the equator, and 
+less than ±0.05% on medium latitudes. Precision of calculations allow to get distances with an error ±0.5 meters.
 
 Please, check out
 [Scala docs in sources](https://github.com/Sizmek/rtree2d/blob/master/core/src/main/scala/com/sizmek/rtree2d/core/RTree.scala) 
