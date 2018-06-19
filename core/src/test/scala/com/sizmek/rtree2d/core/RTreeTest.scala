@@ -1,5 +1,6 @@
 package com.sizmek.rtree2d.core
 
+import com.sizmek.rtree2d.core.GeoUtils._
 import org.scalatest.FunSuite
 import org.scalatest.Matchers._
 
@@ -238,7 +239,19 @@ class RTreeTest extends FunSuite {
     assert(distance(0, 0, RTreeEntry(-10, -20, 10, -10, 3)) === distance(0, 0, RTreeEntry(0, -10, 3)))
     assert(distance(0, 0, RTreeEntry(0, 180, 3)) === distance(-90, 0, RTreeEntry(90, 0, 3)))
     assert(distance(0, 0, RTreeEntry(0, 0, 3)) === distance(0, -180, RTreeEntry(0, 180, 3)) +- 0.5f)
+    assert(distance(0, 0, RTreeEntry(0, 10, 3)) === distance(0, -180, RTreeEntry(-10, -160, 10, 170, 3)))
+    assert(distance(0, 0, RTreeEntry(0, 10, 3)) === distance(0, 180, RTreeEntry(-10, -170, 10, 160, 3)))
+    assert(distance(10, 0, RTreeEntry(10, 10, 3)) === distance(10, -180, RTreeEntry(-10, -160, 10, 170, 3)))
+    assert(distance(-10, 0, RTreeEntry(-10, 10, 3)) === distance(-10, 180, RTreeEntry(-10, -170, 10, 160, 3)))
     assert(distance(50.4500f, 30.5233f, RTreeEntry(50.0614f, 19.9383f, 3)) === 753.0f +- 0.5f) // Kraków <-> Kyiv, in km
+    assert(distance(34.6937f, 135.5022f, RTreeEntry(34.0522f,-118.2437f, 3)) === 9189.5f +- 0.5f) // Osaka <-> Los Angeles, in km
     intercept[UnsupportedOperationException](distance(0, 0, RTree[Int](Nil)))
+  }
+
+  test("Check precision of formulas") {
+    assert(greatCircleDistance2(0, 179.99999f, 0, 180f) === greatCircleDistance1(0, 179.99999f, 0, 180f) +- 0.000005f)
+    assert(greatCircleDistance2(0, 0, 0.00001f, 0.00001f) === greatCircleDistance1(0, 0, 0.00001f, 0.00001f) +- 0.000005f)
+    assert(greatCircleDistance2(50.4500f, 30.5233f, 50.0614f, 19.9383f) === greatCircleDistance1(50.4500f, 30.5233f, 50.0614f, 19.9383f) +- 0.000005f)
+    assert(greatCircleDistance2(34.6937f, 135.5022f, 34.0522f,-118.2437f) === greatCircleDistance1(34.6937f, 135.5022f, 34.0522f,-118.2437f) +- 0.000005f)
   }
 }

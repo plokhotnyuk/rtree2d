@@ -305,7 +305,7 @@ final case class RTreeEntry[A] (x1: Float, y1: Float, x2: Float, y2: Float, valu
   def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
              (implicit distCalc: DistanceCalculator): Option[(Float, RTreeEntry[A])] = {
     val dist = distCalc.distance(x, y, this)
-    if (dist <= maxDist) Some((dist, this))
+    if (dist < maxDist) Some((dist, this))
     else None
   }
 
@@ -458,25 +458,45 @@ object SphericalDistanceCalculator {
     * their longitudes and latitudes.
     *
     * To simplify creation of entries and queries X-axis is used for latitudes an and Y-axis for longitudes.
+    *
+    * Calculations was borrowed from the geoflatbush project of Vladimir Agafonkin:
+    * https://github.com/mourner/geoflatbush/blob/master/index.mjs
     */
   def calculator(radius: Double): DistanceCalculator = new DistanceCalculator {
-    private[this] val diameter = radius * 2
-    private[this] val radPerDeg = PI / 180
-    private[this] val halfRadPerDeg = PI / 360
+    private[this] val radPerDegree = PI / 180
+    private[this] val circumference = radius * radPerDegree
 
-    override def distance[A](lat: Float, lon: Float, t: RTree[A]): Float = ({
-      val dy = if (lon < t.y1) t.y1 - lon else if (lon < t.y2) 0 else lon - t.y2
-      val dx = if (lat < t.x1) t.x1 - lat else if (lat < t.x2) 0 else lat - t.x2
-      if (dy == 0) dx * halfRadPerDeg
-      else if (dx == 0) asin(cos(lat * radPerDeg) * sin(dy * halfRadPerDeg))
-      else {
-        val radLat1 = lat * radPerDeg
-        val radLat2 = (if (lat < t.x1) t.x1 else t.x2) * radPerDeg
-        val shdy = sin(dy * halfRadPerDeg)
-        val shdx = sin(dx * halfRadPerDeg)
-        asin(sqrt(cos(radLat1) * cos(radLat2) * shdy * shdy + shdx * shdx))
-      }
-    } * diameter).toFloat
+    override def distance[A](lat: Float, lon: Float, t: RTree[A]): Float =
+      if (lon >= t.y1 && lon <= t.y2) {
+        if (lat < t.x1) ((t.x1 - lat) * circumference).toFloat
+        else if (lat > t.x2) ((lat - t.x2) * circumference).toFloat
+        else 0
+      } else (acos {
+        val radLat = lat * radPerDegree
+        val sinLat = sin(radLat) // TODO: refactor it to be the parameter of the distance method
+        val cosLat = cos(radLat) // TODO: refactor it to be the parameter of the distance method
+        if (t.y1 == t.y2 && t.x1 == t.x2) {
+          val cosLonDelta = cos((t.y1 - lon) * radPerDegree)
+          cosNormalizedDistance(t.x1, cosLat, sinLat, cosLonDelta)
+        } else {
+          val cosLonDelta = cos(min(normalize(t.y1 - lon), normalize(lon - t.y2)) * radPerDegree)
+          val extremumLat = atan(sinLat / (cosLat * cosLonDelta)) / radPerDegree
+          var d = max(
+            cosNormalizedDistance(t.x1, cosLat, sinLat, cosLonDelta),
+            cosNormalizedDistance(t.x2, cosLat, sinLat, cosLonDelta))
+          if (extremumLat > t.x1 && extremumLat < t.x2) {
+            d = max(d, cosNormalizedDistance(extremumLat, cosLat, sinLat, cosLonDelta))
+          }
+          d
+        }
+      } * radius).toFloat
+
+    private def normalize(lonDelta: Float): Float = if (lonDelta < 0) lonDelta + 360 else lonDelta
+
+    private def cosNormalizedDistance(lat: Double, cosLat: Double, sinLat: Double, cosLonDelta: Double): Double = {
+      val radLat = lat * radPerDegree
+      min(sinLat * sin(radLat) + cosLat * cos(radLat) * cosLonDelta, 1)
+    }
   }
 }
 

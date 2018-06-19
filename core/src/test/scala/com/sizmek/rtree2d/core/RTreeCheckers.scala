@@ -1,7 +1,9 @@
 package com.sizmek.rtree2d.core
 
+import java.lang.Math._
 import java.util.concurrent.atomic.AtomicInteger
 
+import com.sizmek.rtree2d.core.GeoUtils._
 import org.scalacheck.Prop._
 import org.scalacheck.Gen
 import org.scalatest.Matchers._
@@ -13,6 +15,8 @@ class RTreeCheckers extends WordSpec with Checkers {
     PropertyCheckConfiguration(minSuccessful = 100)
   private val lastId = new AtomicInteger
   private val floatGen = Gen.choose[Float](-1000, 1000)
+  private val latGen = Gen.choose[Float](-90, 90)
+  private val lonGen = Gen.choose[Float](-180, 180)
   private val positiveFloatGen = Gen.choose[Float](0, 200)
   private val entryGen = for {
     x <- floatGen
@@ -20,6 +24,12 @@ class RTreeCheckers extends WordSpec with Checkers {
     w <- positiveFloatGen
     h <- positiveFloatGen
   } yield RTreeEntry(x, y, x + w, y + h, lastId.getAndIncrement())
+  private val latLonEntryGen = for {
+    x1 <- latGen
+    y1 <- lonGen
+    x2 <- latGen
+    y2 <- lonGen
+  } yield RTreeEntry(min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2), lastId.getAndIncrement())
   private val entryListGen = Gen.oneOf(0, 1, 10, 100, 1000).flatMap(n => Gen.listOfN(n, entryGen))
 
   "RTree" when {
@@ -190,6 +200,72 @@ class RTreeCheckers extends WordSpec with Checkers {
       }
     }
   }
+  "SphericalEarthDistanceCalculator.calculator" when {
+    "asked to calculate distance from point to an RTree" should {
+      "return 0 if the point is inside it" in check {
+        forAll(latLonEntryGen, Gen.choose[Float](0, 1), Gen.choose[Float](0, 1)) {
+          (t: RTreeEntry[Int], rdx: Float, rdy: Float) =>
+            val lat = t.x1 + rdx * (t.x2 - t.x1)
+            val lon = t.y1 + rdy * (t.y2 - t.y1)
+            propBoolean(intersects(t, lat, lon)) ==> {
+              SphericalEarthDistanceCalculator.calculator.distance(lat, lon, t) === 0.0f +- 0.1f
+            }
+        }
+      }
+      "return a distance to the nearest edge of the RTree bounding box if point doesn't intersect and is aligned vertically" in check {
+        forAll(latLonEntryGen, latGen, lonGen) {
+          (t: RTreeEntry[Int], lat: Float, lon: Float) =>
+            propBoolean(!intersects(t, lat, lon) && alignedVertically(t, lat, lon)) ==> {
+              val distancesForCorners = Seq(
+                greatCircleDistance1(lat, lon, t.x1, lon),
+                greatCircleDistance1(lat, lon, t.x2, lon),
+                greatCircleDistance1(lat, lon, t.x1, t.y1),
+                greatCircleDistance1(lat, lon, t.x1, t.y2),
+                greatCircleDistance1(lat, lon, t.x2, t.y1),
+                greatCircleDistance1(lat, lon, t.x2, t.y2)
+              )
+              val expected = distancesForCorners.min
+              val result = SphericalEarthDistanceCalculator.calculator.distance(lat, lon, t)
+              result <= expected + 0.1f
+            }
+        }
+      }
+      "return a distance to the nearest edge of the RTree bounding box if point doesn't not intersect and is aligned horizontally" in check {
+        forAll(latLonEntryGen, latGen, lonGen) {
+          (t: RTreeEntry[Int], lat: Float, lon: Float) =>
+            propBoolean(!intersects(t, lat, lon) && alignedHorizontally(t, lat, lon)) ==> {
+              val distancesForCorners = Seq(
+                greatCircleDistance1(lat, lon, lat, t.y1),
+                greatCircleDistance1(lat, lon, lat, t.y2),
+                greatCircleDistance1(lat, lon, t.x1, t.y1),
+                greatCircleDistance1(lat, lon, t.x1, t.y2),
+                greatCircleDistance1(lat, lon, t.x2, t.y1),
+                greatCircleDistance1(lat, lon, t.x2, t.y2)
+              )
+              val expected = distancesForCorners.min
+              val result = SphericalEarthDistanceCalculator.calculator.distance(lat, lon, t)
+              result <= expected + 0.1f
+            }
+        }
+      }
+      "return a distance to the nearest corner of the RTree bounding box if point doesn't not intersect and is not aligned vertically or horizontally" in check {
+        forAll(latLonEntryGen, latGen, lonGen) {
+          (t: RTreeEntry[Int], lat: Float, lon: Float) =>
+            propBoolean(!intersects(t, lat, lon) && !alignedHorizontally(t, lat, lon) && !alignedVertically(t, lat, lon)) ==> {
+              val distancesForCorners = Seq(
+                greatCircleDistance1(lat, lon, t.x1, t.y1),
+                greatCircleDistance1(lat, lon, t.x1, t.y2),
+                greatCircleDistance1(lat, lon, t.x2, t.y1),
+                greatCircleDistance1(lat, lon, t.x2, t.y2)
+              )
+              val expected = distancesForCorners.min
+              val result = SphericalEarthDistanceCalculator.calculator.distance(lat, lon, t)
+              result <= expected + 0.1f
+            }
+        }
+      }
+    }
+  }
 
   private def intersects[T](es: Seq[RTreeEntry[T]], x: Float, y: Float): Seq[RTreeEntry[T]] =
     intersects(es, x, y, x, y)
@@ -208,6 +284,12 @@ class RTreeCheckers extends WordSpec with Checkers {
     val dy = Math.max(Math.abs((t.y1 + t.y2) / 2 - y) - (t.y2 - t.y1) / 2, 0)
     Math.sqrt(dx * dx + dy * dy).toFloat
   }
+
+  private def alignedHorizontally[T](e: RTree[T], lat: Float, lon: Float): Boolean =
+    e.x1 <= lat && lat <= e.x2 && (lon < e.y1 || e.y2 < lon)
+
+  private def alignedVertically[T](e: RTree[T], lat: Float, lon: Float): Boolean =
+    e.y1 <= lon && lon <= e.y2 && (lat < e.x1 || e.x2 < lat)
 
   implicit private def orderingByName[A <: RTreeEntry[Int]]: Ordering[A] =
     Ordering.by(e => (e.x1, e.y1, e.x2, e.y2, e.value))
