@@ -364,7 +364,7 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
         ps(i) = (from + i) | (floatToRawIntBits(distCalc.distance(x, y, level(from + i))).toLong << 32)
         i += 1
       }
-      java.util.Arrays.sort(ps)
+      java.util.Arrays.sort(ps) // Assuming that there no NaNs or negative values for distances
       i = 0
       var result: Option[(Float, RTreeEntry[A])] = None
       while (i < n && {
@@ -466,34 +466,38 @@ object SphericalDistanceCalculator {
     private[this] val radPerDegree = PI / 180
     private[this] val circumference = radius * radPerDegree
 
-    override def distance[A](lat: Float, lon: Float, t: RTree[A]): Float =
-      if (lon >= t.y1 && lon <= t.y2) {
-        if (lat < t.x1) ((t.x1 - lat) * circumference).toFloat
-        else if (lat > t.x2) ((lat - t.x2) * circumference).toFloat
+    override def distance[A](lat: Float, lon: Float, t: RTree[A]): Float = {
+      val minLon = t.y1
+      val maxLon = t.y2
+      val minLat = t.x1
+      val maxLat = t.x2
+      if (lon >= minLon && lon <= maxLon) {
+        if (lat < minLat) ((minLat - lat) * circumference).toFloat
+        else if (lat > maxLat) ((lat - maxLat) * circumference).toFloat
         else 0
       } else (acos {
         val radLat = lat * radPerDegree
         val sinLat = sin(radLat) // TODO: refactor it to be the parameter of the distance method
         val cosLat = cos(radLat) // TODO: refactor it to be the parameter of the distance method
-        if (t.y1 == t.y2 && t.x1 == t.x2) {
-          val cosLonDelta = cos((t.y1 - lon) * radPerDegree)
-          cosNormalizedDistance(t.x1, cosLat, sinLat, cosLonDelta)
+        if (minLon == maxLon && minLat == maxLat) {
+          cosNormalizedDistance(minLat, cosLat, sinLat, cos((minLon - lon) * radPerDegree))
         } else {
-          val cosLonDelta = cos(min(normalize(t.y1 - lon), normalize(lon - t.y2)) * radPerDegree)
+          val cosLonDelta = cos(min(normalize(minLon - lon), normalize(lon - maxLon)) * radPerDegree)
           val extremumLat = atan(sinLat / (cosLat * cosLonDelta)) / radPerDegree
           var d = max(
-            cosNormalizedDistance(t.x1, cosLat, sinLat, cosLonDelta),
-            cosNormalizedDistance(t.x2, cosLat, sinLat, cosLonDelta))
-          if (extremumLat > t.x1 && extremumLat < t.x2) {
+            cosNormalizedDistance(minLat, cosLat, sinLat, cosLonDelta),
+            cosNormalizedDistance(maxLat, cosLat, sinLat, cosLonDelta))
+          if (extremumLat > minLat && extremumLat < maxLat) {
             d = max(d, cosNormalizedDistance(extremumLat, cosLat, sinLat, cosLonDelta))
           }
           d
         }
       } * radius).toFloat
+    }
 
-    private def normalize(lonDelta: Float): Float = if (lonDelta < 0) lonDelta + 360 else lonDelta
+    private[this] def normalize(lonDelta: Float): Float = if (lonDelta < 0) lonDelta + 360 else lonDelta
 
-    private def cosNormalizedDistance(lat: Double, cosLat: Double, sinLat: Double, cosLonDelta: Double): Double = {
+    private[this] def cosNormalizedDistance(lat: Double, cosLat: Double, sinLat: Double, cosLonDelta: Double): Double = {
       val radLat = lat * radPerDegree
       min(sinLat * sin(radLat) + cosLat * cos(radLat) * cosLonDelta, 1)
     }
