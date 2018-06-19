@@ -480,15 +480,15 @@ object SphericalDistanceCalculator {
         val sinLat = sin(radLat) // TODO: refactor it to be the parameter of the distance method
         val cosLat = cos(radLat) // TODO: refactor it to be the parameter of the distance method
         if (minLon == maxLon && minLat == maxLat) {
-          cosNormalizedDistance(minLat, cosLat, sinLat, cos((minLon - lon) * radPerDegree))
+          normalizedDistanceCos(minLat, cosLat, sinLat, cos((minLon - lon) * radPerDegree))
         } else {
           val cosLonDelta = cos(min(normalize(minLon - lon), normalize(lon - maxLon)) * radPerDegree)
           val extremumLat = atan(sinLat / (cosLat * cosLonDelta)) / radPerDegree
           var d = max(
-            cosNormalizedDistance(minLat, cosLat, sinLat, cosLonDelta),
-            cosNormalizedDistance(maxLat, cosLat, sinLat, cosLonDelta))
+            normalizedDistanceCos(minLat, cosLat, sinLat, cosLonDelta),
+            normalizedDistanceCos(maxLat, cosLat, sinLat, cosLonDelta))
           if (extremumLat > minLat && extremumLat < maxLat) {
-            d = max(d, cosNormalizedDistance(extremumLat, cosLat, sinLat, cosLonDelta))
+            d = max(d, normalizedDistanceCos(extremumLat, cosLat, sinLat, cosLonDelta))
           }
           d
         }
@@ -497,7 +497,7 @@ object SphericalDistanceCalculator {
 
     private[this] def normalize(lonDelta: Float): Float = if (lonDelta < 0) lonDelta + 360 else lonDelta
 
-    private[this] def cosNormalizedDistance(lat: Double, cosLat: Double, sinLat: Double, cosLonDelta: Double): Double = {
+    private[this] def normalizedDistanceCos(lat: Double, cosLat: Double, sinLat: Double, cosLonDelta: Double): Double = {
       val radLat = lat * radPerDegree
       min(sinLat * sin(radLat) + cosLat * cos(radLat) * cosLonDelta, 1)
     }
