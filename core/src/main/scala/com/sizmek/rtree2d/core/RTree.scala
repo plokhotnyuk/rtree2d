@@ -507,7 +507,8 @@ object SphericalEarthDistanceCalculator {
     *
     * 6371.0088 is a mean radius in kilometers, see: https://en.wikipedia.org/wiki/Earth_radius#Mean_radius
     * It allows to get +0.2% accuracy on poles, -0.1% on the equator, and less than ±0.05% on medium latitudes.
-    * Precision of calculations allow to get distances with an error ±0.5 meters.
+    * Precision of 32-bit float point representation allows to locate points and calculate distances with an error
+    * ±0.5 meters.
     */
   implicit val calculator: DistanceCalculator = SphericalDistanceCalculator.calculator(6371.0088)
 }
