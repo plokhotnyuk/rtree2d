@@ -17,7 +17,7 @@ object RTree {
     * @tparam A a type of values being put in the tree
     * @return an RTree instance
     */
-  def apply[A](entries: Traversable[RTreeEntry[A]], nodeCapacity: Int = 16): RTree[A] = {
+  def apply[A](entries: Iterable[RTreeEntry[A]], nodeCapacity: Int = 16): RTree[A] = {
     if (nodeCapacity <= 1) throw new IllegalArgumentException("nodeCapacity should be greater than 1")
     pack(entries.toArray[RTree[A]], nodeCapacity, xComparator[A], yComparator[A])
   }
@@ -33,7 +33,7 @@ object RTree {
     * @tparam A a type of values being put in the tree
     * @return an RTree instance
     */
-  def update[A](rtree: RTree[A], remove: Traversable[RTreeEntry[A]] = Nil, insert: Traversable[RTreeEntry[A]] = Nil,
+  def update[A](rtree: RTree[A], remove: Iterable[RTreeEntry[A]] = Nil, insert: Iterable[RTreeEntry[A]] = Nil,
                 nodeCapacity: Int = 16): RTree[A] =
     if ((rtree.isEmpty || remove.isEmpty) && insert.isEmpty) rtree
     else if (rtree.isEmpty && remove.isEmpty) {
@@ -45,7 +45,7 @@ object RTree {
       insert.copyToArray(es, l1)
       pack(es, nodeCapacity, xComparator[A], yComparator[A])
     } else {
-      val cs = new mutable.OpenHashMap[RTree[A], DejaVuCounter](max(8, remove.size))
+      val cs = new mutable.AnyRefMap[RTree[A], DejaVuCounter](remove.size)
       remove.foreach(e => cs.getOrElseUpdate(e, new DejaVuCounter).inc())
       val es1 = RTree.lastLevel(rtree)
       val l1 = es1.length
@@ -171,15 +171,23 @@ sealed trait RTree[A] {
     * @param y y value of the given point
     * @return a sequence of found values
     */
-  def searchAll(x: Float, y: Float): Seq[RTreeEntry[A]] =
-    new mutable.ResizableArray[RTreeEntry[A]] {
-      search(x, y) { v =>
-        if (size0 + 1 >= array.length) array = java.util.Arrays.copyOf(array, size0 << 1)
-        array(size0) = v
-        size0 += 1
-        false
-      }
+  def searchAll(x: Float, y: Float): IndexedSeq[RTreeEntry[A]] = new IndexedSeq[RTreeEntry[A]] {
+    private[this] var size0: Int = _
+    private[this] var array: Array[RTreeEntry[A]] = new Array[RTreeEntry[A]](16)
+
+    RTree.this.search(x, y) { v =>
+      if (size0 + 1 >= array.length) array = java.util.Arrays.copyOf(array, size0 << 1)
+      array(size0) = v
+      size0 += 1
+      false
     }
+
+    override def length: Int = size0
+
+    override def apply(idx: Int): RTreeEntry[A] =
+      if (idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
+      else array(idx)
+  }
 
   /**
     * Returns a sequence of all entries in the R-tree whose MBR intersects the given rectangle.
@@ -190,15 +198,23 @@ sealed trait RTree[A] {
     * @param y2 y value of the upper right point of the given rectangle
     * @return a sequence of found values
     */
-  def searchAll(x1: Float, y1: Float, x2: Float, y2: Float): Seq[RTreeEntry[A]] =
-    new mutable.ResizableArray[RTreeEntry[A]] {
-      search(x1, y1, x2, y2) { v =>
-        if (size0 + 1 >= array.length) array = java.util.Arrays.copyOf(array, size0 << 1)
-        array(size0) = v
-        size0 += 1
-        false
-      }
+  def searchAll(x1: Float, y1: Float, x2: Float, y2: Float): IndexedSeq[RTreeEntry[A]] = new IndexedSeq[RTreeEntry[A]] {
+    private[this] var size0: Int = _
+    private[this] var array: Array[RTreeEntry[A]] = new Array[RTreeEntry[A]](16)
+
+    RTree.this.search(x1, y1, x2, y2) { v =>
+      if (size0 + 1 >= array.length) array = java.util.Arrays.copyOf(array, size0 << 1)
+      array(size0) = v
+      size0 += 1
+      false
     }
+
+    override def length: Int = size0
+
+    override def apply(idx: Int): RTreeEntry[A] =
+    if (idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
+    else array(idx)
+  }
 
   /**
     * Returns an option of of the nearest R-tree entry and the distance to it for the given point
@@ -241,7 +257,7 @@ sealed trait RTree[A] {
   /**
     * @return a sequence of all entries
     */
-  def entries: Seq[RTreeEntry[A]] = new IndexedSeq[RTreeEntry[A]] {
+  def entries: IndexedSeq[RTreeEntry[A]] = new IndexedSeq[RTreeEntry[A]] {
     private[this] val entries: Array[RTree[A]] = RTree.lastLevel(RTree.this)
 
     override def length: Int = entries.length
@@ -265,13 +281,13 @@ sealed trait RTree[A] {
 }
 
 private final case class RTreeNil[A]() extends RTree[A] {
-  def x1: Float = throw new UnsupportedOperationException
+  def x1: Float = throw new UnsupportedOperationException("RTreeNil.x1")
 
-  def y1: Float = throw new UnsupportedOperationException
+  def y1: Float = throw new UnsupportedOperationException("RTreeNil.y1")
 
-  def x2: Float = throw new UnsupportedOperationException
+  def x2: Float = throw new UnsupportedOperationException("RTreeNil.x2")
 
-  def y2: Float = throw new UnsupportedOperationException
+  def y2: Float = throw new UnsupportedOperationException("RTreeNil.y2")
 
   def isEmpty: Boolean = true
 
@@ -296,10 +312,7 @@ private final case class RTreeNil[A]() extends RTree[A] {
   * @param value a value to store in the r-tree
   * @tparam A a type of th value being put in the tree
   */
-final case class RTreeEntry[A] (x1: Float, y1: Float, x2: Float, y2: Float, value: A) extends RTree[A] {
-  if (!(x2 >= x1)) throw new IllegalArgumentException("x2 should be greater than x1 and any of them should not be NaN")
-  if (!(y2 >= y1)) throw new IllegalArgumentException("y2 should be greater than y1 and any of them should not be NaN")
-
+final case class RTreeEntry[A] private[core] (x1: Float, y1: Float, x2: Float, y2: Float, value: A) extends RTree[A] {
   def isEmpty: Boolean = false
 
   def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
@@ -318,23 +331,6 @@ final case class RTreeEntry[A] (x1: Float, y1: Float, x2: Float, y2: Float, valu
   def pretty(sb: java.lang.StringBuilder, indent: Int): java.lang.StringBuilder =
     RTree.appendSpaces(sb, indent).append("RTreeEntry(").append(x1).append(',').append(y1).append(',')
       .append(x2).append(',').append(y2).append(',').append(value).append(")\n")
-}
-
-object RTreeEntry {
-  /**
-    * Create an entry for a point and a value.
-    *
-    * @param x x value of the given point
-    * @param y y value of the given point
-    * @param value a value to store in the r-tree
-    * @tparam A a type of th value being put in the tree
-    * @return a newly created entry
-    */
-  def apply[A](x: Float, y: Float, value: A): RTreeEntry[A] = {
-    if (x != x) throw new IllegalArgumentException("x should not be NaN")
-    if (y != y) throw new IllegalArgumentException("y should not be NaN")
-    new RTreeEntry[A](x, y, x, y, value)
-  }
 }
 
 private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float,
@@ -413,108 +409,9 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
     sb
   }
 
-  override def equals(that: Any): Boolean = throw new UnsupportedOperationException
+  override def equals(that: Any): Boolean = throw new UnsupportedOperationException("RTreeNode.equals")
 
-  override def hashCode(): Int = throw new UnsupportedOperationException
-}
-
-/**
-  * A type class for distance calculations that can be used for `nearest` requests
-  * to an R-tree instances.
-  */
-trait DistanceCalculator {
-  /**
-    * Returns a distance from the given point to a boinding box of the specified RTree.
-    *
-    * @param x x value of the given point
-    * @param y y value of the given point
-    * @param t an RTree instance
-    * @tparam A a type of th value being put in the tree
-    * @return return a distance value
-    */
-  def distance[A](x: Float, y: Float, t: RTree[A]): Float
-}
-
-object EuclideanPlaneDistanceCalculator {
-  /**
-    * An instance of the `DistanceCalculator` type class which use Euclidean geometry
-    * to calculate distances.
-    */
-  implicit val calculator: DistanceCalculator = new DistanceCalculator {
-    override def distance[A](x: Float, y: Float, t: RTree[A]): Float = {
-      val dy = if (y < t.y1) t.y1 - y else if (y < t.y2) 0 else y - t.y2
-      val dx = if (x < t.x1) t.x1 - x else if (x < t.x2) 0 else x - t.x2
-      if (dy == 0) dx
-      else if (dx == 0) dy
-      else sqrt(dx * dx + dy * dy).toFloat
-    }
-  }
-}
-
-object SphericalDistanceCalculator {
-  /**
-    * Creates an instance of the `DistanceCalculator` type class which use the haversine formula to determine
-    * the great-circle distance between a point and a rounding box of R-tree on a sphere with specified radius given
-    * their longitudes and latitudes.
-    *
-    * To simplify creation of entries and queries X-axis is used for latitudes an and Y-axis for longitudes.
-    *
-    * Calculations was borrowed from the geoflatbush project of Vladimir Agafonkin:
-    * https://github.com/mourner/geoflatbush/blob/master/index.mjs
-    */
-  def calculator(radius: Double): DistanceCalculator = new DistanceCalculator {
-    private[this] val radPerDegree = PI / 180
-    private[this] val circumference = radius * radPerDegree
-
-    override def distance[A](lat: Float, lon: Float, t: RTree[A]): Float = {
-      val minLon = t.y1
-      val maxLon = t.y2
-      val minLat = t.x1
-      val maxLat = t.x2
-      if (lon >= minLon && lon <= maxLon) {
-        if (lat < minLat) ((minLat - lat) * circumference).toFloat
-        else if (lat > maxLat) ((lat - maxLat) * circumference).toFloat
-        else 0
-      } else (acos {
-        val radLat = lat * radPerDegree
-        val sinLat = sin(radLat) // TODO: refactor it to be the parameter of the distance method
-        val cosLat = cos(radLat) // TODO: refactor it to be the parameter of the distance method
-        if (minLon == maxLon && minLat == maxLat) {
-          normalizedDistanceCos(minLat, cosLat, sinLat, cos((minLon - lon) * radPerDegree))
-        } else {
-          val cosLonDelta = cos(min(normalize(minLon - lon), normalize(lon - maxLon)) * radPerDegree)
-          val extremumLat = atan(sinLat / (cosLat * cosLonDelta)) / radPerDegree
-          var d = max(
-            normalizedDistanceCos(minLat, cosLat, sinLat, cosLonDelta),
-            normalizedDistanceCos(maxLat, cosLat, sinLat, cosLonDelta))
-          if (extremumLat > minLat && extremumLat < maxLat) {
-            d = max(d, normalizedDistanceCos(extremumLat, cosLat, sinLat, cosLonDelta))
-          }
-          d
-        }
-      } * radius).toFloat
-    }
-
-    private[this] def normalize(lonDelta: Float): Float = if (lonDelta < 0) lonDelta + 360 else lonDelta
-
-    private[this] def normalizedDistanceCos(lat: Double, cosLat: Double, sinLat: Double, cosLonDelta: Double): Double = {
-      val radLat = lat * radPerDegree
-      min(sinLat * sin(radLat) + cosLat * cos(radLat) * cosLonDelta, 1)
-    }
-  }
-}
-
-object SphericalEarthDistanceCalculator {
-  /**
-    * An instance of the `DistanceCalculator` type class which use a spherical model of the Earth to calculate distances
-    * that are represented in kilometers.
-    *
-    * 6371.0088 is a mean radius in kilometers, see: https://en.wikipedia.org/wiki/Earth_radius#Mean_radius
-    * It allows to get +0.2% accuracy on poles, -0.1% on the equator, and less than ±0.05% on medium latitudes.
-    * Precision of 32-bit float point representation allows to locate points and calculate distances with an error
-    * ±0.5 meters.
-    */
-  implicit val calculator: DistanceCalculator = SphericalDistanceCalculator.calculator(6371.0088)
+  override def hashCode(): Int = throw new UnsupportedOperationException("RTreeNode.hashCode")
 }
 
 private class DejaVuCounter {

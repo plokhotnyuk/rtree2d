@@ -1,11 +1,11 @@
 package com.sizmek.rtree2d.core
 
-import com.sizmek.rtree2d.core.GeoUtils._
 import org.scalatest.FunSuite
-import org.scalatest.Matchers._
 
 class RTreeTest extends FunSuite {
-  private val entries = ((1 to 100) :+ 100).map(x => RTreeEntry(x1 = x, y1 = x, x2 = x + 1.9f, y2 = x + 1.9f, value = x))
+  import EuclideanPlane._
+
+  private val entries = ((1 to 100) :+ 100).map(x => entry(x1 = x, y1 = x, x2 = x + 1.9f, y2 = x + 1.9f, value = x))
   private val rtree = RTree[Int](entries)
 
   test("RTreeNil.x1") {
@@ -29,7 +29,6 @@ class RTreeTest extends FunSuite {
   }
 
   test("RTreeNil.nearest") {
-    import EuclideanPlaneDistanceCalculator._
     assert(RTree[Int](Nil).nearest(0, 0) === None)
   }
 
@@ -45,8 +44,8 @@ class RTreeTest extends FunSuite {
     assert(RTree[Int](Nil) === RTree[Int](Nil))
     assert(RTree[Int](Nil) === RTree[String](Nil))
     assert(RTree[Int](Nil) !== Seq())
-    assert(RTree[Int](Nil) !== RTreeEntry(1, 2, 1, 2, 5))
-    assert(RTree[Int](Nil) !== RTree(Seq(RTreeEntry(1, 2, 1, 2, 5))))
+    assert(RTree[Int](Nil) !== entry(1, 2, 1, 2, 5))
+    assert(RTree[Int](Nil) !== RTree(Seq(entry(1, 2, 1, 2, 5))))
   }
 
   test("RTreeNil.hashCode") {
@@ -54,86 +53,61 @@ class RTreeTest extends FunSuite {
     assert(RTree[Int](Nil).hashCode() === RTree[String](Nil).hashCode())
   }
 
-  test("RTreeEntry.apply") {
-    assert(RTreeEntry(1, 2, 1, 2, 5) === RTreeEntry(1, 2, 5))
-    assert(intercept[IllegalArgumentException](RTreeEntry(Float.NaN, 2, 5)).getMessage ===
-      "x should not be NaN")
-    assert(intercept[IllegalArgumentException](RTreeEntry(1, Float.NaN, 5)).getMessage ===
-      "y should not be NaN")
-    assert(intercept[IllegalArgumentException](RTreeEntry(5, 4, 3, 2, 1)).getMessage ===
-      "x2 should be greater than x1 and any of them should not be NaN")
-    assert(intercept[IllegalArgumentException](RTreeEntry(Float.NaN, 2, 3, 4, 5)).getMessage ===
-      "x2 should be greater than x1 and any of them should not be NaN")
-    assert(intercept[IllegalArgumentException](RTreeEntry(1, 2, Float.NaN, 4, 5)).getMessage ===
-      "x2 should be greater than x1 and any of them should not be NaN")
-    assert(intercept[IllegalArgumentException](RTreeEntry(Float.NaN, 2, Float.NaN, 4, 5)).getMessage ===
-      "x2 should be greater than x1 and any of them should not be NaN")
-    assert(intercept[IllegalArgumentException](RTreeEntry(3, 4, 5, 2, 1)).getMessage ===
-      "y2 should be greater than y1 and any of them should not be NaN")
-    assert(intercept[IllegalArgumentException](RTreeEntry(1, Float.NaN, 3, 4, 5)).getMessage ===
-      "y2 should be greater than y1 and any of them should not be NaN")
-    assert(intercept[IllegalArgumentException](RTreeEntry(1, 2, 3, Float.NaN, 5)).getMessage ===
-      "y2 should be greater than y1 and any of them should not be NaN")
-    assert(intercept[IllegalArgumentException](RTreeEntry(1, Float.NaN, 3, Float.NaN, 5)).getMessage ===
-      "y2 should be greater than y1 and any of them should not be NaN")
-  }
-
   test("RTreeEntry.entries") {
-    assert(RTreeEntry(1, 2, 1, 2, 5).entries === Seq(RTreeEntry(1, 2, 5)))
+    assert(entry(1, 2, 1, 2, 5).entries === Seq(entry(1, 2, 5)))
   }
 
   test("RTreeEntry.nearest") {
-    import EuclideanPlaneDistanceCalculator._
-    assert(RTreeEntry(1, 2, 1, 2, 5).nearest(0, 0) === Some((2.236068f, RTreeEntry(1, 2, 1, 2, 5))))
-    assert(RTreeEntry(1, 2, 1, 2, 5).nearest(1, 2) === Some((0.0f, RTreeEntry(1, 2, 1, 2, 5))))
+    assert(entry(1, 2, 1, 2, 5).nearest(0, 0) === Some((2.236068f, entry(1, 2, 1, 2, 5))))
+    assert(entry(1, 2, 1, 2, 5).nearest(1, 2) === Some((0.0f, entry(1, 2, 1, 2, 5))))
   }
 
   test("RTreeEntry.searchAll by point") {
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(0, 0) === Seq())
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(1, 2) === Seq(RTreeEntry(1, 2, 3, 4, 5)))
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(2, 3) === Seq(RTreeEntry(1, 2, 3, 4, 5)))
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(3, 4) === Seq(RTreeEntry(1, 2, 3, 4, 5)))
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(3, Float.NaN) === Seq())
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(Float.NaN, 3) === Seq())
+    assert(entry(1, 2, 3, 4, 5).searchAll(0, 0) === Seq())
+    assert(entry(1, 2, 3, 4, 5).searchAll(1, 2) === Seq(entry(1, 2, 3, 4, 5)))
+    assert(entry(1, 2, 3, 4, 5).searchAll(2, 3) === Seq(entry(1, 2, 3, 4, 5)))
+    assert(entry(1, 2, 3, 4, 5).searchAll(3, 4) === Seq(entry(1, 2, 3, 4, 5)))
+    assert(entry(1, 2, 3, 4, 5).searchAll(3, Float.NaN) === Seq())
+    assert(entry(1, 2, 3, 4, 5).searchAll(Float.NaN, 3) === Seq())
   }
 
   test("RTreeEntry.searchAll by rectangle") {
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(-1, -1, 0, 0) === Seq())
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(0, 0, 1, 2) === Seq(RTreeEntry(1, 2, 3, 4, 5)))
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(2, 3, 4, 5) === Seq(RTreeEntry(1, 2, 3, 4, 5)))
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(3, 4, 5, 6) === Seq(RTreeEntry(1, 2, 3, 4, 5)))
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(Float.NaN, 4, 5, 6) === Seq())
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(3, Float.NaN, 5, 6) === Seq())
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(3, 4, Float.NaN, 6) === Seq())
-    assert(RTreeEntry(1, 2, 3, 4, 5).searchAll(3, 4, 5, Float.NaN) === Seq())
+    assert(entry(1, 2, 3, 4, 5).searchAll(-1, -1, 0, 0) === Seq())
+    assert(entry(1, 2, 3, 4, 5).searchAll(0, 0, 1, 2) === Seq(entry(1, 2, 3, 4, 5)))
+    assert(entry(1, 2, 3, 4, 5).searchAll(2, 3, 4, 5) === Seq(entry(1, 2, 3, 4, 5)))
+    assert(entry(1, 2, 3, 4, 5).searchAll(3, 4, 5, 6) === Seq(entry(1, 2, 3, 4, 5)))
+    assert(entry(1, 2, 3, 4, 5).searchAll(Float.NaN, 4, 5, 6) === Seq())
+    assert(entry(1, 2, 3, 4, 5).searchAll(3, Float.NaN, 5, 6) === Seq())
+    assert(entry(1, 2, 3, 4, 5).searchAll(3, 4, Float.NaN, 6) === Seq())
+    assert(entry(1, 2, 3, 4, 5).searchAll(3, 4, 5, Float.NaN) === Seq())
   }
 
   test("RTreeEntry.equals") {
-    assert(RTreeEntry(1, 2, 3, 4, 5) === RTreeEntry(1, 2, 3, 4, 5))
-    assert(RTreeEntry(1, 2, 3, 4, 5) === RTree(Seq(RTreeEntry(1, 2, 3, 4, 5))))
-    assert(RTreeEntry(1, 2, 3, 4, 5) !== RTreeEntry(1.1f, 2, 3, 4, 5))
-    assert(RTreeEntry(1, 2, 3, 4, 5) !== RTreeEntry(1, 2.1f, 3, 4, 5))
-    assert(RTreeEntry(1, 2, 3, 4, 5) !== RTreeEntry(1, 2, 3.1f, 4, 5))
-    assert(RTreeEntry(1, 2, 3, 4, 5) !== RTreeEntry(1, 2, 3, 4.1f, 5))
-    assert(RTreeEntry(1, 2, 3, 4, 5) !== RTreeEntry(1, 2, 3, 4, 50))
-    assert(RTreeEntry(1, 2, 3, 4, 5) !== RTreeEntry(1, 2, 3, 4, "5"))
+    assert(entry(1, 2, 3, 4, 5) === entry(1, 2, 3, 4, 5))
+    assert(entry(1, 2, 3, 4, 5) === RTree(Seq(entry(1, 2, 3, 4, 5))))
+    assert(entry(1, 2, 3, 4, 5) !== entry(1.1f, 2, 3, 4, 5))
+    assert(entry(1, 2, 3, 4, 5) !== entry(1, 2.1f, 3, 4, 5))
+    assert(entry(1, 2, 3, 4, 5) !== entry(1, 2, 3.1f, 4, 5))
+    assert(entry(1, 2, 3, 4, 5) !== entry(1, 2, 3, 4.1f, 5))
+    assert(entry(1, 2, 3, 4, 5) !== entry(1, 2, 3, 4, 50))
+    assert(entry(1, 2, 3, 4, 5) !== entry(1, 2, 3, 4, "5"))
   }
 
   test("RTreeEntry.hashCode") {
-    assert(RTreeEntry(1, 2, 3, 4, 5).hashCode() === RTreeEntry(1, 2, 3, 4, 5).hashCode())
-    assert(RTreeEntry(1, 2, 3, 4, 5).hashCode() === RTree(Seq(RTreeEntry(1, 2, 3, 4, 5))).hashCode())
-    assert(RTreeEntry(1, 2, 3, 4, 5).hashCode() !== RTreeEntry(1.1f, 2, 3, 4, 5).hashCode())
-    assert(RTreeEntry(1, 2, 3, 4, 5).hashCode() !== RTreeEntry(1, 2.1f, 3, 4, 5).hashCode())
-    assert(RTreeEntry(1, 2, 3, 4, 5).hashCode() !== RTreeEntry(1, 2, 3.1f, 4, 5).hashCode())
-    assert(RTreeEntry(1, 2, 3, 4, 5).hashCode() !== RTreeEntry(1, 2, 3, 4.1f, 5).hashCode())
-    assert(RTreeEntry(1, 2, 3, 4, 5).hashCode() !== RTreeEntry(1, 2, 3, 4, 50).hashCode())
-    assert(RTreeEntry(1, 2, 3, 4, 5).hashCode() !== RTreeEntry(1, 2, 3, 4, "5").hashCode())
+    assert(entry(1, 2, 3, 4, 5).hashCode() === entry(1, 2, 3, 4, 5).hashCode())
+    assert(entry(1, 2, 3, 4, 5).hashCode() === RTree(Seq(entry(1, 2, 3, 4, 5))).hashCode())
+    assert(entry(1, 2, 3, 4, 5).hashCode() !== entry(1.1f, 2, 3, 4, 5).hashCode())
+    assert(entry(1, 2, 3, 4, 5).hashCode() !== entry(1, 2.1f, 3, 4, 5).hashCode())
+    assert(entry(1, 2, 3, 4, 5).hashCode() !== entry(1, 2, 3.1f, 4, 5).hashCode())
+    assert(entry(1, 2, 3, 4, 5).hashCode() !== entry(1, 2, 3, 4.1f, 5).hashCode())
+    assert(entry(1, 2, 3, 4, 5).hashCode() !== entry(1, 2, 3, 4, 50).hashCode())
+    assert(entry(1, 2, 3, 4, 5).hashCode() !== entry(1, 2, 3, 4, "5").hashCode())
   }
 
   test("RTree.apply") {
     assert(RTree(entries).entries === entries)
     assert(RTree(entries, 4).entries === entries)
-    assert(RTree(entries, 16).entries === entries)
+    assert(RTree(entries, 8).entries === entries)
     assert(intercept[IllegalArgumentException](RTree(entries, 1)).getMessage ===
       "nodeCapacity should be greater than 1")
   }
@@ -143,7 +117,6 @@ class RTreeTest extends FunSuite {
   }
 
   test("RTree.nearest") {
-    import EuclideanPlaneDistanceCalculator._
     assert(rtree.nearest(0, 0) === Some((1.4142135f, entries.head)))
     assert(rtree.nearest(100, 100) === Some((0.0f, entries.init.init.last)))
   }
@@ -210,48 +183,12 @@ class RTreeTest extends FunSuite {
   }
 
   test("RTree.equals") {
-    intercept[UnsupportedOperationException](RTree(entries, 2) == RTree(entries, 4))
+    assert(intercept[UnsupportedOperationException](RTree(entries, 2) == RTree(entries, 4))
+      .getMessage === "RTreeNode.equals")
   }
 
   test("RTree.hashCode") {
-    intercept[UnsupportedOperationException](RTree(entries).hashCode())
-  }
-
-  test("EuclideanPlaneDistanceCalculator.calculator.distance") {
-    import EuclideanPlaneDistanceCalculator.calculator._
-    assert(distance(0, 0, RTreeEntry(0, 0, 3)) === 0.0f)
-    assert(distance(0, 0, RTreeEntry(-1, -1, 1, 1, 3)) === 0.0f)
-    assert(distance(0, 0, RTreeEntry(3, 4, 5, 6, 3)) === 5f)
-    intercept[UnsupportedOperationException](distance(0, 0, RTree[Int](Nil)))
-  }
-
-  test("GeodesicShpereDistanceCalculator.calculator") {
-    import SphericalEarthDistanceCalculator.calculator._
-    assert(distance(0, 0, RTreeEntry(0, 0, 3)) === 0.0f)
-    assert(distance(0, 0, RTreeEntry(-10, -10, 10, 10, 3)) === 0.0f)
-    assert(distance(0, 0, RTreeEntry(10, 10, 20, 20, 3)) === distance(0, 0, RTreeEntry(10, 10, 3)))
-    assert(distance(0, 0, RTreeEntry(-20, -20, -10, -10, 3)) === distance(0, 0, RTreeEntry(-10, -10, 3)))
-    assert(distance(0, 0, RTreeEntry(10, -20, 20, -10, 3)) === distance(0, 0, RTreeEntry(10, -10, 3)))
-    assert(distance(0, 0, RTreeEntry(-20, 10, -10, 20, 3)) === distance(0, 0, RTreeEntry(-10, 10, 3)))
-    assert(distance(0, 0, RTreeEntry(10, -10, 20, 10, 3)) === distance(0, 0, RTreeEntry(10, 0, 3)))
-    assert(distance(0, 0, RTreeEntry(-20, -10, -10, 10, 3)) === distance(0, 0, RTreeEntry(-10, 0, 3)))
-    assert(distance(0, 0, RTreeEntry(-10, 10, 10, 20, 3)) === distance(0, 0, RTreeEntry(0, 10, 3)))
-    assert(distance(0, 0, RTreeEntry(-10, -20, 10, -10, 3)) === distance(0, 0, RTreeEntry(0, -10, 3)))
-    assert(distance(0, 0, RTreeEntry(0, 180, 3)) === distance(-90, 0, RTreeEntry(90, 0, 3)))
-    assert(distance(0, 0, RTreeEntry(0, 0, 3)) === distance(0, -180, RTreeEntry(0, 180, 3)) +- 0.5f)
-    assert(distance(0, 0, RTreeEntry(0, 10, 3)) === distance(0, -180, RTreeEntry(-10, -160, 10, 170, 3)))
-    assert(distance(0, 0, RTreeEntry(0, 10, 3)) === distance(0, 180, RTreeEntry(-10, -170, 10, 160, 3)))
-    assert(distance(10, 0, RTreeEntry(10, 10, 3)) === distance(10, -180, RTreeEntry(-10, -160, 10, 170, 3)))
-    assert(distance(-10, 0, RTreeEntry(-10, 10, 3)) === distance(-10, 180, RTreeEntry(-10, -170, 10, 160, 3)))
-    assert(distance(50.4500f, 30.5233f, RTreeEntry(50.0614f, 19.9383f, 3)) === 753.0f +- 0.5f) // Kraków <-> Kyiv, in km
-    assert(distance(34.6937f, 135.5022f, RTreeEntry(34.0522f,-118.2437f, 3)) === 9189.5f +- 0.5f) // Osaka <-> Los Angeles, in km
-    intercept[UnsupportedOperationException](distance(0, 0, RTree[Int](Nil)))
-  }
-
-  test("Check precision of formulas") {
-    assert(greatCircleDistance2(0, 179.99999f, 0, 180f) === greatCircleDistance1(0, 179.99999f, 0, 180f) +- 0.000005f)
-    assert(greatCircleDistance2(0, 0, 0.00001f, 0.00001f) === greatCircleDistance1(0, 0, 0.00001f, 0.00001f) +- 0.000005f)
-    assert(greatCircleDistance2(50.4500f, 30.5233f, 50.0614f, 19.9383f) === greatCircleDistance1(50.4500f, 30.5233f, 50.0614f, 19.9383f) +- 0.000005f)
-    assert(greatCircleDistance2(34.6937f, 135.5022f, 34.0522f,-118.2437f) === greatCircleDistance1(34.6937f, 135.5022f, 34.0522f,-118.2437f) +- 0.000005f)
+    assert(intercept[UnsupportedOperationException](RTree(entries).hashCode())
+      .getMessage === "RTreeNode.hashCode")
   }
 }

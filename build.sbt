@@ -61,7 +61,6 @@ lazy val commonSettings = Seq(
     "-encoding", "UTF-8",
     "-feature",
     "-unchecked",
-    "-Yno-adapted-args",
     "-Ywarn-dead-code",
     "-Xfuture",
     "-Xlint"
@@ -101,10 +100,10 @@ lazy val core = project
   .settings(mimaSettings: _*)
   .settings(publishSettings: _*)
   .settings(
-    crossScalaVersions := Seq("2.13.0-M3", "2.12.6", "2.11.12"),
+    crossScalaVersions := Seq("2.13.0-M4", "2.12.6", "2.11.12"),
     libraryDependencies ++= Seq(
       "org.scalacheck" %% "scalacheck" % "1.14.0" % Test,
-      "org.scalatest" %% "scalatest" % "3.0.5-M1" % Test
+      "org.scalatest" %% "scalatest" % "3.0.6-SNAP1" % Test
     )
   )
 
@@ -119,7 +118,7 @@ lazy val benchmark = project
       "com.github.davidmoten" % "rtree" % "0.8.5",
       "org.spire-math" %% "archery" % "0.6.0",
       "pl.project13.scala" % "sbt-jmh-extras" % "0.3.4",
-      "org.scalatest" %% "scalatest" % "3.0.5-M1" % Test
+      "org.scalatest" %% "scalatest" % "3.0.6-SNAP1" % Test
     ),
     charts := Def.inputTaskDyn {
       val jmhParams = Def.spaceDelimited().parsed

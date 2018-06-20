@@ -46,10 +46,10 @@ by point or rectangle requests:
 
 ```scala
 import com.sizmek.rtree2d.core._
-import EuclideanPlaneDistanceCalculator._
+import EuclideanPlane._
 
-val box1 = RTreeEntry(1.0f, 1.0f, 2.0f, 2.0f, "Box 1")
-val box2 = RTreeEntry(2.0f, 2.0f, 3.0f, 3.0f, "Box 2")
+val box1 = entry(1.0f, 1.0f, 2.0f, 2.0f, "Box 1")
+val box2 = entry(2.0f, 2.0f, 3.0f, 3.0f, "Box 2")
 val entries = Seq(box1, box2)
 
 val rtree = RTree(entries)
@@ -71,13 +71,13 @@ in degrees. Result distances are in kilometers:
  
 ```scala
 import com.sizmek.rtree2d.core._
-import SphericalEarthDistanceCalculator._
+import SphericalEarth._
 
-val city1 = RTreeEntry(50.0614f, 19.9383f, "Kraków")
-val city2 = RTreeEntry(50.4500f, 30.5233f, "Kyiv")
+val city1 = entry(50.0614f, 19.9383f, "Kraków")
+val city2 = entry(50.4500f, 30.5233f, "Kyiv")
 val entries = Seq(city1, city2)
 
-val rtree = RTree(entries)
+val rtree = RTree(entries, nodeCapacity = 4/* the best capacity for nearest queries for spherical geometry */)
 
 assert(rtree.entries == entries)
 assert(rtree.nearest(0.0f, 0.0f) == Some((5879.9897f, city1)))
@@ -88,8 +88,8 @@ assert(rtree.searchAll(0f, -180f, 90f, 180f).forall(entries.contains))
 ```
 
 Used spherical model of the Earth with the mean radius allows to get +0.2% accuracy on poles, -0.1% on the equator, and 
-less than ±0.05% on medium latitudes. Precision of 32-bit float point representation allows to locate points and 
-calculate distances with an error ±0.5 meters.
+less than ±0.05% on medium latitudes. Precision of 32-bit float number allows to locate points and calculate distances 
+with an error ±0.5 meters.
 
 Please, check out
 [Scala docs in sources](https://github.com/Sizmek/rtree2d/blob/master/core/src/main/scala/com/sizmek/rtree2d/core/RTree.scala) 
