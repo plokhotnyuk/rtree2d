@@ -115,9 +115,9 @@ trait Spherical {
     if (!(minLat >= -90)) throw new IllegalArgumentException("minLat should not be less than -90 or NaN")
     if (!(minLon >= -180)) throw new IllegalArgumentException("minLon should not be less than -180 or NaN")
     if (!(maxLat <= 90 && maxLat >= minLat))
-      throw new IllegalArgumentException("maxLat should not be greater than -90 or less than minLat or NaN")
+      throw new IllegalArgumentException("maxLat should not be greater than 90 or less than minLat or NaN")
     if (!(maxLon <= 180 && maxLon >= minLon))
-      throw new IllegalArgumentException("maxLon should not be greater than -180 or less than minLat  or NaN")
+      throw new IllegalArgumentException("maxLon should not be greater than 180 or less than minLat  or NaN")
     new RTreeEntry[A](minLat, minLon, maxLat, maxLon, value)
   }
 
@@ -174,13 +174,76 @@ trait Spherical {
 }
 
 object SphericalEarth extends Spherical {
+  private[this] val radPerDegree = PI / 180
+
+  /**
+    * 6371.0088 is a value of the mean radius in kilometers, see: https://en.wikipedia.org/wiki/Earth_radius#Mean_radius
+    * It allows to get +0.2% accuracy on poles, -0.1% on the equator, and less than ±0.05% on medium latitudes.
+    * Precision of 32-bit float number allows to locate points and calculate distances with an error ±0.5 meters.
+    */
+  private[this] val earthMeanRadius = 6371.0088
+
   /**
     * An instance of the `DistanceCalculator` type class which use a spherical model of the Earth to calculate distances
     * that are represented in kilometers.
     *
-    * 6371.0088 is the mean radius in kilometers, see: https://en.wikipedia.org/wiki/Earth_radius#Mean_radius
-    * It allows to get +0.2% accuracy on poles, -0.1% on the equator, and less than ±0.05% on medium latitudes.
-    * Precision of 32-bit float number allows to locate points and calculate distances with an error ±0.5 meters.
     */
-  implicit val distanceCalculator: DistanceCalculator = distanceCalculator(6371.0088)
+  implicit val distanceCalculator: DistanceCalculator = distanceCalculator(earthMeanRadius)
+
+  /**
+    * Create an indexed sequence of entries that are specified by a circular area on the Earth and a value.
+    *
+    * Sequence of entries required for case when the circle is crossed by the anti-meridian because the RTree which
+    * use bounding box form longitudes and latitudes for geo-indexing doesn't support wrapping of geo-coordinates over
+    * the Earth, so we split that entries on two by the date change meridian.
+    *
+    * Used formula with description is here: http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates#Longitude
+    *
+    * @param lat a latitude coordinate of the given center point
+    * @param lon a latitude coordinate of the given center point
+    * @param distance a distance, from the center point to borders of the circular area on the Earth surface (in km),
+    *                 if the value of distance is greated than half of circumference of the Earth then a whole sphere
+    *                 will be bounded
+    * @param value a value to store in the r-tree
+    * @tparam A a type of th value being put in the tree
+    * @return a newly created entry
+    */
+  def entries[A](lat: Float, lon: Float, distance: Float, value: A): IndexedSeq[RTreeEntry[A]] = {
+    if (!(lat >= -90 && lat <= 90)) throw new IllegalArgumentException("lat should not be out of range from -90 to 90 or NaN")
+    if (!(lon >= -180 && lon <= 180)) throw new IllegalArgumentException("lon should not be out of range from -180 to 180 or NaN")
+    if (!(distance >= 0)) throw new IllegalArgumentException("distance should not be less than 0 or NaN")
+    val radLon = lon * radPerDegree
+    val radLat = lat * radPerDegree
+    val deltaLat = distance / earthMeanRadius
+    val lat1 = ((radLat - deltaLat) / radPerDegree).toFloat
+    val lat2 = ((radLat + deltaLat) / radPerDegree).toFloat
+    if (lat1 > -90 && lat2 < 90) {
+      val deltaLon = asin(sin(deltaLat) / cos(radLat))
+      val lon1 = ((radLon - deltaLon) / radPerDegree).toFloat
+      val lon2 = ((radLon + deltaLon) / radPerDegree).toFloat
+      if (lon1 < -180) {
+        new IndexedSeq2(new RTreeEntry(lat1, -180, lat2, lon2, value), new RTreeEntry(lat1, lon1 + 360, lat2, 180, value))
+      } else if (lon2 > 180) {
+        new IndexedSeq2(new RTreeEntry(lat1, -180, lat2, lon2 - 360, value), new RTreeEntry(lat1, lon1, lat2, 180, value))
+      }
+      else new IndexedSeq1(new RTreeEntry(lat1, lon1, lat2, lon2, value))
+    } else new IndexedSeq1(new RTreeEntry(max(lat1, -90), -180, min(lat2, 90), 180, value))
+  }
+}
+
+private class IndexedSeq1[A](a: A) extends IndexedSeq[A] {
+  override def length: Int = 1
+
+  override def apply(idx: Int): A =
+    if (idx == 0) a
+    else throw new IndexOutOfBoundsException(idx.toString)
+}
+
+private class IndexedSeq2[A](a0: A, a1: A) extends IndexedSeq[A] {
+  override def length: Int = 2
+
+  override def apply(idx: Int): A =
+    if (idx == 0) a0
+    else if (idx == 1) a1
+    else throw new IndexOutOfBoundsException(idx.toString)
 }
