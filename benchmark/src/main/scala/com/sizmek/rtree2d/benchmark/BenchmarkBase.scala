@@ -42,6 +42,9 @@ abstract class BenchmarkBase {
   //@Param(Array("0.01", "0.1"))
   var partToAddOrRemove = 0.1f // part of RTree to add or remove
 
+  //@Param(Array("plain", "spherical"))
+  var geometry = "plain"
+
   def doShuffle[A](as: Array[A]): Unit = {
     val rnd = new util.Random(7777777)
     var i = as.length - 1
