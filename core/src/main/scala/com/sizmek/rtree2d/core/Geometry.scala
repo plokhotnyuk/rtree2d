@@ -225,8 +225,7 @@ object SphericalEarth extends Spherical {
         new IndexedSeq2(new RTreeEntry(lat1, -180, lat2, lon2, value), new RTreeEntry(lat1, lon1 + 360, lat2, 180, value))
       } else if (lon2 > 180) {
         new IndexedSeq2(new RTreeEntry(lat1, -180, lat2, lon2 - 360, value), new RTreeEntry(lat1, lon1, lat2, 180, value))
-      }
-      else new IndexedSeq1(new RTreeEntry(lat1, lon1, lat2, lon2, value))
+      } else new IndexedSeq1(new RTreeEntry(lat1, lon1, lat2, lon2, value))
     } else new IndexedSeq1(new RTreeEntry(max(lat1, -90), -180, min(lat2, 90), 180, value))
   }
 }
