@@ -58,6 +58,7 @@ class RTreeTest extends FunSuite {
   }
 
   test("RTreeEntry.nearest") {
+    assert(entry(1, 2, 1, 2, 5).nearest(0, 0, maxDist = 1f) === None)
     assert(entry(1, 2, 1, 2, 5).nearest(0, 0) === Some((2.236068f, entry(1, 2, 1, 2, 5))))
     assert(entry(1, 2, 1, 2, 5).nearest(1, 2) === Some((0.0f, entry(1, 2, 1, 2, 5))))
   }
