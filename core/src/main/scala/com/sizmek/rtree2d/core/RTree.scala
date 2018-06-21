@@ -435,18 +435,6 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
   override def hashCode(): Int = throw new UnsupportedOperationException("RTreeNode.hashCode")
 }
 
-private class DejaVuCounter {
-  private[this] var n: Int = _
-
-  def inc(): Unit = n += 1
-
-  def decIfPositive(): Boolean =
-    if (n > 0) {
-      n -= 1
-      false
-    } else true
-}
-
 /**
   * A binary heap collection of distance/entry pairs.
   *
@@ -513,4 +501,16 @@ class RTreeEntryBinaryHeap[A](private[this] val maxDist: Float, private[this] va
   }
 
   private[core] def topDistance: Float = distances(1)
+}
+
+private class DejaVuCounter {
+  private[this] var n: Int = _
+
+  def inc(): Unit = n += 1
+
+  def decIfPositive(): Boolean =
+    if (n > 0) {
+      n -= 1
+      false
+    } else true
 }
