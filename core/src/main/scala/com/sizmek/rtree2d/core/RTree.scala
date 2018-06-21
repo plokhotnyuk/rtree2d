@@ -193,13 +193,15 @@ sealed trait RTree[A] {
     *
     * @param x x value of the given point
     * @param y y value of the given point
+    * @param k a maximum number of nearest entries to collect
     * @param maxDist an exclusive limit of the distance (infinity by default)
     * @param distCalc a distance calculator provided according to geometry of indexed entries
     * @return a sequence of the nearest entries
     */
   def nearestK(x: Float, y: Float, k: Int, maxDist: Float = Float.PositiveInfinity)
               (implicit distCalc: DistanceCalculator): IndexedSeq[RTreeEntry[A]] =
-    new RTreeEntryBinaryHeap[A](maxDist, k) {
+    if (k <= 0) Vector.empty
+    else new RTreeEntryBinaryHeap[A](maxDist, k) {
       nearest(x, y, maxDist)((d, e) => put(d, e))
     }.toIndexedSeq
 
@@ -469,7 +471,7 @@ class RTreeEntryBinaryHeap[A](private[this] val maxDist: Float, private[this] va
       }
       distances(i) = d
       entries(i) = e
-      maxDist
+      if (size0 == maxSize) distances(1) else maxDist
     } else if (size0 > 0 && d < distances(1)) {
       var i = 1
       var j = i << 1
@@ -499,8 +501,6 @@ class RTreeEntryBinaryHeap[A](private[this] val maxDist: Float, private[this] va
       if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
       else array(idx + 1)
   }
-
-  private[core] def topDistance: Float = distances(1)
 }
 
 private class DejaVuCounter {

@@ -19,7 +19,7 @@ object TestUtils {
     h <- positiveFloatGen
   } yield RTreeEntry(x, y, x + w, y + h, lastId.getAndIncrement())
   val distanceEntryGen: Gen[(Float, RTreeEntry[Int])] = for {
-    d <- floatGen
+    d <- positiveFloatGen
     e <- entryGen
   } yield (d, e)
   val latLonEntryGen: Gen[RTreeEntry[Int]] = for {

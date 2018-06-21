@@ -177,7 +177,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       "return max distance provided in constructor" in check {
         forAll(distanceEntryListGen, positiveFloatGen, positiveIntGen) {
           (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxDist: Float, maxSize: Int) =>
-            propBoolean(distanceEntryPairs.size <= maxSize && distanceEntryPairs.forall { case (d, e) => d < maxDist }) ==> {
+            propBoolean(distanceEntryPairs.size < maxSize && distanceEntryPairs.forall { case (d, e) => d < maxDist }) ==> {
               val heap = new RTreeEntryBinaryHeap[Int](maxDist, maxSize)
               distanceEntryPairs.forall { case (d, e) => heap.put(d, e) == maxDist }
             }
@@ -195,22 +195,6 @@ class RTreeCheckers extends WordSpec with Checkers {
       }
     }
     "number of added distance/entry pairs greater than the max size" should {
-      "return max distance of stored distance/entry pairs" in check {
-        forAll(distanceEntryListGen, positiveFloatGen, positiveIntGen) {
-          (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxDist: Float, maxSize: Int) =>
-            propBoolean(distanceEntryPairs.forall { case (d, e) => d < maxDist }) ==> {
-              val heap = new RTreeEntryBinaryHeap[Int](maxDist, maxSize)
-              var size = 0
-              distanceEntryPairs.forall { case (d, e) =>
-                val expected =
-                  if (size < maxSize) maxDist
-                  else heap.topDistance
-                size += 1
-                heap.put(d, e) === expected
-              }
-            }
-        }
-      }
       "return sequence with most nearest distance/entry pairs from all submitted" in check {
         forAll(distanceEntryListGen, positiveIntGen) {
           (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxSize: Int) =>
