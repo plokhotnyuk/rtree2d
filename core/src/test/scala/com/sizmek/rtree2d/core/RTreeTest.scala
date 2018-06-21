@@ -28,8 +28,12 @@ class RTreeTest extends FunSuite {
     assert(RTree[Int](Nil).entries === Seq())
   }
 
-  test("RTreeNil.nearest") {
-    assert(RTree[Int](Nil).nearest(0, 0) === None)
+  test("RTreeNil.nearestOne") {
+    assert(RTree[Int](Nil).nearestOption(0, 0) === None)
+  }
+
+  test("RTreeNil.nearestK") {
+    assert(RTree[Int](Nil).nearestK(0, 0, k = 3) === Seq())
   }
 
   test("RTreeNil.searchAll by point") {
@@ -57,10 +61,17 @@ class RTreeTest extends FunSuite {
     assert(entry(1, 2, 1, 2, 5).entries === Seq(entry(1, 2, 5)))
   }
 
-  test("RTreeEntry.nearest") {
-    assert(entry(1, 2, 1, 2, 5).nearest(0, 0, maxDist = 1f) === None)
-    assert(entry(1, 2, 1, 2, 5).nearest(0, 0) === Some((2.236068f, entry(1, 2, 1, 2, 5))))
-    assert(entry(1, 2, 1, 2, 5).nearest(1, 2) === Some((0.0f, entry(1, 2, 1, 2, 5))))
+  test("RTreeEntry.nearestOne") {
+    assert(entry(1, 2, 1, 2, 5).nearestOption(0, 0, maxDist = 1f) === None)
+    assert(entry(1, 2, 1, 2, 5).nearestOption(0, 0) === Some(entry(1, 2, 1, 2, 5)))
+    assert(entry(1, 2, 1, 2, 5).nearestOption(1, 2) === Some(entry(1, 2, 1, 2, 5)))
+  }
+
+  test("RTreeEntry.nearestK") {
+    assert(entry(1, 2, 1, 2, 5).nearestK(0, 0, k = 3, maxDist = 1f) === Seq())
+    assert(entry(1, 2, 1, 2, 5).nearestK(0, 0, k = 0) === Seq())
+    assert(entry(1, 2, 1, 2, 5).nearestK(0, 0, k = 3) === Seq(entry(1, 2, 1, 2, 5)))
+    assert(entry(1, 2, 1, 2, 5).nearestK(1, 2, k = 3) === Seq(entry(1, 2, 1, 2, 5)))
   }
 
   test("RTreeEntry.searchAll by point") {
@@ -117,9 +128,29 @@ class RTreeTest extends FunSuite {
     assert(rtree.entries === entries)
   }
 
-  test("RTree.nearest") {
-    assert(rtree.nearest(0, 0) === Some((1.4142135f, entries.head)))
-    assert(rtree.nearest(100, 100) === Some((0.0f, entries.init.init.last)))
+  test("RTree.nearestOne") {
+    assert(rtree.nearestOption(0, 0) === Some(entries.head))
+    assert(rtree.nearestOption(100, 100) === Some(entries.init.init.last))
+  }
+
+  test("RTree.nearestK") {
+    assert(rtree.nearestK(0, 0, k = 1) === Seq(entries(0)))
+    assert(rtree.nearestK(100, 100, k = 1) === Seq(entries.init.init.last))
+    assert(rtree.nearestK(0, 0, k = 0) === Seq())
+    assert(rtree.nearestK(0, 0, k = 3) === Seq(
+      entry(3.0f, 3.0f, 4.9f, 4.9f, 3),
+      entry(1.0f, 1.0f, 2.9f, 2.9f, 1),
+      entry(2.0f, 2.0f, 3.9f, 3.9f, 2)
+    ))
+    assert(rtree.nearestK(0, 0, k = 7) === Seq(
+      entry(7.0f, 7.0f, 8.9f, 8.9f, 7),
+      entry(4.0f, 4.0f, 5.9f, 5.9f, 4),
+      entry(6.0f, 6.0f, 7.9f, 7.9f, 6),
+      entry(1.0f, 1.0f, 2.9f, 2.9f, 1),
+      entry(3.0f, 3.0f, 4.9f, 4.9f, 3),
+      entry(2.0f, 2.0f, 3.9f, 3.9f, 2),
+      entry(5.0f, 5.0f, 6.9f, 6.9f, 5)
+    ))
   }
 
   test("RTree.update") {
@@ -139,13 +170,6 @@ class RTreeTest extends FunSuite {
     var found = Seq.empty[Int]
     rtree.search(50, 50) { e =>
       found = found :+ e.value
-      true
-    }
-    assert(found === Seq(49))
-    found = Seq.empty[Int]
-    rtree.search(50, 50) { e =>
-      found = found :+ e.value
-      false
     }
     assert(found === Seq(49, 50))
   }
@@ -158,13 +182,6 @@ class RTreeTest extends FunSuite {
     var found = Seq.empty[Int]
     rtree.search(50, 50, 51, 51) { e =>
       found = found :+ e.value
-      true
-    }
-    assert(found === Seq(49))
-    found = Seq.empty[Int]
-    rtree.search(50, 50, 51, 51) { e =>
-      found = found :+ e.value
-      false
     }
     assert(found === Seq(49, 50, 51))
   }
@@ -191,5 +208,41 @@ class RTreeTest extends FunSuite {
   test("RTree.hashCode") {
     assert(intercept[UnsupportedOperationException](RTree(entries).hashCode())
       .getMessage === "RTreeNode.hashCode")
+  }
+
+  test("RTreeEntryBinaryHeap.put") {
+    var heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, 1)
+    assert(heap.put(2, entry(0, 0, 2)) == 2)
+    assert(heap.put(1, entry(0, 0, 1)) == 1)
+    heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, 2)
+    assert(heap.put(2, entry(0, 0, 2)) == Float.PositiveInfinity)
+    assert(heap.put(1, entry(0, 0, 1)) == 2)
+    heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, 2)
+    assert(heap.put(3, entry(0, 0, 3)) == Float.PositiveInfinity)
+    assert(heap.put(2, entry(0, 0, 2)) == 3)
+    assert(heap.put(1, entry(0, 0, 1)) == 2)
+  }
+
+  test("RTreeEntryBinaryHeap.toIndexedSeq") {
+    val heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, 7)
+    heap.put(1, entry(1, 1, 1))
+    heap.put(8, entry(8, 8, 8))
+    heap.put(2, entry(2, 2, 2))
+    heap.put(5, entry(5, 5, 5))
+    heap.put(9, entry(9, 9, 9))
+    heap.put(6, entry(6, 6, 6))
+    heap.put(3, entry(3, 3, 3))
+    heap.put(4, entry(4, 4, 4))
+    heap.put(0, entry(0, 0, 0))
+    heap.put(7, entry(7, 7, 7))
+    assert(heap.toIndexedSeq === Seq(
+      entry(6, 6, 6),
+      entry(5, 5, 5),
+      entry(3, 3, 3),
+      entry(1, 1, 1),
+      entry(4, 4, 4),
+      entry(2, 2, 2),
+      entry(0, 0, 0)
+    ))
   }
 }

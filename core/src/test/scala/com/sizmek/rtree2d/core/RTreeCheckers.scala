@@ -44,25 +44,25 @@ class RTreeCheckers extends WordSpec with Checkers {
         }
       }
     }
-    "asked for nearest" should {
-      "return any of entries which intersects by point" in check {
+    "asked for nearest one" should {
+      "return any of entries which intersects with point" in check {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
             import EuclideanPlane._
             val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).sortBy(_._1)
             propBoolean(sorted.nonEmpty && sorted.exists { case (d, e) => d == 0.0f }) ==> {
-              val result = RTree(entries).nearest(x, y)
-              sorted.map(Some(_)).contains(result)
+              val result = RTree(entries).nearestOption(x, y).get
+              sorted.map(_._2).contains(result)
             }
         }
       }
-      "return the nearest entry if point is out of all entries" in check {
+      "return the nearest entry if point does not intersect with entries" in check {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
             import EuclideanPlane._
             val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).sortBy(_._1)
             propBoolean(sorted.nonEmpty && !sorted.exists { case (d, e) => d == 0.0f }) ==> {
-              RTree(entries).nearest(x, y) === Some(sorted.head)
+              RTree(entries).nearestOption(x, y) === Some(sorted.head._2)
             }
         }
       }
@@ -72,8 +72,8 @@ class RTreeCheckers extends WordSpec with Checkers {
             import EuclideanPlane._
             val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).filter(_._1 < maxDist).sortBy(_._1)
             propBoolean(sorted.nonEmpty) ==> {
-              val result = RTree(entries).nearest(x, y, maxDist)
-              sorted.map(Some(_)).contains(result)
+              val result = RTree(entries).nearestOption(x, y, maxDist)
+              sorted.map { case (d, e) =>Some(e) }.contains(result)
             }
         }
       }
@@ -82,7 +82,49 @@ class RTreeCheckers extends WordSpec with Checkers {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
             import EuclideanPlane._
             propBoolean(entries.isEmpty) ==> {
-              RTree(entries).nearest(x, y) === None
+              RTree(entries).nearestOption(x, y) === None
+            }
+        }
+      }
+    }
+    "asked for nearest K" should {
+      "return up to K entries which intersects with point" in check {
+        forAll(entryListGen, floatGen, floatGen, positiveIntGen) {
+          (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, k: Int) =>
+            import EuclideanPlane._
+            val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).sortBy(_._1)
+            propBoolean(sorted.nonEmpty && sorted.exists { case (d, e) => d == 0.0f }) ==> {
+              val result = RTree(entries).nearestK(x, y, k)
+              result.forall(sorted.map(_._2).contains)
+            }
+        }
+      }
+      "return up to K nearest entries if point does not intersect with entries" in check {
+        forAll(entryListGen, floatGen, floatGen, positiveIntGen) {
+          (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, k: Int) =>
+            import EuclideanPlane._
+            val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).sortBy(_._1)
+            propBoolean(sorted.nonEmpty && !sorted.exists { case (d, e) => d == 0.0f } && sorted.size == sorted.map(_._1).distinct.size) ==> {
+              RTree(entries).nearestK(x, y, k).toSet === sorted.take(k).map(_._2).toSet
+            }
+        }
+      }
+      "return up to K nearest entries with in a specified distance limit or none if all entries are out of the limit" in check {
+        forAll(entryListGen, floatGen, floatGen, floatGen, positiveIntGen) {
+          (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, maxDist: Float, k: Int) =>
+            import EuclideanPlane._
+            val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).filter(_._1 < maxDist).sortBy(_._1)
+            propBoolean(sorted.size == sorted.map(_._1).distinct.size) ==> {
+              RTree(entries).nearestK(x, y, k, maxDist).toSet === sorted.take(k).map(_._2).toSet
+            }
+        }
+      }
+      "don't return any entry for empty tree" in check {
+        forAll(entryListGen, floatGen, floatGen, positiveIntGen) {
+          (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, k: Int) =>
+            import EuclideanPlane._
+            propBoolean(entries.isEmpty) ==> {
+              RTree(entries).nearestK(x, y, k) === Seq()
             }
         }
       }
@@ -103,22 +145,6 @@ class RTreeCheckers extends WordSpec with Checkers {
             val expected = intersects(entries, x, y)
             propBoolean(expected.isEmpty) ==> {
               RTree(entries).searchAll(x, y).isEmpty
-            }
-        }
-      }
-    }
-    "searched by point for first match only" should {
-      "receive one entry from expected" in check {
-        forAll(entryListGen, floatGen, floatGen) {
-          (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
-            val expected = intersects(entries, x, y).toSet
-            propBoolean(expected.nonEmpty) ==> {
-              var found: RTreeEntry[Int] = null
-              RTree(entries).search(x, y) { e =>
-                found = e
-                true
-              }
-              expected(found)
             }
         }
       }
@@ -145,19 +171,38 @@ class RTreeCheckers extends WordSpec with Checkers {
         }
       }
     }
-    "searched by rectangle for first match only" should {
-      "receive one entry from expected" in check {
-        forAll(entryListGen, floatGen, floatGen, positiveFloatGen, positiveFloatGen) {
-          (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, w: Float, h: Float) =>
-            val (x1, y1, x2, y2) = (x, y, x + w, y + h)
-            val expected = intersects(entries, x1, y1, x2, y2).toSet
-            propBoolean(expected.nonEmpty) ==> {
-              var found: RTreeEntry[Int] = null
-              RTree(entries).search(x1, y1, x2, y2) { e =>
-                found = e
-                true
-              }
-              expected(found)
+  }
+  "RTreeEntryBinaryHeap" when {
+    "number of added distance/entry pairs not greater than the max size" should {
+      "return max distance provided in constructor" in check {
+        forAll(distanceEntryListGen, positiveFloatGen, positiveIntGen) {
+          (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxDist: Float, maxSize: Int) =>
+            propBoolean(distanceEntryPairs.size < maxSize && distanceEntryPairs.forall { case (d, e) => d < maxDist }) ==> {
+              val heap = new RTreeEntryBinaryHeap[Int](maxDist, maxSize)
+              distanceEntryPairs.forall { case (d, e) => heap.put(d, e) == maxDist }
+            }
+        }
+      }
+      "return sequence with all submitted distance/entry pairs" in check {
+        forAll(distanceEntryListGen, positiveFloatGen, positiveIntGen) {
+          (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxDist: Float, maxSize: Int) =>
+            propBoolean(distanceEntryPairs.size <= maxSize) ==> {
+              val heap = new RTreeEntryBinaryHeap[Int](maxDist, maxSize)
+              distanceEntryPairs.foreach { case (d, e) => heap.put(d, e) }
+              heap.toIndexedSeq.toSet === distanceEntryPairs.map(_._2).toSet
+            }
+        }
+      }
+    }
+    "number of added distance/entry pairs greater than the max size" should {
+      "return sequence with most nearest distance/entry pairs from all submitted" in check {
+        forAll(distanceEntryListGen, positiveIntGen) {
+          (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxSize: Int) =>
+            val size = distanceEntryPairs.size
+            propBoolean(size > maxSize && size == distanceEntryPairs.map(_._1).distinct.size) ==> {
+              val heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, maxSize)
+              distanceEntryPairs.foreach { case (d, e) => heap.put(d, e) }
+              heap.toIndexedSeq.toSet === distanceEntryPairs.sortBy(_._1).take(maxSize).map(_._2).toSet
             }
         }
       }

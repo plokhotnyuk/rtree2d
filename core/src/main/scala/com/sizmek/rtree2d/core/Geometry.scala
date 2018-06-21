@@ -215,18 +215,18 @@ object SphericalEarth extends Spherical {
     val radLon = lon * radPerDegree
     val radLat = lat * radPerDegree
     val deltaLat = distance / earthMeanRadius
-    val lat1 = ((radLat - deltaLat) / radPerDegree).toFloat
-    val lat2 = ((radLat + deltaLat) / radPerDegree).toFloat
-    if (lat1 > -90 && lat2 < 90) {
+    val minLat = ((radLat - deltaLat) / radPerDegree).toFloat
+    val maxLat = ((radLat + deltaLat) / radPerDegree).toFloat
+    if (minLat > -90 && maxLat < 90) {
       val deltaLon = asin(sin(deltaLat) / cos(radLat))
-      val lon1 = ((radLon - deltaLon) / radPerDegree).toFloat
-      val lon2 = ((radLon + deltaLon) / radPerDegree).toFloat
-      if (lon1 < -180) {
-        new IndexedSeq2(new RTreeEntry(lat1, -180, lat2, lon2, value), new RTreeEntry(lat1, lon1 + 360, lat2, 180, value))
-      } else if (lon2 > 180) {
-        new IndexedSeq2(new RTreeEntry(lat1, -180, lat2, lon2 - 360, value), new RTreeEntry(lat1, lon1, lat2, 180, value))
-      } else new IndexedSeq1(new RTreeEntry(lat1, lon1, lat2, lon2, value))
-    } else new IndexedSeq1(new RTreeEntry(max(lat1, -90), -180, min(lat2, 90), 180, value))
+      val minLon = ((radLon - deltaLon) / radPerDegree).toFloat
+      val maxLon = ((radLon + deltaLon) / radPerDegree).toFloat
+      if (minLon < -180) {
+        new IndexedSeq2(new RTreeEntry(minLat, -180, maxLat, maxLon, value), new RTreeEntry(minLat, minLon + 360, maxLat, 180, value))
+      } else if (maxLon > 180) {
+        new IndexedSeq2(new RTreeEntry(minLat, -180, maxLat, maxLon - 360, value), new RTreeEntry(minLat, minLon, maxLat, 180, value))
+      } else new IndexedSeq1(new RTreeEntry(minLat, minLon, maxLat, maxLon, value))
+    } else new IndexedSeq1(new RTreeEntry(max(minLat, -90), -180, min(maxLat, 90), 180, value))
   }
 }
 

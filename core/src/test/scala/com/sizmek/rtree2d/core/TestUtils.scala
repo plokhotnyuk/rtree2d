@@ -10,6 +10,7 @@ object TestUtils {
   val floatGen: Gen[Float] = Gen.choose[Float](-1000, 1000)
   val latGen: Gen[Float] = Gen.choose[Float](-90, 90)
   val lonGen: Gen[Float] = Gen.choose[Float](-180, 180)
+  val positiveIntGen: Gen[Int] = Gen.choose[Int](0, 200)
   val positiveFloatGen: Gen[Float] = Gen.choose[Float](0, 200)
   val entryGen: Gen[RTreeEntry[Int]] = for {
     x <- floatGen
@@ -17,6 +18,10 @@ object TestUtils {
     w <- positiveFloatGen
     h <- positiveFloatGen
   } yield RTreeEntry(x, y, x + w, y + h, lastId.getAndIncrement())
+  val distanceEntryGen: Gen[(Float, RTreeEntry[Int])] = for {
+    d <- positiveFloatGen
+    e <- entryGen
+  } yield (d, e)
   val latLonEntryGen: Gen[RTreeEntry[Int]] = for {
     x1 <- latGen
     y1 <- lonGen
@@ -24,6 +29,8 @@ object TestUtils {
     y2 <- lonGen
   } yield RTreeEntry(min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2), lastId.getAndIncrement())
   val entryListGen: Gen[Seq[RTreeEntry[Int]]] = Gen.oneOf(0, 1, 10, 100, 1000).flatMap(n => Gen.listOfN(n, entryGen))
+  val distanceEntryListGen: Gen[Seq[(Float, RTreeEntry[Int])]] =
+    Gen.oneOf(0, 1, 10, 100, 1000).flatMap(n => Gen.listOfN(n, distanceEntryGen))
 
   implicit def orderingByName[A <: RTreeEntry[Int]]: Ordering[A] = Ordering.by(e => (e.x1, e.y1, e.x2, e.y2, e.value))
 

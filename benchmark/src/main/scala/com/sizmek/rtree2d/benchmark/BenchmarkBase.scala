@@ -36,6 +36,9 @@ abstract class BenchmarkBase {
   //@Param(Array("10", "100"))
   var rectSize = 10.0f // size of rect relative to interval between points
 
+  //@Param(Array("10", "100"))
+  var nearestMax = 10 // maximum number of entries to return for nearest query
+
   //@Param(Array("8", "16"))
   var nodeCapacity = 16 // Archery use hard coded 50 for limiting a number of children nodes
 
