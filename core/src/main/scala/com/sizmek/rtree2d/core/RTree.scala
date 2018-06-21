@@ -167,7 +167,7 @@ sealed trait RTree[A] {
   /**
     * Returns an option of the nearest R-tree entry for the given point.
     *
-    * Search distance can be limited by `maxDist` parameter.
+    * Search distance can be limited by the `maxDist` parameter.
     *
     * @param x x value of the given point
     * @param y y value of the given point
@@ -189,7 +189,7 @@ sealed trait RTree[A] {
   /**
     * Returns a sequence of up to the specified number of nearest R-tree entries for the given point.
     *
-    * Search distance can be limited by `maxDist` parameter.
+    * Search distance can be limited by the `maxDist` parameter.
     *
     * @param x x value of the given point
     * @param y y value of the given point
@@ -206,7 +206,7 @@ sealed trait RTree[A] {
   /**
     * Returns a distance to the nearest R-tree entry for the given point.
     *
-    * Search distance can be limited by `maxDist` parameter.
+    * Search distance can be limited by the `maxDist` parameter.
     *
     * @param x x value of the given point
     * @param y y value of the given point
@@ -219,8 +219,7 @@ sealed trait RTree[A] {
              (f: (Float, RTreeEntry[A]) => Float)(implicit distCalc: DistanceCalculator): Float
 
   /**
-    * Call the provided `f` function with entries whose MBR contains the given point,
-    * until the function returns true.
+    * Call the provided `f` function with entries whose MBR contains the given point.
     *
     * @param x x value of the given point
     * @param y y value of the given point
@@ -229,8 +228,7 @@ sealed trait RTree[A] {
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Unit): Unit
 
   /**
-    * Call the provided `f` function with entries whose MBR intersects with the given point,
-    * until the function returns true.
+    * Call the provided `f` function with entries whose MBR intersects with the given point.
     *
     * @param x1 x value of the lower left point of the given rectangle
     * @param y1 y value of the lower left point of the given rectangle
@@ -456,7 +454,7 @@ private class DejaVuCounter {
   * @param maxSize a maximum size of the heap
   * @tparam A a type of th value being put in entries
   */
-class RTreeEntryBinaryHeap[A](maxDist: Float, maxSize: Int) {
+class RTreeEntryBinaryHeap[A](private[this] val maxDist: Float, private[this] val maxSize: Int) {
   private[this] var size0 = 0
   private[this] var distances = new Array[Float](8)
   private[this] var entries = new Array[RTreeEntry[A]](8)
