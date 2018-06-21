@@ -198,7 +198,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       "return max distance of stored distance/entry pairs" in check {
         forAll(distanceEntryListGen, positiveFloatGen, positiveIntGen) {
           (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxDist: Float, maxSize: Int) =>
-            propBoolean(distanceEntryPairs.size <= maxSize && distanceEntryPairs.forall { case (d, e) => d < maxDist }) ==> {
+            propBoolean(distanceEntryPairs.forall { case (d, e) => d < maxDist }) ==> {
               val heap = new RTreeEntryBinaryHeap[Int](maxDist, maxSize)
               var size = 0
               distanceEntryPairs.forall { case (d, e) =>
