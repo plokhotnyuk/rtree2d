@@ -165,7 +165,7 @@ sealed trait RTree[A] {
   def isEmpty: Boolean
 
   /**
-    * Returns an option of the nearest R-tree entry and its distance to the given point.
+    * Returns an option of the nearest R-tree entry for the given point.
     *
     * Search distance can be limited by `maxDist` parameter.
     *
@@ -173,13 +173,13 @@ sealed trait RTree[A] {
     * @param y y value of the given point
     * @param maxDist an exclusive limit of the distance (infinity by default)
     * @param distCalc a distance calculator provided according to geometry of indexed entries
-    * @return the distance to a found entry or initially submitted value of maxDist
+    * @return an option of the nearest entry
     */
   def nearestOption(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
-                   (implicit distCalc: DistanceCalculator): Option[(Float, RTreeEntry[A])] = {
-    var res: (Float, RTreeEntry[A]) = null
+                   (implicit distCalc: DistanceCalculator): Option[RTreeEntry[A]] = {
+    var res: RTreeEntry[A] = null
     nearest(x, y, maxDist)((d, e) => {
-      res = (d, e)
+      res = e
       d
     })
     if (res eq null) None
@@ -187,7 +187,7 @@ sealed trait RTree[A] {
   }
 
   /**
-    * Returns a sequence of up to K nearest R-tree entries paired with their distance to the given point.
+    * Returns a sequence of up to the specified number of nearest R-tree entries for the given point.
     *
     * Search distance can be limited by `maxDist` parameter.
     *
@@ -195,25 +195,23 @@ sealed trait RTree[A] {
     * @param y y value of the given point
     * @param maxDist an exclusive limit of the distance (infinity by default)
     * @param distCalc a distance calculator provided according to geometry of indexed entries
-    * @return the distance to a found entry or initially submitted value of maxDist
+    * @return a sequence of the nearest entries
     */
   def nearestK(x: Float, y: Float, k: Int, maxDist: Float = Float.PositiveInfinity)
-              (implicit distCalc: DistanceCalculator): IndexedSeq[(Float, RTreeEntry[A])] = {
-    val res = new RTreeEntryBinaryHeap[A](maxDist, k)
-    nearest(x, y, maxDist)((d, e) => res.put(d, e))
-    res
-  }
+              (implicit distCalc: DistanceCalculator): IndexedSeq[RTreeEntry[A]] =
+    new RTreeEntryBinaryHeap[A](maxDist, k) {
+      nearest(x, y, maxDist)((d, e) => put(d, e))
+    }.toIndexedSeq
 
   /**
-    * Returns an option of of the nearest R-tree entry and the distance to it for the given point
-    * and a specified distance calculator.
+    * Returns a distance to the nearest R-tree entry for the given point.
     *
     * Search distance can be limited by `maxDist` parameter.
     *
     * @param x x value of the given point
     * @param y y value of the given point
     * @param maxDist an exclusive limit of the distance (infinity by default)
-    * @param f the function that receives found values and their distances and returns t current maximum distance
+    * @param f the function that receives found values and their distances and returns the current maximum distance
     * @param distCalc a distance calculator provided according to geometry of indexed entries
     * @return the distance to a found entry or initially submitted value of maxDist
     */
@@ -454,52 +452,67 @@ private class DejaVuCounter {
 /**
   * A binary heap collection of distance/entry pairs.
   *
-  * @param maxDist a limit of distance
+  * @param maxDist an initial limit of distance
   * @param maxSize a maximum size of the heap
   * @tparam A a type of th value being put in entries
   */
-class RTreeEntryBinaryHeap[A](maxDist: Float, maxSize: Int) extends IndexedSeq[(Float, RTreeEntry[A])] {
+class RTreeEntryBinaryHeap[A](maxDist: Float, maxSize: Int) {
   private[this] var size0 = 0
-  private[this] var heap = new Array[(Float, RTreeEntry[A])](16)
+  private[this] var distances = new Array[Float](8)
+  private[this] var entries = new Array[RTreeEntry[A]](8)
 
   def put(d: Float, e: RTreeEntry[A]): Float = {
-    val node = (d, e)
-    var heap = this.heap
+    var distances = this.distances
+    var entries = this.entries
     if (size0 < maxSize) {
       size0 += 1
-      if (size0 >= heap.length) {
-        heap = java.util.Arrays.copyOf(heap, Math.min(heap.length << 1, maxSize + 1))
-        this.heap = heap
+      if (size0 >= distances.length) {
+        val newSize = Math.min(distances.length << 1, maxSize + 1)
+        distances = java.util.Arrays.copyOf(distances, newSize)
+        entries = java.util.Arrays.copyOf(entries, newSize)
+        this.distances = distances
+        this.entries = entries
       }
       var i = size0
       var j = i >> 1
-      while (j > 0 && d >= heap(j)._1) {
-        heap(i) = heap(j)
+      while (j > 0 && d >= distances(j)) {
+        distances(i) = distances(j)
+        entries(i) = entries(j)
         i = j
         j >>= 1
       }
-      heap(i) = node
+      distances(i) = d
+      entries(i) = e
       maxDist
-    } else if (size0 > 0 && d < heap(1)._1) {
+    } else if (size0 > 0 && d < distances(1)) {
       var i = 1
       var j = i << 1
       var k = j + 1
-      if (k <= size0 && heap(k)._1 >= heap(j)._1) j = k
-      while (j <= size0 && heap(j)._1 >= d) {
-        heap(i) = heap(j)
+      if (k <= size0 && distances(k) >= distances(j)) j = k
+      while (j <= size0 && distances(j) >= d) {
+        distances(i) = distances(j)
+        entries(i) = entries(j)
         i = j
         j = i << 1
         k = j + 1
-        if (k <= size0 && heap(k)._1 >= heap(j)._1) j = k
+        if (k <= size0 && distances(k) >= distances(j)) j = k
       }
-      heap(i) = node
-      heap(1)._1
+      distances(i) = d
+      entries(i) = e
+      distances(1)
     } else maxDist
   }
 
-  override def length: Int = size0
+  def toIndexedSeq: IndexedSeq[RTreeEntry[A]] = new IndexedSeq[RTreeEntry[A]] {
+    private[this] val size0 = RTreeEntryBinaryHeap.this.size0
+    private[this] val array = RTreeEntryBinaryHeap.this.entries
 
-  override def apply(idx: Int): (Float, RTreeEntry[A]) =
-    if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
-    else heap(idx + 1)
+    override def length: Int = size0
+
+    override def apply(idx: Int): RTreeEntry[A] =
+      if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
+      else array(idx + 1)
+  }
+
+  private[core] def topDistance: Float = distances(1)
 }

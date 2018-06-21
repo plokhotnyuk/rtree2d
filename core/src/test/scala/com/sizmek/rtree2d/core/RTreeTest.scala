@@ -63,15 +63,15 @@ class RTreeTest extends FunSuite {
 
   test("RTreeEntry.nearestOne") {
     assert(entry(1, 2, 1, 2, 5).nearestOption(0, 0, maxDist = 1f) === None)
-    assert(entry(1, 2, 1, 2, 5).nearestOption(0, 0) === Some((2.236068f, entry(1, 2, 1, 2, 5))))
-    assert(entry(1, 2, 1, 2, 5).nearestOption(1, 2) === Some((0.0f, entry(1, 2, 1, 2, 5))))
+    assert(entry(1, 2, 1, 2, 5).nearestOption(0, 0) === Some(entry(1, 2, 1, 2, 5)))
+    assert(entry(1, 2, 1, 2, 5).nearestOption(1, 2) === Some(entry(1, 2, 1, 2, 5)))
   }
 
   test("RTreeEntry.nearestK") {
     assert(entry(1, 2, 1, 2, 5).nearestK(0, 0, k = 3, maxDist = 1f) === Seq())
     assert(entry(1, 2, 1, 2, 5).nearestK(0, 0, k = 0) === Seq())
-    assert(entry(1, 2, 1, 2, 5).nearestK(0, 0, k = 3) === Seq((2.236068f, entry(1, 2, 1, 2, 5))))
-    assert(entry(1, 2, 1, 2, 5).nearestK(1, 2, k = 3) === Seq((0.0f, entry(1, 2, 1, 2, 5))))
+    assert(entry(1, 2, 1, 2, 5).nearestK(0, 0, k = 3) === Seq(entry(1, 2, 1, 2, 5)))
+    assert(entry(1, 2, 1, 2, 5).nearestK(1, 2, k = 3) === Seq(entry(1, 2, 1, 2, 5)))
   }
 
   test("RTreeEntry.searchAll by point") {
@@ -129,27 +129,27 @@ class RTreeTest extends FunSuite {
   }
 
   test("RTree.nearestOne") {
-    assert(rtree.nearestOption(0, 0) === Some((1.4142135f, entries.head)))
-    assert(rtree.nearestOption(100, 100) === Some((0.0f, entries.init.init.last)))
+    assert(rtree.nearestOption(0, 0) === Some(entries.head))
+    assert(rtree.nearestOption(100, 100) === Some(entries.init.init.last))
   }
 
   test("RTree.nearestK") {
-    assert(rtree.nearestK(0, 0, k = 1) === Seq((1.4142135f, entries(0))))
-    assert(rtree.nearestK(100, 100, k = 1) === Seq((0.0f, entries.init.init.last)))
+    assert(rtree.nearestK(0, 0, k = 1) === Seq(entries(0)))
+    assert(rtree.nearestK(100, 100, k = 1) === Seq(entries.init.init.last))
     assert(rtree.nearestK(0, 0, k = 0) === Seq())
     assert(rtree.nearestK(0, 0, k = 3) === Seq(
-      (4.2426405f, entry(3.0f, 3.0f, 4.9f, 4.9f, 3)),
-      (1.4142135f, entry(1.0f, 1.0f, 2.9f, 2.9f, 1)),
-      (2.828427f, entry(2.0f, 2.0f, 3.9f, 3.9f, 2))
+      entry(3.0f, 3.0f, 4.9f, 4.9f, 3),
+      entry(1.0f, 1.0f, 2.9f, 2.9f, 1),
+      entry(2.0f, 2.0f, 3.9f, 3.9f, 2)
     ))
     assert(rtree.nearestK(0, 0, k = 7) === Seq(
-      (9.899495f, entry(7.0f, 7.0f, 8.9f, 8.9f, 7)),
-      (5.656854f, entry(4.0f, 4.0f, 5.9f, 5.9f, 4)),
-      (8.485281f, entry(6.0f, 6.0f, 7.9f, 7.9f, 6)),
-      (1.4142135f, entry(1.0f, 1.0f, 2.9f, 2.9f, 1)),
-      (4.2426405f, entry(3.0f, 3.0f, 4.9f, 4.9f, 3)),
-      (2.828427f, entry(2.0f, 2.0f, 3.9f, 3.9f, 2)),
-      (7.071068f, entry(5.0f, 5.0f, 6.9f, 6.9f, 5))
+      entry(7.0f, 7.0f, 8.9f, 8.9f, 7),
+      entry(4.0f, 4.0f, 5.9f, 5.9f, 4),
+      entry(6.0f, 6.0f, 7.9f, 7.9f, 6),
+      entry(1.0f, 1.0f, 2.9f, 2.9f, 1),
+      entry(3.0f, 3.0f, 4.9f, 4.9f, 3),
+      entry(2.0f, 2.0f, 3.9f, 3.9f, 2),
+      entry(5.0f, 5.0f, 6.9f, 6.9f, 5)
     ))
   }
 
@@ -223,34 +223,13 @@ class RTreeTest extends FunSuite {
     heap.put(0, entry(0, 0, 0))
     heap.put(7, entry(7, 7, 7))
     assert(heap.toIndexedSeq === Seq(
-      (6, entry(6, 6, 6)),
-      (5, entry(5, 5, 5)),
-      (3, entry(3, 3, 3)),
-      (1, entry(1, 1, 1)),
-      (4, entry(4, 4, 4)),
-      (2, entry(2, 2, 2)),
-      (0, entry(0, 0, 0))
+      entry(6, 6, 6),
+      entry(5, 5, 5),
+      entry(3, 3, 3),
+      entry(1, 1, 1),
+      entry(4, 4, 4),
+      entry(2, 2, 2),
+      entry(0, 0, 0)
     ))
-  }
-
-  test("xxx") {
-    import com.sizmek.rtree2d.core._
-    import SphericalEarth._
-
-    val city1 = entry(50.0614f, 19.9383f, "Kraków")
-    val city2 = entry(50.4500f, 30.5233f, "Kyiv")
-    val entries = Seq(city1, city2)
-
-    val rtree = RTree(entries, nodeCapacity = 4/* the best capacity for nearest queries for spherical geometry */)
-
-    assert(rtree.entries == entries)
-    assert(rtree.nearestOption(0.0f, 0.0f) == Some((5879.9897f, city1)))
-    assert(rtree.nearestOption(50f, 20f, maxDist = 1.0f) == None)
-    assert(rtree.nearestOption(50f, 20f) == Some((8.126432f, city1)))
-    assert(rtree.nearestK(50f, 20f, k = 1) == Seq((8.126432f, city1)))
-    assert(rtree.nearestK(50f, 20f, k = 2) == Seq((749.6644f, city2), (8.126432f, city1)))
-    assert(rtree.searchAll(50f, 30f, 51f, 31f) == Seq(city2))
-    assert(rtree.searchAll(0f, -180f, 90f, 180f).forall(entries.contains))
-
   }
 }
