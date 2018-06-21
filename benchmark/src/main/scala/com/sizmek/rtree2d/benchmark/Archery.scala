@@ -53,6 +53,13 @@ class Archery extends BenchmarkBase {
   }
 
   @Benchmark
+  def nearestK: Seq[Entry[PointOfInterest]] = {
+    val i = curr
+    curr = if (i + 2 < xys.length) i + 2 else 0
+    rtree.nearestK(Point(xys(i), xys(i + 1)), nearestMax)
+  }
+
+  @Benchmark
   def searchByPoint: Seq[Entry[PointOfInterest]] = {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0

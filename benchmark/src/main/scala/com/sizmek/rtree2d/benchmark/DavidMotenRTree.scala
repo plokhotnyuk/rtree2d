@@ -61,6 +61,13 @@ class DavidMotenRTree extends BenchmarkBase {
   }
 
   @Benchmark
+  def nearestK: Option[Entry[PointOfInterest, Rectangle]] = {
+    val i = curr
+    curr = if (i + 2 < xys.length) i + 2 else 0
+    rtree.nearest(point(xys(i), xys(i + 1)), Double.PositiveInfinity, nearestMax).toBlocking.toIterable.asScala.headOption
+  }
+
+  @Benchmark
   def searchByPoint: Seq[Entry[PointOfInterest, Rectangle]] = {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0

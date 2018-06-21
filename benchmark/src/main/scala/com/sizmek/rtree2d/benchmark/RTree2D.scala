@@ -50,7 +50,14 @@ class RTree2D extends BenchmarkBase {
   def nearest: Option[RTreeEntry[PointOfInterest]] = {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0
-    rtree.nearest(xys(i), xys(i + 1))(distanceCalculator).map(_._2)
+    rtree.nearestOption(xys(i), xys(i + 1))(distanceCalculator).map(_._2)
+  }
+
+  @Benchmark
+  def nearestK: Seq[RTreeEntry[PointOfInterest]] = {
+    val i = curr
+    curr = if (i + 2 < xys.length) i + 2 else 0
+    rtree.nearestK(xys(i), xys(i + 1), nearestMax)(distanceCalculator).map(_._2)
   }
 
   @Benchmark

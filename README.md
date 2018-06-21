@@ -45,25 +45,27 @@ Add import, create entries, build an R-tree from them, and use it for search a n
 by point or rectangle requests:
 
 ```scala
-import com.sizmek.rtree2d.core._
-import EuclideanPlane._
-
-val box1 = entry(1.0f, 1.0f, 2.0f, 2.0f, "Box 1")
-val box2 = entry(2.0f, 2.0f, 3.0f, 3.0f, "Box 2")
-val entries = Seq(box1, box2)
-
-val rtree = RTree(entries)
-
-assert(rtree.entries == entries)
-assert(rtree.nearest(0.0f, 0.0f) == Some((1.4142135f, box1)))
-assert(rtree.nearest(0.0f, 0.0f, 1.0f) == None)
-assert(rtree.nearest(1.5f, 1.5f) == Some((0.0f, box1)))
-assert(rtree.searchAll(0.0f, 0.0f) == Nil)
-assert(rtree.searchAll(1.5f, 1.5f) == Seq(box1))
-assert(rtree.searchAll(2.5f, 2.5f) == Seq(box2))
-assert(rtree.searchAll(2.0f, 2.0f) == Seq(box1, box2))
-assert(rtree.searchAll(2.5f, 2.5f, 3.5f, 3.5f) == Seq(box2))
-assert(rtree.searchAll(1.5f, 1.5f, 2.5f, 2.5f).forall(entries.contains))
+import com.sizmek.rtree2d.core._                                                         
+import EuclideanPlane._                                                                  
+                                                                                         
+val box1 = entry(1.0f, 1.0f, 2.0f, 2.0f, "Box 1")                                        
+val box2 = entry(2.0f, 2.0f, 3.0f, 3.0f, "Box 2")                                        
+val entries = Seq(box1, box2)                                                            
+                                                                                         
+val rtree = RTree(entries)                                                               
+                                                                                         
+assert(rtree.entries == entries)                                                         
+assert(rtree.nearestOption(0.0f, 0.0f) == Some((1.4142135f, box1)))                      
+assert(rtree.nearestOption(0.0f, 0.0f, maxDist = 1.0f) == None)                          
+assert(rtree.nearestOption(1.5f, 1.5f) == Some((0.0f, box1)))                            
+assert(rtree.nearestK(0.0f, 0.0f, k = 1) == Seq((1.4142135f, box1)))                     
+assert(rtree.nearestK(0.0f, 0.0f, k = 2) == Seq((2.828427f, box2), (1.4142135f, box1)))  
+assert(rtree.searchAll(0.0f, 0.0f) == Nil)                                               
+assert(rtree.searchAll(1.5f, 1.5f) == Seq(box1))                                         
+assert(rtree.searchAll(2.5f, 2.5f) == Seq(box2))                                         
+assert(rtree.searchAll(2.0f, 2.0f) == Seq(box1, box2))                                   
+assert(rtree.searchAll(2.5f, 2.5f, 3.5f, 3.5f) == Seq(box2))                             
+assert(rtree.searchAll(1.5f, 1.5f, 2.5f, 2.5f).forall(entries.contains))                 
 ```
 
 RTree2D can be used for indexing spherical coordinates, where X-axis is used for latitudes, and Y-axis for longitudes
@@ -80,9 +82,11 @@ val entries = Seq(city1, city2)
 val rtree = RTree(entries, nodeCapacity = 4/* the best capacity for nearest queries for spherical geometry */)
 
 assert(rtree.entries == entries)
-assert(rtree.nearest(0.0f, 0.0f) == Some((5879.9897f, city1)))
-assert(rtree.nearest(50f, 20f, 1.0f) == None)
-assert(rtree.nearest(50f, 20f) == Some((8.126432f, city1)))
+assert(rtree.nearestOption(0.0f, 0.0f) == Some((5879.9897f, city1)))
+assert(rtree.nearestOption(50f, 20f, maxDist = 1.0f) == None)
+assert(rtree.nearestOption(50f, 20f) == Some((8.126432f, city1)))
+assert(rtree.nearestK(50f, 20f, k = 1) == Seq((8.126432f, city1)))
+assert(rtree.nearestK(50f, 20f, k = 2) == Seq((749.6644f, city2), (8.126432f, city1)))
 assert(rtree.searchAll(50f, 30f, 51f, 31f) == Seq(city2))
 assert(rtree.searchAll(0f, -180f, 90f, 180f).forall(entries.contains))
 ```
