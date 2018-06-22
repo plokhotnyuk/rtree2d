@@ -115,6 +115,7 @@ lazy val benchmark = project
   .settings(
     crossScalaVersions := Seq("2.12.6", "2.11.12"),
     libraryDependencies ++= Seq(
+      "org.locationtech.jts" % "jts-core" % "1.15.0",
       "com.github.davidmoten" % "rtree" % "0.8.5",
       "org.spire-math" %% "archery" % "0.6.0",
       "pl.project13.scala" % "sbt-jmh-extras" % "0.3.4",
