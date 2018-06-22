@@ -110,11 +110,11 @@ class STRtreeWrapper(nodeCapacity: Int, es: Seq[(Envelope, PointOfInterest)]) ex
     }).asInstanceOf[(Envelope, PointOfInterest)])
 
   def nearestK(x: Float, y: Float, k: Int): Seq[(Envelope, PointOfInterest)] = {
-    val array = nearestNeighbour(new Envelope(x, x, y, y), null, new ItemDistance {
+    val res = nearestNeighbour(new Envelope(x, x, y, y), null, new ItemDistance {
       override def distance(item1: ItemBoundable, item2: ItemBoundable): Double =
         item1.getBounds.asInstanceOf[Envelope].distance(item2.getBounds.asInstanceOf[Envelope])
     }, k)
-    util.Arrays.copyOf(array, array.length, classOf[Array[(Envelope, PointOfInterest)]])
+    util.Arrays.copyOf(res, res.length, classOf[Array[(Envelope, PointOfInterest)]])
   }
 
   private[this] def entries(top: AbstractNode, acc: ArrayBuffer[(Envelope, PointOfInterest)]): Unit = {
