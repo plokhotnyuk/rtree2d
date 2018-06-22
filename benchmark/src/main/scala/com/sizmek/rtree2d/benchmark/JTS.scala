@@ -1,5 +1,7 @@
 package com.sizmek.rtree2d.benchmark
 
+import java.util
+
 import org.locationtech.jts.geom.Envelope
 import org.locationtech.jts.index.ItemVisitor
 import org.locationtech.jts.index.strtree._
@@ -103,28 +105,16 @@ class STRtreeWrapper(nodeCapacity: Int, es: Seq[(Envelope, PointOfInterest)]) ex
 
   def nearest(x: Float, y: Float): Option[(Envelope, PointOfInterest)] =
     Option(nearestNeighbour(new Envelope(x, x, y, y), null, new ItemDistance {
-      override def distance(item1: ItemBoundable, item2: ItemBoundable): Double = {
-        val e1 = item1.getBounds.asInstanceOf[Envelope]
-        val e2 = item2.getBounds.asInstanceOf[Envelope]
-        e1.distance(e2)
-      }
+      override def distance(item1: ItemBoundable, item2: ItemBoundable): Double =
+        item1.getBounds.asInstanceOf[Envelope].distance(item2.getBounds.asInstanceOf[Envelope])
     }).asInstanceOf[(Envelope, PointOfInterest)])
 
   def nearestK(x: Float, y: Float, k: Int): Seq[(Envelope, PointOfInterest)] = {
     val array = nearestNeighbour(new Envelope(x, x, y, y), null, new ItemDistance {
-      override def distance(item1: ItemBoundable, item2: ItemBoundable): Double = {
-        val e1 = item1.getBounds.asInstanceOf[Envelope]
-        val e2 = item2.getBounds.asInstanceOf[Envelope]
-        e1.distance(e2)
-      }
+      override def distance(item1: ItemBoundable, item2: ItemBoundable): Double =
+        item1.getBounds.asInstanceOf[Envelope].distance(item2.getBounds.asInstanceOf[Envelope])
     }, k)
-    val res = new ArrayBuffer[(Envelope, PointOfInterest)]
-    var i = 0
-    while (i < array.length) {
-      res += array(i).asInstanceOf[(Envelope, PointOfInterest)]
-      i += 1
-    }
-    res
+    util.Arrays.copyOf(array, array.length, classOf[Array[(Envelope, PointOfInterest)]])
   }
 
   private[this] def entries(top: AbstractNode, acc: ArrayBuffer[(Envelope, PointOfInterest)]): Unit = {
