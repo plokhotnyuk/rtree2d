@@ -118,6 +118,14 @@ The `apply` benchmark tests building of R-tries from a sequence of entires.
 
 [![apply](docs/overlap-1/apply.png)](docs/overlap-1/apply.png)
 
+The `nearest` benchmark tests search an entry of the R-tree that is the nearest to the specified point.
+
+[![nearest](docs/overlap-1/nearest.png)](docs/overlap-1/nearest.png)
+
+The `nearestK` benchmark tests search up to specified number of entries in the R-tree that the nearest to the specified point.
+
+[![nearest](docs/overlap-1/nearestK.png)](docs/overlap-1/nearestK.png)
+
 The `searchByPoint` benchmark tests requests that search entries with intersects with the specified point.
 
 [![searchByPoint](docs/overlap-1/searchByPoint.png)](docs/overlap-1/searchByPoint.png)
@@ -126,10 +134,6 @@ The `searchByRectangle` benchmark tests requests that search entries with inters
 can intersect with up to 100 entries.
 
 [![searchByRectangle](docs/overlap-1/searchByRectangle.png)](docs/overlap-1/searchByRectangle.png)
-
-The `nearest` benchmark tests search an entry of the R-tree that a nearest to the specified point.
-
-[![nearest](docs/overlap-1/nearest.png)](docs/overlap-1/nearest.png)
 
 The `entries` benchmark tests returning of all entries that are indexed in the R-tree.
 
