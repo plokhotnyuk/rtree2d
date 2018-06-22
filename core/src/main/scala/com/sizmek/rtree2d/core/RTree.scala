@@ -247,21 +247,15 @@ sealed trait RTree[A] {
     * @param y y value of the given point
     * @return a sequence of found values
     */
-  def searchAll(x: Float, y: Float): IndexedSeq[RTreeEntry[A]] = new IndexedSeq[RTreeEntry[A]] {
-    private[this] var size0: Int = _
-    private[this] var array: Array[RTreeEntry[A]] = new Array[RTreeEntry[A]](16)
-
-    RTree.this.search(x, y) { v =>
-      if (size0 + 1 >= array.length) array = java.util.Arrays.copyOf(array, size0 << 1)
-      array(size0) = v
-      size0 += 1
+  def searchAll(x: Float, y: Float): IndexedSeq[RTreeEntry[A]] = {
+    var size: Int = 0
+    var array: Array[RTreeEntry[A]] = new Array[RTreeEntry[A]](16)
+    search(x, y) { v =>
+      if (size + 1 >= array.length) array = java.util.Arrays.copyOf(array, size << 1)
+      array(size) = v
+      size += 1
     }
-
-    override def length: Int = size0
-
-    override def apply(idx: Int): RTreeEntry[A] =
-      if (idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
-      else array(idx)
+    new RTreeEntryIndexedSeq[A](array, size)
   }
 
   /**
@@ -273,33 +267,21 @@ sealed trait RTree[A] {
     * @param y2 y value of the upper right point of the given rectangle
     * @return a sequence of found values
     */
-  def searchAll(x1: Float, y1: Float, x2: Float, y2: Float): IndexedSeq[RTreeEntry[A]] = new IndexedSeq[RTreeEntry[A]] {
-    private[this] var size0: Int = _
-    private[this] var array: Array[RTreeEntry[A]] = new Array[RTreeEntry[A]](16)
-
-    RTree.this.search(x1, y1, x2, y2) { v =>
-      if (size0 + 1 >= array.length) array = java.util.Arrays.copyOf(array, size0 << 1)
-      array(size0) = v
-      size0 += 1
+  def searchAll(x1: Float, y1: Float, x2: Float, y2: Float): IndexedSeq[RTreeEntry[A]] = {
+    var size: Int = 0
+    var array: Array[RTreeEntry[A]] = new Array[RTreeEntry[A]](16)
+    search(x1, y1, x2, y2) { v =>
+      if (size + 1 >= array.length) array = java.util.Arrays.copyOf(array, size << 1)
+      array(size) = v
+      size += 1
     }
-
-    override def length: Int = size0
-
-    override def apply(idx: Int): RTreeEntry[A] =
-      if (idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
-      else array(idx)
+    new RTreeEntryIndexedSeq[A](array, size)
   }
 
   /**
     * @return a sequence of all entries
     */
-  def entries: IndexedSeq[RTreeEntry[A]] = new IndexedSeq[RTreeEntry[A]] {
-    private[this] val entries: Array[RTree[A]] = RTree.lastLevel(RTree.this)
-
-    override def length: Int = entries.length
-
-    override def apply(idx: Int): RTreeEntry[A] = entries(idx).asInstanceOf[RTreeEntry[A]]
-  }
+  def entries: IndexedSeq[RTreeEntry[A]] = new AdaptedRTreeEntryIndexedSeq[A](RTree.lastLevel(RTree.this))
 
   /**
     * Appends a prettified string representation of the r-tree.
@@ -444,24 +426,24 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
   * @param maxSize a maximum size of the heap
   * @tparam A a type of th value being put in entries
   */
-class RTreeEntryBinaryHeap[A](private[this] val maxDist: Float, private[this] val maxSize: Int) {
-  private[this] var size0 = 0
-  private[this] var distances = new Array[Float](8)
-  private[this] var entries = new Array[RTreeEntry[A]](8)
+class RTreeEntryBinaryHeap[A](maxDist: Float, maxSize: Int) {
+  private[this] var size = 0
+  private[this] var distances = new Array[Float](16)
+  private[this] var entries = new Array[RTreeEntry[A]](16)
 
   def put(d: Float, e: RTreeEntry[A]): Float = {
     var distances = this.distances
     var entries = this.entries
-    if (size0 < maxSize) {
-      size0 += 1
-      if (size0 >= distances.length) {
+    if (size < maxSize) {
+      size += 1
+      if (size >= distances.length) {
         val newSize = Math.min(distances.length << 1, maxSize + 1)
         distances = java.util.Arrays.copyOf(distances, newSize)
         entries = java.util.Arrays.copyOf(entries, newSize)
         this.distances = distances
         this.entries = entries
       }
-      var i = size0
+      var i = size
       var j = i >> 1
       while (j > 0 && d >= distances(j)) {
         distances(i) = distances(j)
@@ -471,19 +453,19 @@ class RTreeEntryBinaryHeap[A](private[this] val maxDist: Float, private[this] va
       }
       distances(i) = d
       entries(i) = e
-      if (size0 == maxSize) distances(1) else maxDist
-    } else if (size0 > 0 && d < distances(1)) {
+      if (size == maxSize) distances(1) else maxDist
+    } else if (size > 0 && d < distances(1)) {
       var i = 1
       var j = i << 1
       var k = j + 1
-      if (k <= size0 && distances(k) >= distances(j)) j = k
-      while (j <= size0 && distances(j) >= d) {
+      if (k <= size && distances(k) >= distances(j)) j = k
+      while (j <= size && distances(j) >= d) {
         distances(i) = distances(j)
         entries(i) = entries(j)
         i = j
         j = i << 1
         k = j + 1
-        if (k <= size0 && distances(k) >= distances(j)) j = k
+        if (k <= size && distances(k) >= distances(j)) j = k
       }
       distances(i) = d
       entries(i) = e
@@ -491,16 +473,31 @@ class RTreeEntryBinaryHeap[A](private[this] val maxDist: Float, private[this] va
     } else maxDist
   }
 
-  def toIndexedSeq: IndexedSeq[RTreeEntry[A]] = new IndexedSeq[RTreeEntry[A]] {
-    private[this] val size0 = RTreeEntryBinaryHeap.this.size0
-    private[this] val array = RTreeEntryBinaryHeap.this.entries
+  def toIndexedSeq: IndexedSeq[RTreeEntry[A]] = new ShiftedRTreeEntryIndexedSeq(entries, size)
+}
 
-    override def length: Int = size0
+private class RTreeEntryIndexedSeq[A](array: Array[RTreeEntry[A]], size0: Int) extends IndexedSeq[RTreeEntry[A]] {
+  override def length: Int = size0
 
-    override def apply(idx: Int): RTreeEntry[A] =
-      if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
-      else array(idx + 1)
-  }
+  override def apply(idx: Int): RTreeEntry[A] =
+    if (idx < 0 || idx >= size0) throw new ArrayIndexOutOfBoundsException(idx.toString)
+    else array(idx)
+}
+
+private class AdaptedRTreeEntryIndexedSeq[A](array: Array[RTree[A]]) extends IndexedSeq[RTreeEntry[A]] {
+  override def length: Int = array.length
+
+  override def apply(idx: Int): RTreeEntry[A] =
+    if (idx < 0 || idx >= array.length) throw new ArrayIndexOutOfBoundsException(idx.toString)
+    else array(idx).asInstanceOf[RTreeEntry[A]]
+}
+
+private class ShiftedRTreeEntryIndexedSeq[A](array: Array[RTreeEntry[A]], size0: Int) extends IndexedSeq[RTreeEntry[A]] {
+  override def length: Int = size0
+
+  override def apply(idx: Int): RTreeEntry[A] =
+    if (idx < 0 || idx >= size0) throw new ArrayIndexOutOfBoundsException(idx.toString)
+    else array(idx + 1)
 }
 
 private class DejaVuCounter {

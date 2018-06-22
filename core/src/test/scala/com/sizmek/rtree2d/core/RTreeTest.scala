@@ -26,6 +26,8 @@ class RTreeTest extends FunSuite {
 
   test("RTreeNil.entries") {
     assert(RTree[Int](Nil).entries === Seq())
+    assert(intercept[ArrayIndexOutOfBoundsException](RTree[Int](Nil).entries(-1)).getMessage === "-1")
+    assert(intercept[ArrayIndexOutOfBoundsException](RTree[Int](Nil).entries(0)).getMessage === "0")
   }
 
   test("RTreeNil.nearestOne") {
@@ -34,14 +36,20 @@ class RTreeTest extends FunSuite {
 
   test("RTreeNil.nearestK") {
     assert(RTree[Int](Nil).nearestK(0, 0, k = 3) === Seq())
+    assert(intercept[ArrayIndexOutOfBoundsException](RTree[Int](Nil).nearestK(0, 0, k = 3).apply(-1)).getMessage === "-1")
+    assert(intercept[ArrayIndexOutOfBoundsException](RTree[Int](Nil).nearestK(0, 0, k = 3).apply(0)).getMessage === "0")
   }
 
   test("RTreeNil.searchAll by point") {
     assert(RTree[Int](Nil).searchAll(0, 0) === Seq())
+    assert(intercept[ArrayIndexOutOfBoundsException](RTree[Int](Nil).searchAll(0, 0).apply(-1)).getMessage === "-1")
+    assert(intercept[ArrayIndexOutOfBoundsException](RTree[Int](Nil).searchAll(0, 0).apply(0)).getMessage === "0")
   }
 
   test("RTreeNil.searchAll by rectangle") {
     assert(RTree[Int](Nil).searchAll(0, 0, 0, 0) === Seq())
+    assert(intercept[ArrayIndexOutOfBoundsException](RTree[Int](Nil).searchAll(0, 0, 0, 0).apply(-1)).getMessage === "-1")
+    assert(intercept[ArrayIndexOutOfBoundsException](RTree[Int](Nil).searchAll(0, 0, 0, 0).apply(0)).getMessage === "0")
   }
 
   test("RTreeNil.equals") {
@@ -59,6 +67,8 @@ class RTreeTest extends FunSuite {
 
   test("RTreeEntry.entries") {
     assert(entry(1, 2, 1, 2, 5).entries === Seq(entry(1, 2, 5)))
+    assert(intercept[ArrayIndexOutOfBoundsException](entry(1, 2, 1, 2, 5).entries(-1)).getMessage === "-1")
+    assert(intercept[ArrayIndexOutOfBoundsException](entry(1, 2, 1, 2, 5).entries(1)).getMessage === "1")
   }
 
   test("RTreeEntry.nearestOne") {
@@ -72,6 +82,8 @@ class RTreeTest extends FunSuite {
     assert(entry(1, 2, 1, 2, 5).nearestK(0, 0, k = 0) === Seq())
     assert(entry(1, 2, 1, 2, 5).nearestK(0, 0, k = 3) === Seq(entry(1, 2, 1, 2, 5)))
     assert(entry(1, 2, 1, 2, 5).nearestK(1, 2, k = 3) === Seq(entry(1, 2, 1, 2, 5)))
+    assert(intercept[ArrayIndexOutOfBoundsException](entry(1, 2, 1, 2, 5).nearestK(1, 2, k = 3).apply(-1)).getMessage === "-1")
+    assert(intercept[ArrayIndexOutOfBoundsException](entry(1, 2, 1, 2, 5).nearestK(1, 2, k = 3).apply(3)).getMessage === "3")
   }
 
   test("RTreeEntry.searchAll by point") {
@@ -81,6 +93,8 @@ class RTreeTest extends FunSuite {
     assert(entry(1, 2, 3, 4, 5).searchAll(3, 4) === Seq(entry(1, 2, 3, 4, 5)))
     assert(entry(1, 2, 3, 4, 5).searchAll(3, Float.NaN) === Seq())
     assert(entry(1, 2, 3, 4, 5).searchAll(Float.NaN, 3) === Seq())
+    assert(intercept[ArrayIndexOutOfBoundsException](entry(1, 2, 3, 4, 5).searchAll(1, 2).apply(-1)).getMessage === "-1")
+    assert(intercept[ArrayIndexOutOfBoundsException](entry(1, 2, 3, 4, 5).searchAll(1, 2).apply(1)).getMessage === "1")
   }
 
   test("RTreeEntry.searchAll by rectangle") {
@@ -92,6 +106,8 @@ class RTreeTest extends FunSuite {
     assert(entry(1, 2, 3, 4, 5).searchAll(3, Float.NaN, 5, 6) === Seq())
     assert(entry(1, 2, 3, 4, 5).searchAll(3, 4, Float.NaN, 6) === Seq())
     assert(entry(1, 2, 3, 4, 5).searchAll(3, 4, 5, Float.NaN) === Seq())
+    assert(intercept[ArrayIndexOutOfBoundsException](entry(1, 2, 3, 4, 5).searchAll(0, 0, 1, 2).apply(-1)).getMessage === "-1")
+    assert(intercept[ArrayIndexOutOfBoundsException](entry(1, 2, 3, 4, 5).searchAll(0, 0, 1, 2).apply(1)).getMessage === "1")
   }
 
   test("RTreeEntry.equals") {
@@ -126,6 +142,8 @@ class RTreeTest extends FunSuite {
 
   test("RTree.entries") {
     assert(rtree.entries === entries)
+    assert(intercept[ArrayIndexOutOfBoundsException](rtree.entries(-1)).getMessage === "-1")
+    assert(intercept[ArrayIndexOutOfBoundsException](rtree.entries(entries.length)).getMessage === "101")
   }
 
   test("RTree.nearestOne") {
@@ -151,6 +169,8 @@ class RTreeTest extends FunSuite {
       entry(2.0f, 2.0f, 3.9f, 3.9f, 2),
       entry(5.0f, 5.0f, 6.9f, 6.9f, 5)
     ))
+    assert(intercept[ArrayIndexOutOfBoundsException](rtree.nearestK(0, 0, k = 7).apply(-1)).getMessage === "-1")
+    assert(intercept[ArrayIndexOutOfBoundsException](rtree.nearestK(0, 0, k = 7).apply(7)).getMessage === "7")
   }
 
   test("RTree.update") {
@@ -164,6 +184,8 @@ class RTreeTest extends FunSuite {
 
   test("RTree.searchAll by point") {
     assert(rtree.searchAll(50, 50).map(_.value) === Seq(49, 50))
+    assert(intercept[ArrayIndexOutOfBoundsException](rtree.searchAll(50, 50).apply(-1)).getMessage === "-1")
+    assert(intercept[ArrayIndexOutOfBoundsException](rtree.searchAll(50, 50).apply(2)).getMessage === "2")
   }
 
   test("RTree.search by point") {
@@ -176,6 +198,8 @@ class RTreeTest extends FunSuite {
 
   test("RTree.searchAll by rectangle") {
     assert(rtree.searchAll(50, 50, 51, 51).map(_.value) === Seq(49, 50, 51))
+    assert(intercept[ArrayIndexOutOfBoundsException](rtree.searchAll(50, 50, 51, 51).apply(-1)).getMessage === "-1")
+    assert(intercept[ArrayIndexOutOfBoundsException](rtree.searchAll(50, 50, 51, 51).apply(3)).getMessage === "3")
   }
 
   test("RTree.search by rectangle") {
