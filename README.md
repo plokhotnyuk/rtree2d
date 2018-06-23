@@ -10,18 +10,19 @@ queries.
 ## Goals
 
 Main our requirements was:
-- efficiency: we wanted the R-Tree to be able to search millions of points efficiently even in case of highly overlapped 
-entries, also, we needed to be able to quickly rebuild R-tries with a per minute rate producing minimum pressure on GC
+- efficiency: we wanted the R-Tree to be able to search throught millions of entries efficiently even in case of highly 
+overlapped entries, also, we needed to be able to quickly rebuild R-tries with a per minute rate producing minimum 
+pressure on GC
 - immutability: different threads needed to be able to work with the same R-tree without problems,
-at the same time some thread can build a new version of the R-tree reusing immutable entries from the previous version
+at the same time some thr  nead can build a new version of the R-tree reusing immutable entries from the previous version
 
 To archive these goals we have used:
 - STR packing that is a one of the most efficient packing method which produces balanced R-tree
 - a memory representation and access patterns to it which are aware of a cache hierarchy of contemporary CPUs (while it 
 is not a final version and can be improved further soon)
 - an efficient TimSort version of merge sorting from Java which minimize access to memory
-- efficient implementations of search functions with minimum of virtual calls and allocations (there are versions with 
-zero allocations)
+- efficient implementations of nearest and range search functions with minimum of virtual calls and allocations (there 
+are versions with zero allocations)
 
 ## How to use
 
@@ -57,9 +58,8 @@ val rtree = RTree(entries)
 assert(rtree.entries == entries)                                                         
 assert(rtree.nearestOption(0.0f, 0.0f) == Some(box1))                      
 assert(rtree.nearestOption(0.0f, 0.0f, maxDist = 1.0f) == None)                          
-assert(rtree.nearestOption(1.5f, 1.5f) == Some(box1))                            
 assert(rtree.nearestK(0.0f, 0.0f, k = 1) == Seq(box1))                     
-assert(rtree.nearestK(0.0f, 0.0f, k = 2) == Seq(box2, box1))  
+assert(rtree.nearestK(0.0f, 0.0f, k = 2, maxDist = 10f) == Seq(box2, box1))  
 assert(rtree.searchAll(0.0f, 0.0f) == Nil)                                               
 assert(rtree.searchAll(1.5f, 1.5f) == Seq(box1))                                         
 assert(rtree.searchAll(2.5f, 2.5f) == Seq(box2))                                         
@@ -84,9 +84,8 @@ val rtree = RTree(entries, nodeCapacity = 4/* the best capacity for nearest quer
 assert(rtree.entries == entries)
 assert(rtree.nearestOption(0.0f, 0.0f) == Some(city1))
 assert(rtree.nearestOption(50f, 20f, maxDist = 1.0f) == None)
-assert(rtree.nearestOption(50f, 20f) == Some(city1))
 assert(rtree.nearestK(50f, 20f, k = 1) == Seq(city1))
-assert(rtree.nearestK(50f, 20f, k = 2) == Seq(city2, city1))
+assert(rtree.nearestK(50f, 20f, k = 2, maxDist = 1000f) == Seq(city2, city1))
 assert(rtree.searchAll(50f, 30f, 51f, 31f) == Seq(city2))
 assert(rtree.searchAll(0f, -180f, 90f, 180f).forall(entries.contains))
 ```
@@ -97,14 +96,15 @@ with an error ±0.5 meters.
 
 Please, check out
 [Scala docs in sources](https://github.com/Sizmek/rtree2d/blob/master/core/src/main/scala/com/sizmek/rtree2d/core/RTree.scala) 
-and [tests](https://github.com/Sizmek/rtree2d/blob/master/core/src/test/scala/com/sizmek/rtree2d/core/RTreeTest.scala).
-for other functions which allows no allocations and fast exit from search requests. 
+and [tests](https://github.com/Sizmek/rtree2d/blob/master/core/src/test/scala/com/sizmek/rtree2d/core/RTreeTest.scala)
+for other functions which allows filtering or accumulating found entries without allocations. 
 
 ## How it works
 
-Charts below are latest results of benchmarks which compare RTree2D with [Archery](https://github.com/non/archery) and
-[David Monten's rtree](https://github.com/davidmoten/rtree) libraries using JDK 8 on the following environment: 
-Intel® Core™ i7-7700HQ CPU @ 2.8GHz (max 3.8GHz), RAM 16Gb DDR4-2400, Ubuntu 18.04, latest versions of Oracle JDK 8.
+Charts below are latest results of benchmarks which compare RTree2D with [Archery](https://github.com/non/archery),
+[David Monten's rtree](https://github.com/davidmoten/rtree), and [JTC](https://github.com/locationtech/jts) libraries 
+using JDK 8 on the following environment: Intel® Core™ i7-7700HQ CPU @ 2.8GHz (max 3.8GHz), RAM 16Gb DDR4-2400, 
+Ubuntu 18.04, latest versions of Oracle JDK 8.
 
 Main metric tested by benchmarks is an execution time in nanoseconds. So lesser values are better. Please, check out 
 the Run benchmarks section bellow how to test other metrics like allocations in bytes or number of some CPU events.     
@@ -174,7 +174,8 @@ It will save benchmark report in `benchmark/rtries.json` file.
 
 Results that are stored in JSON can be easy plotted in [JMH Visualizer](http://jmh.morethan.io/) by drugging & dropping
 of your file(s) to the drop zone or using the `source` or `sources` parameters with an HTTP link to your file(s) in the 
-URLs: `http://jmh.morethan.io/?source=<link to json file>` or `http://jmh.morethan.io/?sources=<link to json file1>,<link to json file2>`.
+URLs: `http://jmh.morethan.io/?source=<link to json file>` or 
+`http://jmh.morethan.io/?sources=<link to json file1>,<link to json file2>`.
 
 Also, there is an ability to run benchmarks and visualize results with a `charts` command. It adds `-rf` and `-rff` 
 options to all passes options and supply them to `jmh:run` task, then group results per benchmark and plot main score 
