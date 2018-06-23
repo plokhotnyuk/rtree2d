@@ -14,15 +14,13 @@ Main our requirements was:
 overlapped entries, also, we needed to be able to quickly rebuild R-tries with a per minute rate producing minimum 
 pressure on GC
 - immutability: different threads needed to be able to work with the same R-tree without problems,
-at the same time some thr  nead can build a new version of the R-tree reusing immutable entries from the previous version
+at the same time some thread can build a new version of the R-tree reusing immutable entries from the previous version
 
 To archive these goals we have used:
 - STR packing that is a one of the most efficient packing method which produces balanced R-tree
-- a memory representation and access patterns to it which are aware of a cache hierarchy of contemporary CPUs (while it 
-is not a final version and can be improved further soon)
-- an efficient TimSort version of merge sorting from Java which minimize access to memory
-- efficient implementations of nearest and range search functions with minimum of virtual calls and allocations (there 
-are versions with zero allocations)
+- a memory representation and access patterns to it which are aware of a cache hierarchy of contemporary CPUs
+- an efficient TimSort version of merge sorting from Java which minimize access to memory during packing 
+- efficient implementations of nearest and range search functions with minimum of virtual calls and allocations
 
 ## How to use
 
@@ -192,6 +190,7 @@ $ ls benchmark/target/scala-2.12/*.*n*
 
 benchmark/target/scala-2.12/apply.png
 benchmark/target/scala-2.12/searchByPoint.png
+benchmark/target/scala-2.12/searchByRectangle.png
 benchmark/target/scala-2.12/benchmark.json
 ``` 
 
