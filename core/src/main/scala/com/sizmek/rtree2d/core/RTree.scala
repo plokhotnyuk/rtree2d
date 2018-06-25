@@ -480,7 +480,7 @@ private class RTreeEntryIndexedSeq[A](array: Array[RTreeEntry[A]], size0: Int) e
   override def length: Int = size0
 
   override def apply(idx: Int): RTreeEntry[A] =
-    if (idx < 0 || idx >= size0) throw new ArrayIndexOutOfBoundsException(idx.toString)
+    if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
     else array(idx)
 }
 
@@ -488,7 +488,7 @@ private class AdaptedRTreeEntryIndexedSeq[A](array: Array[RTree[A]]) extends Ind
   override def length: Int = array.length
 
   override def apply(idx: Int): RTreeEntry[A] =
-    if (idx < 0 || idx >= array.length) throw new ArrayIndexOutOfBoundsException(idx.toString)
+    if (idx < 0 || idx >= array.length) throw new IndexOutOfBoundsException(idx.toString)
     else array(idx).asInstanceOf[RTreeEntry[A]]
 }
 
@@ -496,7 +496,7 @@ private class ShiftedRTreeEntryIndexedSeq[A](array: Array[RTreeEntry[A]], size0:
   override def length: Int = size0
 
   override def apply(idx: Int): RTreeEntry[A] =
-    if (idx < 0 || idx >= size0) throw new ArrayIndexOutOfBoundsException(idx.toString)
+    if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
     else array(idx + 1)
 }
 
