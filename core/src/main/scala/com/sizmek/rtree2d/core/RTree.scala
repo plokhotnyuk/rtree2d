@@ -1,6 +1,6 @@
 package com.sizmek.rtree2d.core
 
-import java.lang.Float.{intBitsToFloat, floatToRawIntBits}
+import java.lang.Float.{floatToRawIntBits, intBitsToFloat}
 import java.lang.Math._
 import java.util
 import java.util.Comparator
@@ -201,7 +201,7 @@ sealed trait RTree[A] {
   def nearestK(x: Float, y: Float, k: Int, maxDist: Float = Float.PositiveInfinity)
               (implicit distCalc: DistanceCalculator): IndexedSeq[RTreeEntry[A]] =
     if (k <= 0) Vector.empty
-    else new RTreeEntryBinaryHeap[A](maxDist, k) {
+    else new FixedBinaryHeap[RTreeEntry[A]](maxDist, k) {
       nearest(x, y, maxDist)((d, e) => put(d, e))
     }.toIndexedSeq
 
@@ -255,7 +255,7 @@ sealed trait RTree[A] {
       array(size) = v
       size += 1
     }
-    new RTreeEntryIndexedSeq[A](array, size)
+    new FixedIndexedSeq[RTreeEntry[A]](array, size)
   }
 
   /**
@@ -275,13 +275,13 @@ sealed trait RTree[A] {
       array(size) = v
       size += 1
     }
-    new RTreeEntryIndexedSeq[A](array, size)
+    new FixedIndexedSeq[RTreeEntry[A]](array, size)
   }
 
   /**
     * @return a sequence of all entries
     */
-  def entries: IndexedSeq[RTreeEntry[A]] = new AdaptedRTreeEntryIndexedSeq[A](RTree.lastLevel(RTree.this))
+  def entries: IndexedSeq[RTreeEntry[A]] = new AdaptedIndexedSeq[RTree[A], RTreeEntry[A]](RTree.lastLevel(RTree.this))
 
   /**
     * Appends a prettified string representation of the r-tree.
@@ -426,12 +426,12 @@ private final case class RTreeNode[A](minX: Float, minY: Float, maxX: Float, max
   * @param maxSize a maximum size of the heap
   * @tparam A a type of th value being put in entries
   */
-class RTreeEntryBinaryHeap[A](maxDist: Float, maxSize: Int) {
+class FixedBinaryHeap[A <: AnyRef](maxDist: Float, maxSize: Int) {
   private[this] var size = 0
   private[this] var distances = new Array[Float](16)
-  private[this] var entries = new Array[RTreeEntry[A]](16)
+  private[this] var entries = new Array[AnyRef](16)
 
-  def put(d: Float, e: RTreeEntry[A]): Float = {
+  def put(d: Float, e: A): Float = {
     var distances = this.distances
     var entries = this.entries
     if (size < maxSize) {
@@ -473,31 +473,31 @@ class RTreeEntryBinaryHeap[A](maxDist: Float, maxSize: Int) {
     } else maxDist
   }
 
-  def toIndexedSeq: IndexedSeq[RTreeEntry[A]] = new ShiftedRTreeEntryIndexedSeq(entries, size)
+  def toIndexedSeq: IndexedSeq[A] = new AdaptedShiftedIndexedSeq[AnyRef, A](entries, size)
 }
 
-private class RTreeEntryIndexedSeq[A](array: Array[RTreeEntry[A]], size0: Int) extends IndexedSeq[RTreeEntry[A]] {
+private class FixedIndexedSeq[A](array: Array[A], size0: Int) extends IndexedSeq[A] {
   override def length: Int = size0
 
-  override def apply(idx: Int): RTreeEntry[A] =
+  override def apply(idx: Int): A =
     if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
     else array(idx)
 }
 
-private class AdaptedRTreeEntryIndexedSeq[A](array: Array[RTree[A]]) extends IndexedSeq[RTreeEntry[A]] {
+private class AdaptedIndexedSeq[A, B <: A](array: Array[A]) extends IndexedSeq[B] {
   override def length: Int = array.length
 
-  override def apply(idx: Int): RTreeEntry[A] =
+  override def apply(idx: Int): B =
     if (idx < 0 || idx >= array.length) throw new IndexOutOfBoundsException(idx.toString)
-    else array(idx).asInstanceOf[RTreeEntry[A]]
+    else array(idx).asInstanceOf[B]
 }
 
-private class ShiftedRTreeEntryIndexedSeq[A](array: Array[RTreeEntry[A]], size0: Int) extends IndexedSeq[RTreeEntry[A]] {
+private class AdaptedShiftedIndexedSeq[A, B <: A](array: Array[A], size0: Int) extends IndexedSeq[B] {
   override def length: Int = size0
 
-  override def apply(idx: Int): RTreeEntry[A] =
+  override def apply(idx: Int): B =
     if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
-    else array(idx + 1)
+    else array(idx + 1).asInstanceOf[B]
 }
 
 private class DejaVuCounter {

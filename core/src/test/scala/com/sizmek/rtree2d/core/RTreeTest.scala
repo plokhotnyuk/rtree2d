@@ -235,20 +235,20 @@ class RTreeTest extends FunSuite {
   }
 
   test("RTreeEntryBinaryHeap.put") {
-    var heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, 1)
+    var heap = new FixedBinaryHeap[RTreeEntry[Int]](Float.PositiveInfinity, 1)
     assert(heap.put(2, entry(0, 0, 2)) == 2)
     assert(heap.put(1, entry(0, 0, 1)) == 1)
-    heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, 2)
+    heap = new FixedBinaryHeap[RTreeEntry[Int]](Float.PositiveInfinity, 2)
     assert(heap.put(2, entry(0, 0, 2)) == Float.PositiveInfinity)
     assert(heap.put(1, entry(0, 0, 1)) == 2)
-    heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, 2)
+    heap = new FixedBinaryHeap[RTreeEntry[Int]](Float.PositiveInfinity, 2)
     assert(heap.put(3, entry(0, 0, 3)) == Float.PositiveInfinity)
     assert(heap.put(2, entry(0, 0, 2)) == 3)
     assert(heap.put(1, entry(0, 0, 1)) == 2)
   }
 
   test("RTreeEntryBinaryHeap.toIndexedSeq") {
-    val heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, 7)
+    val heap = new FixedBinaryHeap[RTreeEntry[Int]](Float.PositiveInfinity, 7)
     heap.put(1, entry(1, 1, 1))
     heap.put(8, entry(8, 8, 8))
     heap.put(2, entry(2, 2, 2))

@@ -178,7 +178,7 @@ class RTreeCheckers extends WordSpec with Checkers {
         forAll(distanceEntryListGen, positiveFloatGen, positiveIntGen) {
           (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxDist: Float, maxSize: Int) =>
             propBoolean(distanceEntryPairs.size < maxSize && distanceEntryPairs.forall { case (d, e) => d < maxDist }) ==> {
-              val heap = new RTreeEntryBinaryHeap[Int](maxDist, maxSize)
+              val heap = new FixedBinaryHeap[RTreeEntry[Int]](maxDist, maxSize)
               distanceEntryPairs.forall { case (d, e) => heap.put(d, e) == maxDist }
             }
         }
@@ -187,7 +187,7 @@ class RTreeCheckers extends WordSpec with Checkers {
         forAll(distanceEntryListGen, positiveFloatGen, positiveIntGen) {
           (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxDist: Float, maxSize: Int) =>
             propBoolean(distanceEntryPairs.size <= maxSize) ==> {
-              val heap = new RTreeEntryBinaryHeap[Int](maxDist, maxSize)
+              val heap = new FixedBinaryHeap[RTreeEntry[Int]](maxDist, maxSize)
               distanceEntryPairs.foreach { case (d, e) => heap.put(d, e) }
               heap.toIndexedSeq.toSet === distanceEntryPairs.map(_._2).toSet
             }
@@ -200,7 +200,7 @@ class RTreeCheckers extends WordSpec with Checkers {
           (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxSize: Int) =>
             val size = distanceEntryPairs.size
             propBoolean(size > maxSize && size == distanceEntryPairs.map(_._1).distinct.size) ==> {
-              val heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, maxSize)
+              val heap = new FixedBinaryHeap[RTreeEntry[Int]](Float.PositiveInfinity, maxSize)
               distanceEntryPairs.foreach { case (d, e) => heap.put(d, e) }
               heap.toIndexedSeq.toSet === distanceEntryPairs.sortBy(_._1).take(maxSize).map(_._2).toSet
             }
