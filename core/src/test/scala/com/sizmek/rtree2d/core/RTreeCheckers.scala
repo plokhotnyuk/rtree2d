@@ -153,20 +153,20 @@ class RTreeCheckers extends WordSpec with Checkers {
       "receive value of all matched entries" in check {
         forAll(entryListGen, floatGen, floatGen, positiveFloatGen, positiveFloatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, w: Float, h: Float) =>
-            val (x1, y1, x2, y2) = (x, y, x + w, y + h)
-            val expected = intersects(entries, x1, y1, x2, y2).sorted
+            val (minX, minY, maxX, maxY) = (x, y, x + w, y + h)
+            val expected = intersects(entries, minX, minY, maxX, maxY).sorted
             propBoolean(expected.nonEmpty) ==> {
-              RTree(entries).searchAll(x1, y1, x2, y2).sorted === expected
+              RTree(entries).searchAll(minX, minY, maxX, maxY).sorted === expected
             }
         }
       }
       "don't receive any value if no matches" in check {
         forAll(entryListGen, floatGen, floatGen, positiveFloatGen, positiveFloatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, w: Float, h: Float) =>
-            val (x1, y1, x2, y2) = (x, y, x + w, y + h)
-            val expected = intersects(entries, x1, y1, x2, y2)
+            val (minX, minY, maxX, maxY) = (x, y, x + w, y + h)
+            val expected = intersects(entries, minX, minY, maxX, maxY)
             propBoolean(expected.isEmpty) ==> {
-              RTree(entries).searchAll(x1, y1, x2, y2).isEmpty
+              RTree(entries).searchAll(minX, minY, maxX, maxY).isEmpty
             }
         }
       }

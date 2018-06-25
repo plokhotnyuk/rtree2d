@@ -29,8 +29,8 @@ class GeometryCheckers extends WordSpec with Checkers {
       "return 0 if the point is inside it" in check {
         forAll(latLonEntryGen, Gen.choose[Float](0, 1), Gen.choose[Float](0, 1)) {
           (t: RTreeEntry[Int], rdx: Float, rdy: Float) =>
-            val lat = t.x1 + rdx * (t.x2 - t.x1)
-            val lon = t.y1 + rdy * (t.y2 - t.y1)
+            val lat = t.minX + rdx * (t.maxX - t.minX)
+            val lon = t.minY + rdy * (t.maxY - t.minY)
             propBoolean(intersects(t, lat, lon)) ==> {
               SphericalEarth.distanceCalculator.distance(lat, lon, t) === 0.0f +- 0.1f
             }
@@ -41,12 +41,12 @@ class GeometryCheckers extends WordSpec with Checkers {
           (t: RTreeEntry[Int], lat: Float, lon: Float) =>
             propBoolean(!intersects(t, lat, lon) && alignedVertically(t, lat, lon)) ==> {
               val distancesForCorners = IndexedSeq(
-                greatCircleDistance(lat, lon, t.x1, lon),
-                greatCircleDistance(lat, lon, t.x2, lon),
-                greatCircleDistance(lat, lon, t.x1, t.y1),
-                greatCircleDistance(lat, lon, t.x1, t.y2),
-                greatCircleDistance(lat, lon, t.x2, t.y1),
-                greatCircleDistance(lat, lon, t.x2, t.y2)
+                greatCircleDistance(lat, lon, t.minX, lon),
+                greatCircleDistance(lat, lon, t.maxX, lon),
+                greatCircleDistance(lat, lon, t.minX, t.minY),
+                greatCircleDistance(lat, lon, t.minX, t.maxY),
+                greatCircleDistance(lat, lon, t.maxX, t.minY),
+                greatCircleDistance(lat, lon, t.maxX, t.maxY)
               )
               val expected = distancesForCorners.min
               val result = SphericalEarth.distanceCalculator.distance(lat, lon, t)
@@ -59,12 +59,12 @@ class GeometryCheckers extends WordSpec with Checkers {
           (t: RTreeEntry[Int], lat: Float, lon: Float) =>
             propBoolean(!intersects(t, lat, lon) && alignedHorizontally(t, lat, lon)) ==> {
               val distancesForCorners = IndexedSeq(
-                greatCircleDistance(lat, lon, lat, t.y1),
-                greatCircleDistance(lat, lon, lat, t.y2),
-                greatCircleDistance(lat, lon, t.x1, t.y1),
-                greatCircleDistance(lat, lon, t.x1, t.y2),
-                greatCircleDistance(lat, lon, t.x2, t.y1),
-                greatCircleDistance(lat, lon, t.x2, t.y2)
+                greatCircleDistance(lat, lon, lat, t.minY),
+                greatCircleDistance(lat, lon, lat, t.maxY),
+                greatCircleDistance(lat, lon, t.minX, t.minY),
+                greatCircleDistance(lat, lon, t.minX, t.maxY),
+                greatCircleDistance(lat, lon, t.maxX, t.minY),
+                greatCircleDistance(lat, lon, t.maxX, t.maxY)
               )
               val expected = distancesForCorners.min
               val result = SphericalEarth.distanceCalculator.distance(lat, lon, t)
@@ -77,10 +77,10 @@ class GeometryCheckers extends WordSpec with Checkers {
           (t: RTreeEntry[Int], lat: Float, lon: Float) =>
             propBoolean(!intersects(t, lat, lon) && !alignedHorizontally(t, lat, lon) && !alignedVertically(t, lat, lon)) ==> {
               val distancesForCorners = IndexedSeq(
-                greatCircleDistance(lat, lon, t.x1, t.y1),
-                greatCircleDistance(lat, lon, t.x1, t.y2),
-                greatCircleDistance(lat, lon, t.x2, t.y1),
-                greatCircleDistance(lat, lon, t.x2, t.y2)
+                greatCircleDistance(lat, lon, t.minX, t.minY),
+                greatCircleDistance(lat, lon, t.minX, t.maxY),
+                greatCircleDistance(lat, lon, t.maxX, t.minY),
+                greatCircleDistance(lat, lon, t.maxX, t.maxY)
               )
               val expected = distancesForCorners.min
               val result = SphericalEarth.distanceCalculator.distance(lat, lon, t)

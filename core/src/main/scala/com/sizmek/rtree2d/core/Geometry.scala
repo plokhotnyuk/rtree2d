@@ -27,8 +27,8 @@ object EuclideanPlane {
     */
   implicit val distanceCalculator: DistanceCalculator = new DistanceCalculator {
     override def distance[A](x: Float, y: Float, t: RTree[A]): Float = {
-      val dy = if (y < t.y1) t.y1 - y else if (y < t.y2) 0 else y - t.y2
-      val dx = if (x < t.x1) t.x1 - x else if (x < t.x2) 0 else x - t.x2
+      val dy = if (y < t.minY) t.minY - y else if (y < t.maxY) 0 else y - t.maxY
+      val dx = if (x < t.minX) t.minX - x else if (x < t.maxX) 0 else x - t.maxX
       if (dy == 0) dx
       else if (dx == 0) dy
       else sqrt(dx * dx + dy * dy).toFloat
@@ -38,18 +38,18 @@ object EuclideanPlane {
   /**
     * Create an entry for a rectangle and a value.
     *
-    * @param x1 x coordinate of the left bottom corner
-    * @param y1 y coordinate of the left bottom corner
-    * @param x2 x coordinate of the right top corner
-    * @param y2 y coordinate of the right top corner
+    * @param minX x coordinate of the left bottom corner
+    * @param minY y coordinate of the left bottom corner
+    * @param maxX x coordinate of the right top corner
+    * @param maxY y coordinate of the right top corner
     * @param value a value to store in the r-tree
     * @tparam A a type of th value being put in the tree
     * @return a newly created entry
     */
-  def entry[A](x1: Float, y1: Float, x2: Float, y2: Float, value: A): RTreeEntry[A] = {
-    if (!(x2 >= x1)) throw new IllegalArgumentException("x2 should be greater than x1 and any of them should not be NaN")
-    if (!(y2 >= y1)) throw new IllegalArgumentException("y2 should be greater than y1 and any of them should not be NaN")
-    new RTreeEntry[A](x1, y1, x2, y2, value)
+  def entry[A](minX: Float, minY: Float, maxX: Float, maxY: Float, value: A): RTreeEntry[A] = {
+    if (!(maxX >= minX)) throw new IllegalArgumentException("maxX should be greater than minX and any of them should not be NaN")
+    if (!(maxY >= minY)) throw new IllegalArgumentException("maxY should be greater than minY and any of them should not be NaN")
+    new RTreeEntry[A](minX, minY, maxX, maxY, value)
   }
   /**
     * Create an entry for a point and a value.
@@ -136,10 +136,10 @@ trait Spherical {
     private[this] val circumference = radius * radPerDegree
 
     override def distance[A](lat: Float, lon: Float, t: RTree[A]): Float = {
-      val minLon = t.y1
-      val maxLon = t.y2
-      val minLat = t.x1
-      val maxLat = t.x2
+      val minLon = t.minY
+      val maxLon = t.maxY
+      val minLat = t.minX
+      val maxLat = t.maxX
       if (lon >= minLon && lon <= maxLon) {
         if (lat < minLat) ((minLat - lat) * circumference).toFloat
         else if (lat > maxLat) ((lat - maxLat) * circumference).toFloat

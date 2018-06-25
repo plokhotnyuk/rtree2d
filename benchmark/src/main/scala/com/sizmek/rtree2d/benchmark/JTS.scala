@@ -95,9 +95,9 @@ class STRtreeWrapper(nodeCapacity: Int, es: Seq[(Envelope, PointOfInterest)]) ex
     res
   }
 
-  def search(x1: Float, y1: Float, x2: Float, y2: Float): Seq[(Envelope, PointOfInterest)] = {
+  def search(minX: Float, minY: Float, maxX: Float, maxY: Float): Seq[(Envelope, PointOfInterest)] = {
     val res = new ArrayBuffer[(Envelope, PointOfInterest)]
-    query(new Envelope(x1, x2, y1, y2), new ItemVisitor {
+    query(new Envelope(minX, maxX, minY, maxY), new ItemVisitor {
       override def visitItem(item: scala.Any): Unit = res += item.asInstanceOf[(Envelope, PointOfInterest)]
     })
     res

@@ -111,28 +111,28 @@ object RTree {
     var i = from + 1
     if (i == to) t
     else {
-      var y1 = t.y1
-      var y2 = t.y2
-      var x1 = t.x1
-      var x2 = t.x2
+      var minY = t.minY
+      var maxY = t.maxY
+      var minX = t.minX
+      var maxX = t.maxX
       do {
         t = level(i)
-        if (y1 > t.y1) y1 = t.y1
-        if (y2 < t.y2) y2 = t.y2
-        if (x1 > t.x1) x1 = t.x1
-        if (x2 < t.x2) x2 = t.x2
+        if (minY > t.minY) minY = t.minY
+        if (maxY < t.maxY) maxY = t.maxY
+        if (minX > t.minX) minX = t.minX
+        if (maxX < t.maxX) maxX = t.maxX
         i += 1
       } while (i < to)
-      new RTreeNode(x1, y1, x2, y2, level, from, to)
+      new RTreeNode(minX, minY, maxX, maxY, level, from, to)
     }
   }
 
   private[this] def xComparator[A]: Comparator[RTree[A]] = new Comparator[RTree[A]] {
-    override def compare(t1: RTree[A], t2: RTree[A]): Int = floatToRawIntBits((t1.x1 + t1.x2) - (t2.x1 + t2.x2))
+    override def compare(t1: RTree[A], t2: RTree[A]): Int = floatToRawIntBits((t1.minX + t1.maxX) - (t2.minX + t2.maxX))
   }
 
   private[this] def yComparator[A]: Comparator[RTree[A]] = new Comparator[RTree[A]] {
-    override def compare(t1: RTree[A], t2: RTree[A]): Int = floatToRawIntBits((t1.y1 + t1.y2) - (t2.y1 + t2.y2))
+    override def compare(t1: RTree[A], t2: RTree[A]): Int = floatToRawIntBits((t1.minY + t1.maxY) - (t2.minY + t2.maxY))
   }
 }
 
@@ -145,22 +145,22 @@ sealed trait RTree[A] {
   /**
     * @return x value of the lower left point of the MBR
     */
-  def x1: Float
+  def minX: Float
 
   /**
     * @return y value of the lower left point of the MBR
     */
-  def y1: Float
+  def minY: Float
 
   /**
     * @return x value of the upper right point of the MBR
     */
-  def x2: Float
+  def maxX: Float
 
   /**
     * @return y value of the upper right point of the MBR
     */
-  def y2: Float
+  def maxY: Float
 
   def isEmpty: Boolean
 
@@ -232,13 +232,13 @@ sealed trait RTree[A] {
   /**
     * Call the provided `f` function with entries whose MBR intersects with the given point.
     *
-    * @param x1 x value of the lower left point of the given rectangle
-    * @param y1 y value of the lower left point of the given rectangle
-    * @param x2 x value of the upper right point of the given rectangle
-    * @param y2 y value of the upper right point of the given rectangle
+    * @param minX x value of the lower left point of the given rectangle
+    * @param minY y value of the lower left point of the given rectangle
+    * @param maxX x value of the upper right point of the given rectangle
+    * @param maxY y value of the upper right point of the given rectangle
     * @param f the function that receives found values
     */
-  def search(x1: Float, y1: Float, x2: Float, y2: Float)(f: RTreeEntry[A] => Unit): Unit
+  def search(minX: Float, minY: Float, maxX: Float, maxY: Float)(f: RTreeEntry[A] => Unit): Unit
 
   /**
     * Returns a sequence of all entries in the R-tree whose MBR contains the given point.
@@ -261,16 +261,16 @@ sealed trait RTree[A] {
   /**
     * Returns a sequence of all entries in the R-tree whose MBR intersects the given rectangle.
     *
-    * @param x1 x value of the lower left point of the given rectangle
-    * @param y1 y value of the lower left point of the given rectangle
-    * @param x2 x value of the upper right point of the given rectangle
-    * @param y2 y value of the upper right point of the given rectangle
+    * @param minX x value of the lower left point of the given rectangle
+    * @param minY y value of the lower left point of the given rectangle
+    * @param maxX x value of the upper right point of the given rectangle
+    * @param maxY y value of the upper right point of the given rectangle
     * @return a sequence of found values
     */
-  def searchAll(x1: Float, y1: Float, x2: Float, y2: Float): IndexedSeq[RTreeEntry[A]] = {
+  def searchAll(minX: Float, minY: Float, maxX: Float, maxY: Float): IndexedSeq[RTreeEntry[A]] = {
     var size: Int = 0
     var array: Array[RTreeEntry[A]] = new Array[RTreeEntry[A]](16)
-    search(x1, y1, x2, y2) { v =>
+    search(minX, minY, maxX, maxY) { v =>
       if (size + 1 >= array.length) array = java.util.Arrays.copyOf(array, size << 1)
       array(size) = v
       size += 1
@@ -299,13 +299,13 @@ sealed trait RTree[A] {
 }
 
 private final case class RTreeNil[A]() extends RTree[A] {
-  def x1: Float = throw new UnsupportedOperationException("RTreeNil.x1")
+  def minX: Float = throw new UnsupportedOperationException("RTreeNil.minX")
 
-  def y1: Float = throw new UnsupportedOperationException("RTreeNil.y1")
+  def minY: Float = throw new UnsupportedOperationException("RTreeNil.minY")
 
-  def x2: Float = throw new UnsupportedOperationException("RTreeNil.x2")
+  def maxX: Float = throw new UnsupportedOperationException("RTreeNil.maxX")
 
-  def y2: Float = throw new UnsupportedOperationException("RTreeNil.y2")
+  def maxY: Float = throw new UnsupportedOperationException("RTreeNil.maxY")
 
   def isEmpty: Boolean = true
 
@@ -314,7 +314,7 @@ private final case class RTreeNil[A]() extends RTree[A] {
 
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Unit): Unit = ()
 
-  def search(x1: Float, y1: Float, x2: Float, y2: Float)(f: RTreeEntry[A] => Unit): Unit = ()
+  def search(minX: Float, minY: Float, maxX: Float, maxY: Float)(f: RTreeEntry[A] => Unit): Unit = ()
 
   def pretty(sb: java.lang.StringBuilder, indent: Int): java.lang.StringBuilder =
     RTree.appendSpaces(sb, indent).append("RTreeNil()\n")
@@ -323,14 +323,14 @@ private final case class RTreeNil[A]() extends RTree[A] {
 /**
   * Create an entry for a rectangle and a value.
   *
-  * @param x1 x value of the lower left point of the given rectangle
-  * @param y1 y value of the lower left point of the given rectangle
-  * @param x2 x value of the upper right point of the given rectangle
-  * @param y2 y value of the upper right point of the given rectangle
+  * @param minX x value of the lower left point of the given rectangle
+  * @param minY y value of the lower left point of the given rectangle
+  * @param maxX x value of the upper right point of the given rectangle
+  * @param maxY y value of the upper right point of the given rectangle
   * @param value a value to store in the r-tree
   * @tparam A a type of th value being put in the tree
   */
-final case class RTreeEntry[A] private[core] (x1: Float, y1: Float, x2: Float, y2: Float, value: A) extends RTree[A] {
+final case class RTreeEntry[A] private[core] (minX: Float, minY: Float, maxX: Float, maxY: Float, value: A) extends RTree[A] {
   def isEmpty: Boolean = false
 
   def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
@@ -341,17 +341,17 @@ final case class RTreeEntry[A] private[core] (x1: Float, y1: Float, x2: Float, y
   }
 
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Unit): Unit =
-    if (this.y1 <= y && y <= this.y2 && this.x1 <= x && x <= this.x2) f(this)
+    if (this.minY <= y && y <= this.maxY && this.minX <= x && x <= this.maxX) f(this)
 
-  def search(x1: Float, y1: Float, x2: Float, y2: Float)(f: RTreeEntry[A] => Unit): Unit =
-    if (this.y1 <= y2 && y1 <= this.y2 && this.x1 <= x2 && x1 <= this.x2) f(this)
+  def search(minX: Float, minY: Float, maxX: Float, maxY: Float)(f: RTreeEntry[A] => Unit): Unit =
+    if (this.minY <= maxY && minY <= this.maxY && this.minX <= maxX && minX <= this.maxX) f(this)
 
   def pretty(sb: java.lang.StringBuilder, indent: Int): java.lang.StringBuilder =
-    RTree.appendSpaces(sb, indent).append("RTreeEntry(").append(x1).append(',').append(y1).append(',')
-      .append(x2).append(',').append(y2).append(',').append(value).append(")\n")
+    RTree.appendSpaces(sb, indent).append("RTreeEntry(").append(minX).append(',').append(minY).append(',')
+      .append(maxX).append(',').append(maxY).append(',').append(value).append(")\n")
 }
 
-private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float,
+private final case class RTreeNode[A](minX: Float, minY: Float, maxX: Float, maxY: Float,
                                       level: Array[RTree[A]], from: Int, to: Int) extends RTree[A] {
   def isEmpty: Boolean = false
 
@@ -386,7 +386,7 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
   }
 
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Unit): Unit =
-    if (this.y1 <= y && y <= this.y2 && this.x1 <= x && x <= this.x2) {
+    if (this.minY <= y && y <= this.maxY && this.minX <= x && x <= this.maxX) {
       var i = from
       while (i < to) {
         level(i).search(x, y)(f)
@@ -394,18 +394,18 @@ private final case class RTreeNode[A](x1: Float, y1: Float, x2: Float, y2: Float
       }
     }
 
-  def search(x1: Float, y1: Float, x2: Float, y2: Float)(f: RTreeEntry[A] => Unit): Unit =
-    if (this.y1 <= y2 && y1 <= this.y2 && this.x1 <= x2 && x1 <= this.x2) {
+  def search(minX: Float, minY: Float, maxX: Float, maxY: Float)(f: RTreeEntry[A] => Unit): Unit =
+    if (this.minY <= maxY && minY <= this.maxY && this.minX <= maxX && minX <= this.maxX) {
       var i = from
       while (i < to) {
-        level(i).search(x1, y1, x2, y2)(f)
+        level(i).search(minX, minY, maxX, maxY)(f)
         i += 1
       }
     }
 
   def pretty(sb: java.lang.StringBuilder, indent: Int): java.lang.StringBuilder = {
-    RTree.appendSpaces(sb, indent).append("RTreeNode(").append(x1).append(',').append(y1).append(',')
-      .append(x2).append(',').append(y2).append(")\n")
+    RTree.appendSpaces(sb, indent).append("RTreeNode(").append(minX).append(',').append(minY).append(',')
+      .append(maxX).append(',').append(maxY).append(")\n")
     var i = from
     while (i < to) {
       level(i).pretty(sb, indent + 2)
