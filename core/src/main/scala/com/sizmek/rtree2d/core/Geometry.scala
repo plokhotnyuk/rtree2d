@@ -146,8 +146,8 @@ trait Spherical {
         else 0
       } else (acos {
         val radLat = lat * radPerDegree
-        val sinLat = sin(radLat) // TODO: refactor it to be the parameter of the distance method
-        val cosLat = cos(radLat) // TODO: refactor it to be the parameter of the distance method
+        val sinLat = sin(radLat) // TODO: refactor it to be a parameter of the distance method
+        val cosLat = cos(radLat) // TODO: refactor it to be a parameter of the distance method
         if (minLon == maxLon && minLat == maxLat) {
           normalizedDistanceCos(minLat, cosLat, sinLat, cos((minLon - lon) * radPerDegree))
         } else {
@@ -167,7 +167,7 @@ trait Spherical {
     private[this] def normalize(lonDelta: Float): Float = if (lonDelta < 0) lonDelta + 360 else lonDelta
 
     private[this] def normalizedDistanceCos(lat: Double, cosLat: Double, sinLat: Double, cosLonDelta: Double): Double = {
-      val radLat = lat * radPerDegree
+      val radLat = lat * radPerDegree // TODO: refactor it to be a property of the entry
       min(sinLat * sin(radLat) + cosLat * cos(radLat) * cosLonDelta, 1)
     }
   }
@@ -202,7 +202,7 @@ object SphericalEarth extends Spherical {
     * @param lat a latitude coordinate of the given center point
     * @param lon a latitude coordinate of the given center point
     * @param distance a distance, from the center point to borders of the circular area on the Earth surface (in km),
-    *                 if the value of distance is greated than half of circumference of the Earth then a whole sphere
+    *                 if the value of distance is greater than a half of circumference of the Earth then a whole sphere
     *                 will be bounded
     * @param value a value to store in the r-tree
     * @tparam A a type of th value being put in the tree
