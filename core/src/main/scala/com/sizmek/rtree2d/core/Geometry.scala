@@ -195,7 +195,7 @@ object SphericalEarth extends Spherical {
     *
     * Sequence of entries required for case when the circle is crossed by the anti-meridian because the RTree which
     * use bounding box form longitudes and latitudes for geo-indexing doesn't support wrapping of geo-coordinates over
-    * the Earth, so we split that entries on two by the date change meridian.
+    * the Earth, so we split that entries on two by the anti-meridian.
     *
     * Used formula with description is here: http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates#Longitude
     *
