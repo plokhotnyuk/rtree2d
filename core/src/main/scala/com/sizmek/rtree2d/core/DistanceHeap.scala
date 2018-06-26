@@ -7,7 +7,7 @@ package com.sizmek.rtree2d.core
   * @param maxSize a maximum size of the heap
   * @tparam A a type of th value being put in entries
   */
-class FixedBinaryHeap[A <: AnyRef](maxDist: Float, maxSize: Int) {
+class DistanceHeap[A <: AnyRef](maxDist: Float, maxSize: Int) {
   private[this] var size = 0
   private[this] var distances = new Array[Float](16)
   private[this] var entries = new Array[AnyRef](16)
@@ -79,6 +79,23 @@ private[core] class AdaptedShiftedIndexedSeq[A, B <: A](array: Array[A], size0: 
   override def apply(idx: Int): B =
     if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
     else array(idx + 1).asInstanceOf[B]
+}
+
+private[core] class IndexedSeq1[A](a: A) extends IndexedSeq[A] {
+  override def length: Int = 1
+
+  override def apply(idx: Int): A =
+    if (idx == 0) a
+    else throw new IndexOutOfBoundsException(idx.toString)
+}
+
+private[core] class IndexedSeq2[A](a0: A, a1: A) extends IndexedSeq[A] {
+  override def length: Int = 2
+
+  override def apply(idx: Int): A =
+    if (idx == 0) a0
+    else if (idx == 1) a1
+    else throw new IndexOutOfBoundsException(idx.toString)
 }
 
 private[core] class DejaVuCounter {

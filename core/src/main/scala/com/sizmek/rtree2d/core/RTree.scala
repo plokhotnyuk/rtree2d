@@ -10,6 +10,57 @@ import scala.collection.mutable
 
 object RTree {
   /**
+    * Create an entry for a point and a value.
+    *
+    * @param x x value of the given point
+    * @param y y value of the given point
+    * @param value a value to store in the r-tree
+    * @tparam A a type of th value being put in the tree
+    * @return a newly created entry
+    */
+  def entry[A](x: Float, y: Float, value: A): RTreeEntry[A] = {
+    if (x != x) throw new IllegalArgumentException("x should not be NaN")
+    if (y != y) throw new IllegalArgumentException("y should not be NaN")
+    new RTreeEntry[A](x, y, x, y, value)
+  }
+
+  /**
+    * Create an entry for a rectangle and a value.
+    *
+    * @param minX x coordinate of the left bottom corner
+    * @param minY y coordinate of the left bottom corner
+    * @param maxX x coordinate of the right top corner
+    * @param maxY y coordinate of the right top corner
+    * @param value a value to store in the r-tree
+    * @tparam A a type of th value being put in the tree
+    * @return a newly created entry
+    */
+  def entry[A](minX: Float, minY: Float, maxX: Float, maxY: Float, value: A): RTreeEntry[A] = {
+    if (!(maxX >= minX))
+      throw new IllegalArgumentException("maxX should be greater than minX and any of them should not be NaN")
+    if (!(maxY >= minY))
+      throw new IllegalArgumentException("maxY should be greater than minY and any of them should not be NaN")
+    new RTreeEntry[A](minX, minY, maxX, maxY, value)
+  }
+
+  /**
+    * Create an entry specified by center point with distance and a value.
+    *
+    * @param x x value of the given point
+    * @param y y value of the given point
+    * @param distance a value of distance to edges of the entry bounding box
+    * @param value a value to store in the r-tree
+    * @tparam A a type of th value being put in the tree
+    * @return a newly created entry
+    */
+  def entry[A](x: Float, y: Float, distance: Float, value: A): RTreeEntry[A] = {
+    if (x != x) throw new IllegalArgumentException("x should not be NaN")
+    if (y != y) throw new IllegalArgumentException("y should not be NaN")
+    if (!(distance >= 0)) throw new IllegalArgumentException("distance should not be less than 0 or NaN")
+    new RTreeEntry[A](x - distance, y - distance, x + distance, y + distance, value)
+  }
+
+  /**
     * Construct an RTree from a sequence of entries using STR packing.
     *
     * @param entries the sequence of entries
@@ -79,6 +130,14 @@ object RTree {
   private[core] def appendSpaces(sb: java.lang.StringBuilder, n: Int): java.lang.StringBuilder =
     if (n > 0) appendSpaces(sb.append(' '), n - 1)
     else sb
+
+  private[core] def distance[A](x: Float, y: Float, t: RTree[A]): Float = {
+    val dy = if (y < t.minY) t.minY - y else if (y < t.maxY) 0 else y - t.maxY
+    val dx = if (x < t.minX) t.minX - x else if (x < t.maxX) 0 else x - t.maxX
+    if (dy == 0) dx
+    else if (dx == 0) dy
+    else sqrt(dx * dx + dy * dy).toFloat
+  }
 
   @tailrec
   private[this] def pack[A](level: Array[RTree[A]], nodeCapacity: Int, xComp: Comparator[RTree[A]],
@@ -172,11 +231,9 @@ sealed trait RTree[A] {
     * @param x x value of the given point
     * @param y y value of the given point
     * @param maxDist an exclusive limit of the distance (infinity by default)
-    * @param distCalc a distance calculator provided according to geometry of indexed entries
     * @return an option of the nearest entry
     */
-  def nearestOption(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
-                   (implicit distCalc: DistanceCalculator): Option[RTreeEntry[A]] = {
+  def nearestOption(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity): Option[RTreeEntry[A]] = {
     var res: RTreeEntry[A] = null
     nearest(x, y, maxDist)((d, e) => {
       res = e
@@ -195,13 +252,11 @@ sealed trait RTree[A] {
     * @param y y value of the given point
     * @param k a maximum number of nearest entries to collect
     * @param maxDist an exclusive limit of the distance (infinity by default)
-    * @param distCalc a distance calculator provided according to geometry of indexed entries
     * @return a sequence of the nearest entries
     */
-  def nearestK(x: Float, y: Float, k: Int, maxDist: Float = Float.PositiveInfinity)
-              (implicit distCalc: DistanceCalculator): IndexedSeq[RTreeEntry[A]] =
+  def nearestK(x: Float, y: Float, k: Int, maxDist: Float = Float.PositiveInfinity): IndexedSeq[RTreeEntry[A]] =
     if (k <= 0) Vector.empty
-    else new FixedBinaryHeap[RTreeEntry[A]](maxDist, k) {
+    else new DistanceHeap[RTreeEntry[A]](maxDist, k) {
       nearest(x, y, maxDist)((d, e) => put(d, e))
     }.toIndexedSeq
 
@@ -214,11 +269,9 @@ sealed trait RTree[A] {
     * @param y y value of the given point
     * @param maxDist an exclusive limit of the distance (infinity by default)
     * @param f the function that receives found values and their distances and returns the current maximum distance
-    * @param distCalc a distance calculator provided according to geometry of indexed entries
     * @return the distance to a found entry or initially submitted value of maxDist
     */
-  def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
-             (f: (Float, RTreeEntry[A]) => Float)(implicit distCalc: DistanceCalculator): Float
+  def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)(f: (Float, RTreeEntry[A]) => Float): Float
 
   /**
     * Call the provided `f` function with entries whose MBR contains the given point.
@@ -310,7 +363,7 @@ private final case class RTreeNil[A]() extends RTree[A] {
   def isEmpty: Boolean = true
 
   def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
-             (f: (Float, RTreeEntry[A]) => Float)(implicit distCalc: DistanceCalculator): Float = maxDist
+             (f: (Float, RTreeEntry[A]) => Float): Float = maxDist
 
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Unit): Unit = ()
 
@@ -330,12 +383,13 @@ private final case class RTreeNil[A]() extends RTree[A] {
   * @param value a value to store in the r-tree
   * @tparam A a type of th value being put in the tree
   */
-final case class RTreeEntry[A] private[core] (minX: Float, minY: Float, maxX: Float, maxY: Float, value: A) extends RTree[A] {
+final case class RTreeEntry[A] private[core] (minX: Float, minY: Float, maxX: Float, maxY: Float,
+                                              value: A) extends RTree[A] {
   def isEmpty: Boolean = false
 
   def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
-             (f: (Float, RTreeEntry[A]) => Float)(implicit distCalc: DistanceCalculator): Float = {
-    val dist = distCalc.distance(x, y, this)
+             (f: (Float, RTreeEntry[A]) => Float): Float = {
+    val dist = RTree.distance(x, y, this)
     if (dist < maxDist) f(dist, this)
     else maxDist
   }
@@ -356,21 +410,21 @@ private final case class RTreeNode[A](minX: Float, minY: Float, maxX: Float, max
   def isEmpty: Boolean = false
 
   def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
-             (f: (Float, RTreeEntry[A]) => Float)(implicit distCalc: DistanceCalculator): Float = {
+             (f: (Float, RTreeEntry[A]) => Float): Float = {
     var minDist = maxDist
     val n = to - from
     var i = 0
     if (level(from).isInstanceOf[RTreeEntry[A]]) {
       while (i < n) {
         val e = level(from + i).asInstanceOf[RTreeEntry[A]]
-        val d = distCalc.distance(x, y, e)
+        val d = RTree.distance(x, y, e)
         if (d < minDist) minDist = f(d, e)
         i += 1
       }
     } else {
       val ps = new Array[Long](n)
       while (i < n) {
-        ps(i) = (from + i) | (floatToRawIntBits(distCalc.distance(x, y, level(from + i))).toLong << 32)
+        ps(i) = (from + i) | (floatToRawIntBits(RTree.distance(x, y, level(from + i))).toLong << 32)
         i += 1
       }
       java.util.Arrays.sort(ps) // Assuming that there no NaNs or negative values for distances

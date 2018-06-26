@@ -22,17 +22,26 @@ object TestUtils {
     d <- positiveFloatGen
     e <- entryGen
   } yield (d, e)
-  val latLonEntryGen: Gen[RTreeEntry[Int]] = for {
+  val latLonEntryGen: Gen[GeoRTreeEntry[Int]] = for {
     lat1 <- latGen
     lon1 <- lonGen
     lat2 <- latGen
     lon2 <- lonGen
-  } yield RTreeEntry(min(lat1, lat2), min(lon1, lon2), max(lat1, lat2), max(lon1, lon2), lastId.getAndIncrement())
-  val entryListGen: Gen[Seq[RTreeEntry[Int]]] = Gen.oneOf(0, 1, 10, 100, 1000).flatMap(n => Gen.listOfN(n, entryGen))
+  } yield {
+    val minLat = min(lat1, lat2)
+    val minLon = min(lon1, lon2)
+    val maxLat = max(lat1, lat2)
+    val maxLon = max(lon1, lon2)
+    GeoRTreeEntry(minLat, minLon, maxLat, maxLon, lastId.getAndIncrement(),
+      sin(minLat * GeoRTree.radPerDegree), cos(minLat * GeoRTree.radPerDegree),
+      sin(maxLat * GeoRTree.radPerDegree), cos(maxLat * GeoRTree.radPerDegree))
+  }
+  val entryListGen: Gen[Seq[RTreeEntry[Int]]] =
+    Gen.oneOf(0, 1, 10, 100, 1000).flatMap(n => Gen.listOfN(n, entryGen))
+  val latLonEntryListGen: Gen[Seq[GeoRTreeEntry[Int]]] =
+    Gen.oneOf(0, 1, 10, 100, 1000).flatMap(n => Gen.listOfN(n, latLonEntryGen))
   val distanceEntryListGen: Gen[Seq[(Float, RTreeEntry[Int])]] =
     Gen.oneOf(0, 1, 10, 100, 1000).flatMap(n => Gen.listOfN(n, distanceEntryGen))
-
-  implicit def orderingByName[A <: RTreeEntry[Int]]: Ordering[A] = Ordering.by(e => (e.minX, e.minY, e.maxX, e.maxY, e.value))
 
   def intersects[T](es: Seq[RTreeEntry[T]], x: Float, y: Float): Seq[RTreeEntry[T]] = intersects(es, x, y, x, y)
 
@@ -45,16 +54,29 @@ object TestUtils {
     e.minX <= maxX && minX <= e.maxX && e.minY <= maxY && minY <= e.maxY
 
   def euclideanDistance[T](x: Float, y: Float, t: RTree[T]): Float = {
-    val dx = Math.max(Math.abs((t.minX + t.maxX) / 2 - x) - (t.maxX - t.minX) / 2, 0)
-    val dy = Math.max(Math.abs((t.minY + t.maxY) / 2 - y) - (t.maxY - t.minY) / 2, 0)
-    Math.sqrt(dx * dx + dy * dy).toFloat
+    val dx = max(abs((t.minX + t.maxX) / 2 - x) - (t.maxX - t.minX) / 2, 0)
+    val dy = max(abs((t.minY + t.maxY) / 2 - y) - (t.maxY - t.minY) / 2, 0)
+    sqrt(dx * dx + dy * dy).toFloat
   }
 
-  def alignedHorizontally[T](e: RTree[T], lat: Float, lon: Float): Boolean =
-    e.minX <= lat && lat <= e.maxX && (lon < e.minY || e.maxY < lon)
+  def geoIntersects[T](es: Seq[GeoRTreeEntry[T]], lat: Float, lon: Float): Seq[GeoRTreeEntry[T]] =
+    geoIntersects(es, lat, lon, lat, lon)
 
-  def alignedVertically[T](e: RTree[T], lat: Float, lon: Float): Boolean =
-    e.minY <= lon && lon <= e.maxY && (lat < e.minX || e.maxX < lat)
+  def geoIntersects[T](es: Seq[GeoRTreeEntry[T]], minLat: Float, minLon: Float,
+                       maxLat: Float, maxLon: Float): Seq[GeoRTreeEntry[T]] =
+    es.filter(e => geoIntersects(e, minLat, minLon, maxLat, maxLon))
+
+  def geoIntersects[T](e: GeoRTree[T], lat: Float, lon: Float): Boolean =
+    e.minLat <= lat && lat <= e.maxLat && e.minLon <= lon && lon <= e.maxLon
+
+  def geoIntersects[T](e: GeoRTree[T], minLat: Float, minLon: Float, maxLat: Float, maxLon: Float): Boolean =
+    e.minLat <= maxLat && minLat <= e.maxLat && e.minLon <= maxLon && minLon <= e.maxLon
+
+  def alignedHorizontally[T](e: GeoRTree[T], lat: Float, lon: Float): Boolean =
+    e.minLat <= lat && lat <= e.maxLat && (lon < e.minLon || e.maxLon < lon)
+
+  def alignedVertically[T](e: GeoRTree[T], lat: Float, lon: Float): Boolean =
+    e.minLon <= lon && lon <= e.maxLon && (lat < e.minLat || e.maxLat < lat)
 
   // https://en.wikipedia.org/wiki/Haversine_formula + https://en.wikipedia.org/wiki/Earth_radius#Mean_radius
   def greatCircleDistance(lat1: Float, lon1: Float, lat2: Float, lon2: Float, radius: Float = 6371.0088f): Float = {
@@ -62,4 +84,7 @@ object TestUtils {
     val shdx = sin((lat1 - lat2) * PI / 180 / 2)
     (asin(sqrt(cos(lat1 * PI / 180) * cos(lat2 * PI / 180) * shdy * shdy + shdx * shdx)) * 2 * radius).toFloat
   }
+
+  def distance[A](lat: Float, lon: Float, t: GeoRTree[A]): Float =
+    GeoRTree.distance(lat, lon, sin(lat * GeoRTree.radPerDegree), cos(lat * GeoRTree.radPerDegree), t)
 }

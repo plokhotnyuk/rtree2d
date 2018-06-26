@@ -8,8 +8,24 @@ import org.scalatest.prop.Checkers
 
 class RTreeCheckers extends WordSpec with Checkers {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
-    PropertyCheckConfiguration(minSuccessful = 100)
+    PropertyCheckConfiguration(minSuccessful = 100, maxDiscardedFactor = 100)
+
+  implicit def orderingByName[A <: RTreeEntry[Int]]: Ordering[A] =
+    Ordering.by(e => (e.minX, e.minY, e.maxX, e.maxY, e.value))
+
   "RTree" when {
+    "asked to calculate distance from point to an RTree" should {
+      "return a distance to a nearest part of the RTree bounding box or 0 if the point is inside it" in check {
+        forAll(entryListGen, floatGen, floatGen) {
+          (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
+            val t = RTree(entries)
+            propBoolean(entries.nonEmpty && !intersects(t, x, y)) ==> {
+              val expected = euclideanDistance(x, y, t)
+              RTree.distance(x, y, t) === expected +- 0.001f
+            }
+        }
+      }
+    }
     "update" should {
       "withdraw matched entries from a rtree" in check {
         forAll(entryListGen, entryListGen) {
@@ -48,8 +64,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       "return any of entries which intersects with point" in check {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
-            import EuclideanPlane._
-            val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).sortBy(_._1)
+            val sorted = entries.map(e => (RTree.distance(x, y, e), e)).sortBy(_._1)
             propBoolean(sorted.nonEmpty && sorted.exists { case (d, e) => d == 0.0f }) ==> {
               val result = RTree(entries).nearestOption(x, y).get
               sorted.map(_._2).contains(result)
@@ -59,8 +74,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       "return the nearest entry if point does not intersect with entries" in check {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
-            import EuclideanPlane._
-            val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).sortBy(_._1)
+            val sorted = entries.map(e => (RTree.distance(x, y, e), e)).sortBy(_._1)
             propBoolean(sorted.nonEmpty && !sorted.exists { case (d, e) => d == 0.0f }) ==> {
               RTree(entries).nearestOption(x, y) === Some(sorted.head._2)
             }
@@ -69,8 +83,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       "return the nearest entry with in a specified distance limit or none if all entries are out of the limit" in check {
         forAll(entryListGen, floatGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, maxDist: Float) =>
-            import EuclideanPlane._
-            val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).filter(_._1 < maxDist).sortBy(_._1)
+            val sorted = entries.map(e => (RTree.distance(x, y, e), e)).filter(_._1 < maxDist).sortBy(_._1)
             propBoolean(sorted.nonEmpty) ==> {
               val result = RTree(entries).nearestOption(x, y, maxDist)
               sorted.map { case (d, e) =>Some(e) }.contains(result)
@@ -80,7 +93,6 @@ class RTreeCheckers extends WordSpec with Checkers {
       "don't return any entry for empty tree" in check {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
-            import EuclideanPlane._
             propBoolean(entries.isEmpty) ==> {
               RTree(entries).nearestOption(x, y) === None
             }
@@ -91,8 +103,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       "return up to K entries which intersects with point" in check {
         forAll(entryListGen, floatGen, floatGen, positiveIntGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, k: Int) =>
-            import EuclideanPlane._
-            val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).sortBy(_._1)
+            val sorted = entries.map(e => (RTree.distance(x, y, e), e)).sortBy(_._1)
             propBoolean(sorted.nonEmpty && sorted.exists { case (d, e) => d == 0.0f }) ==> {
               val result = RTree(entries).nearestK(x, y, k)
               result.forall(sorted.map(_._2).contains)
@@ -102,8 +113,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       "return up to K nearest entries if point does not intersect with entries" in check {
         forAll(entryListGen, floatGen, floatGen, positiveIntGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, k: Int) =>
-            import EuclideanPlane._
-            val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).sortBy(_._1)
+            val sorted = entries.map(e => (RTree.distance(x, y, e), e)).sortBy(_._1)
             propBoolean(sorted.nonEmpty && !sorted.exists { case (d, e) => d == 0.0f } && sorted.size == sorted.map(_._1).distinct.size) ==> {
               RTree(entries).nearestK(x, y, k).toSet === sorted.take(k).map(_._2).toSet
             }
@@ -112,8 +122,7 @@ class RTreeCheckers extends WordSpec with Checkers {
       "return up to K nearest entries with in a specified distance limit or none if all entries are out of the limit" in check {
         forAll(entryListGen, floatGen, floatGen, floatGen, positiveIntGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, maxDist: Float, k: Int) =>
-            import EuclideanPlane._
-            val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).filter(_._1 < maxDist).sortBy(_._1)
+            val sorted = entries.map(e => (RTree.distance(x, y, e), e)).filter(_._1 < maxDist).sortBy(_._1)
             propBoolean(sorted.size == sorted.map(_._1).distinct.size) ==> {
               RTree(entries).nearestK(x, y, k, maxDist).toSet === sorted.take(k).map(_._2).toSet
             }
@@ -122,7 +131,6 @@ class RTreeCheckers extends WordSpec with Checkers {
       "don't return any entry for empty tree" in check {
         forAll(entryListGen, floatGen, floatGen, positiveIntGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, k: Int) =>
-            import EuclideanPlane._
             propBoolean(entries.isEmpty) ==> {
               RTree(entries).nearestK(x, y, k) === Seq()
             }

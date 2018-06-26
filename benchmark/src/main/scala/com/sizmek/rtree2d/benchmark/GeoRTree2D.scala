@@ -3,11 +3,11 @@ package com.sizmek.rtree2d.benchmark
 import com.sizmek.rtree2d.core._
 import org.openjdk.jmh.annotations._
 
-class RTree2D extends BenchmarkBase {
-  private[benchmark] var rtreeEntries: Array[RTreeEntry[PointOfInterest]] = _
-  private[benchmark] var rtree: RTree[PointOfInterest] = _
-  private[benchmark] var entriesToAdd: Array[RTreeEntry[PointOfInterest]] = _
-  private[benchmark] var entriesToRemove: Array[RTreeEntry[PointOfInterest]] = _
+class GeoRTree2D extends BenchmarkBase {
+  private[benchmark] var rtreeEntries: Array[GeoRTreeEntry[PointOfInterest]] = _
+  private[benchmark] var rtree: GeoRTree[PointOfInterest] = _
+  private[benchmark] var entriesToAdd: Array[GeoRTreeEntry[PointOfInterest]] = _
+  private[benchmark] var entriesToRemove: Array[GeoRTreeEntry[PointOfInterest]] = _
   private[this] var xys: Array[Float] = _
   private[this] var curr: Int = _
   private[this] var eps: Float = _
@@ -20,14 +20,14 @@ class RTree2D extends BenchmarkBase {
     val sizeX = Math.sqrt(size).toFloat
     eps = overlap / (sizeX * 2)
     rectEps = rectSize / (sizeX * 2)
-    rtreeEntries = new Array[RTreeEntry[PointOfInterest]](points.length)
+    rtreeEntries = new Array[GeoRTreeEntry[PointOfInterest]](points.length)
     var i = 0
     while (i < points.length) {
       val p = points(i)
-      rtreeEntries(i) = RTreeEntry(p.x - eps, p.y - eps, p.x + eps, p.y + eps, p)
+      rtreeEntries(i) = GeoRTree.entry(p.x - eps, p.y - eps, p.x + eps, p.y + eps, p)
       i += 1
     }
-    rtree = RTree(rtreeEntries, nodeCapacity)
+    rtree = GeoRTree(rtreeEntries, nodeCapacity)
     doShuffle(points)
     xys = genRequests(points)
     curr = 0
@@ -37,34 +37,34 @@ class RTree2D extends BenchmarkBase {
   }
 
   @Benchmark
-  def apply: RTree[PointOfInterest] = RTree(rtreeEntries, nodeCapacity)
+  def apply: GeoRTree[PointOfInterest] = GeoRTree(rtreeEntries, nodeCapacity)
 
   @Benchmark
-  def entries: Seq[RTreeEntry[PointOfInterest]] = rtree.entries
+  def entries: Seq[GeoRTreeEntry[PointOfInterest]] = rtree.entries
 
   @Benchmark
-  def nearest: Option[RTreeEntry[PointOfInterest]] = {
+  def nearest: Option[GeoRTreeEntry[PointOfInterest]] = {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0
     rtree.nearestOption(xys(i), xys(i + 1))
   }
 
   @Benchmark
-  def nearestK: Seq[RTreeEntry[PointOfInterest]] = {
+  def nearestK: Seq[GeoRTreeEntry[PointOfInterest]] = {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0
     rtree.nearestK(xys(i), xys(i + 1), nearestMax)
   }
 
   @Benchmark
-  def searchByPoint: Seq[RTreeEntry[PointOfInterest]] = {
+  def searchByPoint: Seq[GeoRTreeEntry[PointOfInterest]] = {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0
     rtree.searchAll(xys(i), xys(i + 1))
   }
 
   @Benchmark
-  def searchByRectangle: Seq[RTreeEntry[PointOfInterest]] = {
+  def searchByRectangle: Seq[GeoRTreeEntry[PointOfInterest]] = {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0
     val x = xys(i)
@@ -74,5 +74,5 @@ class RTree2D extends BenchmarkBase {
   }
 
   @Benchmark
-  def update: RTree[PointOfInterest] = RTree.update(rtree, entriesToRemove, entriesToAdd, nodeCapacity)
+  def update: GeoRTree[PointOfInterest] = GeoRTree.update(rtree, entriesToRemove, entriesToAdd, nodeCapacity)
 }

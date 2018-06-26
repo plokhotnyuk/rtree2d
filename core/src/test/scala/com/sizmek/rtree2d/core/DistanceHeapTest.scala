@@ -1,25 +1,24 @@
 package com.sizmek.rtree2d.core
 
 import org.scalatest.FunSuite
+import com.sizmek.rtree2d.core.RTree._
 
-class FixedBinaryHeapTest extends FunSuite {
-  import EuclideanPlane._
-
+class DistanceHeapTest extends FunSuite {
   test("FixedBinaryHeap.put") {
-    var heap = new FixedBinaryHeap[RTreeEntry[Int]](Float.PositiveInfinity, 1)
+    var heap = new DistanceHeap[RTreeEntry[Int]](Float.PositiveInfinity, 1)
     assert(heap.put(2, entry(0, 0, 2)) == 2)
     assert(heap.put(1, entry(0, 0, 1)) == 1)
-    heap = new FixedBinaryHeap[RTreeEntry[Int]](Float.PositiveInfinity, 2)
+    heap = new DistanceHeap[RTreeEntry[Int]](Float.PositiveInfinity, 2)
     assert(heap.put(2, entry(0, 0, 2)) == Float.PositiveInfinity)
     assert(heap.put(1, entry(0, 0, 1)) == 2)
-    heap = new FixedBinaryHeap[RTreeEntry[Int]](Float.PositiveInfinity, 2)
+    heap = new DistanceHeap[RTreeEntry[Int]](Float.PositiveInfinity, 2)
     assert(heap.put(3, entry(0, 0, 3)) == Float.PositiveInfinity)
     assert(heap.put(2, entry(0, 0, 2)) == 3)
     assert(heap.put(1, entry(0, 0, 1)) == 2)
   }
 
   test("FixedBinaryHeap.toIndexedSeq") {
-    val heap = new FixedBinaryHeap[RTreeEntry[Int]](Float.PositiveInfinity, 7)
+    val heap = new DistanceHeap[RTreeEntry[Int]](Float.PositiveInfinity, 7)
     heap.put(1, entry(1, 1, 1))
     heap.put(8, entry(8, 8, 8))
     heap.put(2, entry(2, 2, 2))
