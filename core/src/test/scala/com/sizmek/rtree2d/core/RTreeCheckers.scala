@@ -8,7 +8,7 @@ import org.scalatest.prop.Checkers
 
 class RTreeCheckers extends WordSpec with Checkers {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
-    PropertyCheckConfiguration(minSuccessful = 100)
+    PropertyCheckConfiguration(minSuccessful = 1000)
   "RTree" when {
     "update" should {
       "withdraw matched entries from a rtree" in check {

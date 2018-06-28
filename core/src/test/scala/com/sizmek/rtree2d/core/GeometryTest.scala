@@ -122,4 +122,11 @@ class GeometryTest extends FunSuite {
     assert(intercept[UnsupportedOperationException](distance(0, 0, RTree[Int](Nil)))
       .getMessage === "RTreeNil.minY")
   }
+
+  test("SphericalEarth.radius") {
+    import EllipsoidalEarth._
+    assert(radius(0) === 6378.1370)
+    assert(radius(90) === 6356.7523)
+    assert(radius(35.377755f) === 6371.0088 +- 0.000005)
+  }
 }

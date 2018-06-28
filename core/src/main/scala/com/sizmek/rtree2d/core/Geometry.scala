@@ -14,7 +14,7 @@ trait DistanceCalculator {
     * @param x x value of the given point
     * @param y y value of the given point
     * @param t an RTree instance
-    * @tparam A a type of th value being put in the tree
+    * @tparam A a type of the value being put in the r-tree
     * @return return a distance value
     */
   def distance[A](x: Float, y: Float, t: RTree[A]): Float
@@ -43,12 +43,14 @@ object EuclideanPlane {
     * @param maxX x coordinate of the right top corner
     * @param maxY y coordinate of the right top corner
     * @param value a value to store in the r-tree
-    * @tparam A a type of th value being put in the tree
+    * @tparam A a type of the value being put in the r-tree
     * @return a newly created entry
     */
   def entry[A](minX: Float, minY: Float, maxX: Float, maxY: Float, value: A): RTreeEntry[A] = {
-    if (!(maxX >= minX)) throw new IllegalArgumentException("maxX should be greater than minX and any of them should not be NaN")
-    if (!(maxY >= minY)) throw new IllegalArgumentException("maxY should be greater than minY and any of them should not be NaN")
+    if (!(maxX >= minX))
+      throw new IllegalArgumentException("maxX should be greater than minX and any of them should not be NaN")
+    if (!(maxY >= minY))
+      throw new IllegalArgumentException("maxY should be greater than minY and any of them should not be NaN")
     new RTreeEntry[A](minX, minY, maxX, maxY, value)
   }
   /**
@@ -57,7 +59,7 @@ object EuclideanPlane {
     * @param x x value of the given point
     * @param y y value of the given point
     * @param value a value to store in the r-tree
-    * @tparam A a type of th value being put in the tree
+    * @tparam A a type of the value being put in the r-tree
     * @return a newly created entry
     */
   def entry[A](x: Float, y: Float, value: A): RTreeEntry[A] = {
@@ -73,7 +75,7 @@ object EuclideanPlane {
     * @param y y value of the given point
     * @param distance a value of distance to edges of the entry bounding box
     * @param value a value to store in the r-tree
-    * @tparam A a type of th value being put in the tree
+    * @tparam A a type of the value being put in the r-tree
     * @return a newly created entry
     */
   def entry[A](x: Float, y: Float, distance: Float, value: A): RTreeEntry[A] = {
@@ -85,18 +87,23 @@ object EuclideanPlane {
 }
 
 trait Spherical {
+  private[this] val radPerDegree = PI / 180
+  private[this] val degreePerRad = 180 / PI
+
   /**
     * Create an entry specified by a point with spherical coordinates and a value.
     *
     * @param lat a latitude coordinate of the given point
     * @param lon a latitude coordinate of the given point
     * @param value a value to store in the r-tree
-    * @tparam A a type of th value being put in the tree
+    * @tparam A a type of the value being put in the r-tree
     * @return a newly created entry
     */
   def entry[A](lat: Float, lon: Float, value: A): RTreeEntry[A] = {
-    if (!(lat >= -90 && lat <= 90)) throw new IllegalArgumentException("lat should not be out of range from -90 to 90 or NaN")
-    if (!(lon >= -180 && lon <= 180)) throw new IllegalArgumentException("lon should not be out of range from -180 to 180 or NaN")
+    if (!(lat >= -90 && lat <= 90))
+      throw new IllegalArgumentException("lat should not be out of range from -90 to 90 or NaN")
+    if (!(lon >= -180 && lon <= 180))
+      throw new IllegalArgumentException("lon should not be out of range from -180 to 180 or NaN")
     new RTreeEntry[A](lat, lon, lat, lon, value)
   }
 
@@ -108,7 +115,7 @@ trait Spherical {
     * @param maxLat a latitude coordinate of the right top corner
     * @param maxLon a latitude coordinate of the right top corner
     * @param value a value to store in the r-tree
-    * @tparam A a type of th value being put in the tree
+    * @tparam A a type of the value being put in the r-tree
     * @return a newly created entry
     */
   def entry[A](minLat: Float, minLon: Float, maxLat: Float, maxLon: Float, value: A): RTreeEntry[A] = {
@@ -119,6 +126,51 @@ trait Spherical {
     if (!(maxLon <= 180 && maxLon >= minLon))
       throw new IllegalArgumentException("maxLon should not be greater than 180 or less than minLat  or NaN")
     new RTreeEntry[A](minLat, minLon, maxLat, maxLon, value)
+  }
+
+
+  /**
+    * Create an indexed sequence of entries that are specified by a circular area on the sphere and a value.
+    *
+    * Sequence of entries required for case when the circle is crossed by the anti-meridian because the RTree which
+    * use bounding box form longitudes and latitudes for indexing doesn't support wrapping of longitudes over
+    * the sphere, so we split that entries on two by the date change meridian.
+    *
+    * Used formula with description is here: http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates#Longitude
+    *
+    * @param lat a latitude coordinate of the given center point
+    * @param lon a latitude coordinate of the given center point
+    * @param distance a distance, from the center point to borders of the circular area on the sphere surface,
+    *                 if the value of distance is greater than a half of the circumference then a whole sphere
+    *                 will be bounded
+    * @param radius a value of radius to calculate
+    * @param value a value to store in the r-tree
+    * @tparam A a type of the value being put in the r-tree
+    * @return a newly created entry
+    */
+  def entries[A](lat: Float, lon: Float, distance: Float, value: A, radius: Double): IndexedSeq[RTreeEntry[A]] = {
+    if (!(lat >= -90 && lat <= 90))
+      throw new IllegalArgumentException("lat should not be out of range from -90 to 90 or NaN")
+    if (!(lon >= -180 && lon <= 180))
+      throw new IllegalArgumentException("lon should not be out of range from -180 to 180 or NaN")
+    if (!(distance >= 0)) throw new IllegalArgumentException("distance should not be less than 0 or NaN")
+    val radLon = lon * radPerDegree
+    val radLat = lat * radPerDegree
+    val deltaLat = distance / radius
+    val minLat = ((radLat - deltaLat) * degreePerRad).toFloat
+    val maxLat = ((radLat + deltaLat) * degreePerRad).toFloat
+    if (minLat > -90 && maxLat < 90) {
+      val deltaLon = asin(sin(deltaLat) / cos(radLat))
+      val minLon = ((radLon - deltaLon) * degreePerRad).toFloat
+      val maxLon = ((radLon + deltaLon) * degreePerRad).toFloat
+      if (minLon < -180) {
+        new IndexedSeq2(new RTreeEntry(minLat, -180, maxLat, maxLon, value),
+          new RTreeEntry(minLat, minLon + 360, maxLat, 180, value))
+      } else if (maxLon > 180) {
+        new IndexedSeq2(new RTreeEntry(minLat, -180, maxLat, maxLon - 360, value),
+          new RTreeEntry(minLat, minLon, maxLat, 180, value))
+      } else new IndexedSeq1(new RTreeEntry(minLat, minLon, maxLat, maxLon, value))
+    } else new IndexedSeq1(new RTreeEntry(max(minLat, -90), -180, min(maxLat, 90), 180, value))
   }
 
   /**
@@ -141,52 +193,49 @@ trait Spherical {
       val minLat = t.minX
       val maxLat = t.maxX
       if (lon >= minLon && lon <= maxLon) {
-        if (lat < minLat) ((minLat - lat) * circumference).toFloat
-        else if (lat > maxLat) ((lat - maxLat) * circumference).toFloat
+        if (lat < minLat) (minLat - lat) * circumference
+        else if (lat > maxLat) (lat - maxLat) * circumference
         else 0
-      } else (acos {
+      } else acos(min({
         val radLat = lat * radPerDegree
-        val sinLat = sin(radLat) // TODO: refactor it to be a parameter of the distance method
-        val cosLat = cos(radLat) // TODO: refactor it to be a parameter of the distance method
+        val sinLat = sin(radLat)
+        val cosLat = cos(radLat)
+        val radMinLat = minLat * radPerDegree
         if (minLon == maxLon && minLat == maxLat) {
-          normalizedDistanceCos(minLat, cosLat, sinLat, cos((minLon - lon) * radPerDegree))
+          sinLat * sin(radMinLat) + cosLat * cos((minLon - lon) * radPerDegree) * cos(radMinLat)
         } else {
-          val cosLonDelta = cos(min(normalize(minLon - lon), normalize(lon - maxLon)) * radPerDegree)
-          val extremumLat = atan(sinLat / (cosLat * cosLonDelta)) / radPerDegree
-          var d = max(
-            normalizedDistanceCos(minLat, cosLat, sinLat, cosLonDelta),
-            normalizedDistanceCos(maxLat, cosLat, sinLat, cosLonDelta))
-          if (extremumLat > minLat && extremumLat < maxLat) {
-            d = max(d, normalizedDistanceCos(extremumLat, cosLat, sinLat, cosLonDelta))
-          }
-          d
+          val cosLatPerCosLonDelta = cosLat * cos(min(normalize(minLon - lon), normalize(lon - maxLon)) * radPerDegree)
+          val radExtremumLat = atan(sinLat / cosLatPerCosLonDelta)
+          val radMaxLat = maxLat * radPerDegree
+          val normalizedDistanceCos = max(
+            sinLat * sin(radMinLat) + cosLatPerCosLonDelta * cos(radMinLat),
+            sinLat * sin(radMaxLat) + cosLatPerCosLonDelta * cos(radMaxLat))
+          if (radExtremumLat <= radMinLat || radExtremumLat >= radMaxLat) normalizedDistanceCos
+          else max(sinLat * sin(radExtremumLat) + cosLatPerCosLonDelta * cos(radExtremumLat), normalizedDistanceCos)
         }
-      } * radius).toFloat
-    }
+      }, 1)) * radius
+    }.toFloat
 
     private[this] def normalize(lonDelta: Float): Float = if (lonDelta < 0) lonDelta + 360 else lonDelta
-
-    private[this] def normalizedDistanceCos(lat: Double, cosLat: Double, sinLat: Double, cosLonDelta: Double): Double = {
-      val radLat = lat * radPerDegree // TODO: refactor it to be a property of the entry
-      min(sinLat * sin(radLat) + cosLat * cos(radLat) * cosLonDelta, 1)
-    }
   }
 }
 
 object SphericalEarth extends Spherical {
-  private[this] val radPerDegree = PI / 180
-
-  /**
-    * 6371.0088 is a value of the mean radius in kilometers, see: https://en.wikipedia.org/wiki/Earth_radius#Mean_radius
-    * It allows to get +0.2% accuracy on poles, -0.1% on the equator, and less than ±0.05% on medium latitudes.
-    * Precision of 32-bit float number allows to locate points and calculate distances with an error ±0.5 meters.
-    */
   private[this] val earthMeanRadius = 6371.0088
 
   /**
     * An instance of the `DistanceCalculator` type class which use a spherical model of the Earth to calculate distances
     * that are represented in kilometers.
     *
+    * It is use 6371.0088 as a value of the mean radius in kilometers, see: https://en.wikipedia.org/wiki/Earth_radius#Mean_radius
+    * It allows to get +0.2% accuracy on poles, -0.1% on the equator, and less than ±0.05% on medium latitudes.
+    *
+    * If your indexed entries and requests are located in some area that is less than half-sphere than you can use
+    * mean radius between min and max radiuses in used range of latitudes to get much better accuracy.
+    *
+    * Use the `EllipsoidalEarth.radius` function to calculate it for different latitudes.
+    *
+    * Precision of 32-bit float number allows to locate points and calculate distances with an error ±0.5 meters.
     */
   implicit val distanceCalculator: DistanceCalculator = distanceCalculator(earthMeanRadius)
 
@@ -194,39 +243,42 @@ object SphericalEarth extends Spherical {
     * Create an indexed sequence of entries that are specified by a circular area on the Earth and a value.
     *
     * Sequence of entries required for case when the circle is crossed by the anti-meridian because the RTree which
-    * use bounding box form longitudes and latitudes for geo-indexing doesn't support wrapping of geo-coordinates over
+    * use bounding box form longitudes and latitudes for indexing doesn't support wrapping of longitudes over
     * the Earth, so we split that entries on two by the date change meridian.
-    *
-    * Used formula with description is here: http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates#Longitude
     *
     * @param lat a latitude coordinate of the given center point
     * @param lon a latitude coordinate of the given center point
-    * @param distance a distance, from the center point to borders of the circular area on the Earth surface (in km),
-    *                 if the value of distance is greater than a half of circumference of the Earth then a whole sphere
+    * @param distance a distance, from the center point to borders of the circular area on the Earth surface,
+    *                 if the value of distance is greater than a half of the circumference then the whole Earth
     *                 will be bounded
     * @param value a value to store in the r-tree
-    * @tparam A a type of th value being put in the tree
+    * @tparam A a type of the value being put in the r-tree
     * @return a newly created entry
     */
-  def entries[A](lat: Float, lon: Float, distance: Float, value: A): IndexedSeq[RTreeEntry[A]] = {
-    if (!(lat >= -90 && lat <= 90)) throw new IllegalArgumentException("lat should not be out of range from -90 to 90 or NaN")
-    if (!(lon >= -180 && lon <= 180)) throw new IllegalArgumentException("lon should not be out of range from -180 to 180 or NaN")
-    if (!(distance >= 0)) throw new IllegalArgumentException("distance should not be less than 0 or NaN")
-    val radLon = lon * radPerDegree
+  def entries[A](lat: Float, lon: Float, distance: Float, value: A): IndexedSeq[RTreeEntry[A]] =
+    entries(lat, lon, distance, value, earthMeanRadius)
+}
+
+object EllipsoidalEarth {
+  private[this] val radPerDegree = PI / 180
+  private[this] val earthEquatorialRadius = 6378.1370
+  private[this] val earthPolarRadius = 6356.7523
+
+  /**
+    * Calculate a distance to the center of ellipsoidal model of the Earth (in km) at the specified latitude.
+    *
+    * @param lat a value of provided latitude in degrees
+    * @return a radius (in km)
+    */
+  def radius(lat: Float): Double = {
     val radLat = lat * radPerDegree
-    val deltaLat = distance / earthMeanRadius
-    val minLat = ((radLat - deltaLat) / radPerDegree).toFloat
-    val maxLat = ((radLat + deltaLat) / radPerDegree).toFloat
-    if (minLat > -90 && maxLat < 90) {
-      val deltaLon = asin(sin(deltaLat) / cos(radLat))
-      val minLon = ((radLon - deltaLon) / radPerDegree).toFloat
-      val maxLon = ((radLon + deltaLon) / radPerDegree).toFloat
-      if (minLon < -180) {
-        new IndexedSeq2(new RTreeEntry(minLat, -180, maxLat, maxLon, value), new RTreeEntry(minLat, minLon + 360, maxLat, 180, value))
-      } else if (maxLon > 180) {
-        new IndexedSeq2(new RTreeEntry(minLat, -180, maxLat, maxLon - 360, value), new RTreeEntry(minLat, minLon, maxLat, 180, value))
-      } else new IndexedSeq1(new RTreeEntry(minLat, minLon, maxLat, maxLon, value))
-    } else new IndexedSeq1(new RTreeEntry(max(minLat, -90), -180, min(maxLat, 90), 180, value))
+    val sinLat = sin(radLat)
+    val cosLat = cos(radLat)
+    val s1 = earthEquatorialRadius * cosLat
+    val s2 = earthPolarRadius * sinLat
+    val s3 = earthEquatorialRadius * s1
+    val s4 = earthPolarRadius * s2
+    sqrt((s3 * s3 + s4 * s4) / (s1 * s1 + s2 * s2))
   }
 }
 

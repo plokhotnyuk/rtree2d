@@ -8,20 +8,20 @@ class RTreeTest extends FunSuite {
   private val entries = ((1 to 100) :+ 100).map(x => entry(minX = x, minY = x, maxX = x + 1.9f, maxY = x + 1.9f, value = x))
   private val rtree = RTree[Int](entries)
 
-  test("RTreeNil.x1") {
-    intercept[UnsupportedOperationException](RTree[Int](Nil).minX)
+  test("RTreeNil.minX") {
+    assert(intercept[UnsupportedOperationException](RTree[Int](Nil).minX).getMessage === "RTreeNil.minX")
   }
 
-  test("RTreeNil.y1") {
-    intercept[UnsupportedOperationException](RTree[Int](Nil).minY)
+  test("RTreeNil.minY") {
+    assert(intercept[UnsupportedOperationException](RTree[Int](Nil).minY).getMessage === "RTreeNil.minY")
   }
 
-  test("RTreeNil.x2") {
-    intercept[UnsupportedOperationException](RTree[Int](Nil).maxX)
+  test("RTreeNil.maxX") {
+    assert(intercept[UnsupportedOperationException](RTree[Int](Nil).maxX).getMessage === "RTreeNil.maxX")
   }
 
-  test("RTreeNil.y2") {
-    intercept[UnsupportedOperationException](RTree[Int](Nil).maxY)
+  test("RTreeNil.maxY") {
+    assert(intercept[UnsupportedOperationException](RTree[Int](Nil).maxY).getMessage === "RTreeNil.maxY")
   }
 
   test("RTreeNil.entries") {

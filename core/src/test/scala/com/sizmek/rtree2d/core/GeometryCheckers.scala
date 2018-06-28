@@ -9,7 +9,7 @@ import org.scalatest.prop.Checkers
 
 class GeometryCheckers extends WordSpec with Checkers {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
-    PropertyCheckConfiguration(minSuccessful = 100)
+    PropertyCheckConfiguration(minSuccessful = 1000)
   "EuclideanPlane.distanceCalculator" when {
     "asked to calculate distance from point to an RTree" should {
       "return a distance to a nearest part of the RTree bounding box or 0 if the point is inside it" in check {
