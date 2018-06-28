@@ -1,27 +1,68 @@
 package com.sizmek.rtree2d.core
 
+import com.sizmek.rtree2d.core.RTree._
 import org.scalatest.FunSuite
 
 class RTreeTest extends FunSuite {
-  import EuclideanPlane._
-
-  private val entries = ((1 to 100) :+ 100).map(x => entry(minX = x, minY = x, maxX = x + 1.9f, maxY = x + 1.9f, value = x))
+  private val entries = ((1 to 50) :+ 50).map(x => entry(minX = x, minY = x, maxX = x + 1.9f, maxY = x + 1.9f, value = x))
   private val rtree = RTree[Int](entries)
 
-  test("RTreeNil.x1") {
-    intercept[UnsupportedOperationException](RTree[Int](Nil).minX)
+  test("RTree.entry") {
+    assert(entry(0, 0, 3) === entry(0, 0, 0, 0, 3))
+    assert(entry(0, 0, 7, 3) === entry(-7, -7, 7, 7, 3))
+    assert(entry(-7, -7, 7, 7, 3) === entry(-7, -7, 7, 7, 3))
+    assert(intercept[IllegalArgumentException](entry(0, 0, -7, 3))
+      .getMessage === "distance should not be less than 0 or NaN")
+    assert(intercept[IllegalArgumentException](entry(7, -7, -7, 7, 3))
+      .getMessage === "maxX should be greater than minX and any of them should not be NaN")
+    assert(intercept[IllegalArgumentException](entry(-7, 7, 7, -7, 3))
+      .getMessage === "maxY should be greater than minY and any of them should not be NaN")
+    assert(intercept[IllegalArgumentException](entry(Float.NaN, 0, 3))
+      .getMessage === "x should not be NaN")
+    assert(intercept[IllegalArgumentException](entry(0, Float.NaN, 3))
+      .getMessage === "y should not be NaN")
+    assert(intercept[IllegalArgumentException](entry(Float.NaN, 0, -7, 3))
+      .getMessage === "x should not be NaN")
+    assert(intercept[IllegalArgumentException](entry(0, Float.NaN, -7, 3))
+      .getMessage === "y should not be NaN")
+    assert(intercept[IllegalArgumentException](entry(0, 0, Float.NaN, 3))
+      .getMessage === "distance should not be less than 0 or NaN")
+    assert(intercept[IllegalArgumentException](entry(Float.NaN, -7, 7, 7, 3))
+      .getMessage === "maxX should be greater than minX and any of them should not be NaN")
+    assert(intercept[IllegalArgumentException](entry(-7, Float.NaN, 7, 7, 3))
+      .getMessage === "maxY should be greater than minY and any of them should not be NaN")
+    assert(intercept[IllegalArgumentException](entry(-7, -7, Float.NaN, 7, 3))
+      .getMessage === "maxX should be greater than minX and any of them should not be NaN")
+    assert(intercept[IllegalArgumentException](entry(-7, -7, 7, Float.NaN, 3))
+      .getMessage === "maxY should be greater than minY and any of them should not be NaN")
   }
 
-  test("RTreeNil.y1") {
-    intercept[UnsupportedOperationException](RTree[Int](Nil).minY)
+  test("RTree.distance") {
+    assert(distance(0, 0, entry(0, 0, 3)) === 0.0f)
+    assert(distance(0, 0, entry(-1, -1, 1, 1, 3)) === 0.0f)
+    assert(distance(0, 0, entry(3, 4, 5, 6, 3)) === 5f)
+    assert(intercept[UnsupportedOperationException](distance(0, 0, RTree[Int](Nil)))
+      .getMessage === "RTreeNil.minY")
   }
 
-  test("RTreeNil.x2") {
-    intercept[UnsupportedOperationException](RTree[Int](Nil).maxX)
+  test("RTreeNil.minX") {
+    assert(intercept[UnsupportedOperationException](RTree[Int](Nil).minX)
+      .getMessage === "RTreeNil.minX")
   }
 
-  test("RTreeNil.y2") {
-    intercept[UnsupportedOperationException](RTree[Int](Nil).maxY)
+  test("RTreeNil.minY") {
+    assert(intercept[UnsupportedOperationException](RTree[Int](Nil).minY)
+      .getMessage === "RTreeNil.minY")
+  }
+
+  test("RTreeNil.maxX") {
+    assert(intercept[UnsupportedOperationException](RTree[Int](Nil).maxX)
+      .getMessage === "RTreeNil.maxX")
+  }
+
+  test("RTreeNil.maxY") {
+    assert(intercept[UnsupportedOperationException](RTree[Int](Nil).maxY)
+      .getMessage === "RTreeNil.maxY")
   }
 
   test("RTreeNil.entries") {
@@ -143,17 +184,17 @@ class RTreeTest extends FunSuite {
   test("RTree.entries") {
     assert(rtree.entries === entries)
     assert(intercept[IndexOutOfBoundsException](rtree.entries(-1)).getMessage === "-1")
-    assert(intercept[IndexOutOfBoundsException](rtree.entries(entries.length)).getMessage === "101")
+    assert(intercept[IndexOutOfBoundsException](rtree.entries(entries.length)).getMessage === "51")
   }
 
   test("RTree.nearestOne") {
     assert(rtree.nearestOption(0, 0) === Some(entries.head))
-    assert(rtree.nearestOption(100, 100) === Some(entries.init.init.last))
+    assert(rtree.nearestOption(100, 100) === Some(entries.last))
   }
 
   test("RTree.nearestK") {
     assert(rtree.nearestK(0, 0, k = 1) === Seq(entries(0)))
-    assert(rtree.nearestK(100, 100, k = 1) === Seq(entries.init.init.last))
+    assert(rtree.nearestK(100, 100, k = 1) === Seq(entries.last))
     assert(rtree.nearestK(0, 0, k = 0) === Seq())
     assert(rtree.nearestK(0, 0, k = 3) === Seq(
       entry(3.0f, 3.0f, 4.9f, 4.9f, 3),
@@ -183,9 +224,9 @@ class RTreeTest extends FunSuite {
   }
 
   test("RTree.searchAll by point") {
-    assert(rtree.searchAll(50, 50).map(_.value) === Seq(49, 50))
+    assert(rtree.searchAll(50, 50).map(_.value) === Seq(49, 50, 50))
     assert(intercept[IndexOutOfBoundsException](rtree.searchAll(50, 50).apply(-1)).getMessage === "-1")
-    assert(intercept[IndexOutOfBoundsException](rtree.searchAll(50, 50).apply(2)).getMessage === "2")
+    assert(intercept[IndexOutOfBoundsException](rtree.searchAll(50, 50).apply(3)).getMessage === "3")
   }
 
   test("RTree.search by point") {
@@ -193,11 +234,11 @@ class RTreeTest extends FunSuite {
     rtree.search(50, 50) { e =>
       found = found :+ e.value
     }
-    assert(found === Seq(49, 50))
+    assert(found === Seq(49, 50, 50))
   }
 
   test("RTree.searchAll by rectangle") {
-    assert(rtree.searchAll(50, 50, 51, 51).map(_.value) === Seq(49, 50, 51))
+    assert(rtree.searchAll(50, 50, 51, 51).map(_.value) === Seq(49, 50, 50))
     assert(intercept[IndexOutOfBoundsException](rtree.searchAll(50, 50, 51, 51).apply(-1)).getMessage === "-1")
     assert(intercept[IndexOutOfBoundsException](rtree.searchAll(50, 50, 51, 51).apply(3)).getMessage === "3")
   }
@@ -207,7 +248,7 @@ class RTreeTest extends FunSuite {
     rtree.search(50, 50, 51, 51) { e =>
       found = found :+ e.value
     }
-    assert(found === Seq(49, 50, 51))
+    assert(found === Seq(49, 50, 50))
   }
 
   test("RTree.toString") {
@@ -232,41 +273,5 @@ class RTreeTest extends FunSuite {
   test("RTree.hashCode") {
     assert(intercept[UnsupportedOperationException](RTree(entries).hashCode())
       .getMessage === "RTreeNode.hashCode")
-  }
-
-  test("RTreeEntryBinaryHeap.put") {
-    var heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, 1)
-    assert(heap.put(2, entry(0, 0, 2)) == 2)
-    assert(heap.put(1, entry(0, 0, 1)) == 1)
-    heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, 2)
-    assert(heap.put(2, entry(0, 0, 2)) == Float.PositiveInfinity)
-    assert(heap.put(1, entry(0, 0, 1)) == 2)
-    heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, 2)
-    assert(heap.put(3, entry(0, 0, 3)) == Float.PositiveInfinity)
-    assert(heap.put(2, entry(0, 0, 2)) == 3)
-    assert(heap.put(1, entry(0, 0, 1)) == 2)
-  }
-
-  test("RTreeEntryBinaryHeap.toIndexedSeq") {
-    val heap = new RTreeEntryBinaryHeap[Int](Float.PositiveInfinity, 7)
-    heap.put(1, entry(1, 1, 1))
-    heap.put(8, entry(8, 8, 8))
-    heap.put(2, entry(2, 2, 2))
-    heap.put(5, entry(5, 5, 5))
-    heap.put(9, entry(9, 9, 9))
-    heap.put(6, entry(6, 6, 6))
-    heap.put(3, entry(3, 3, 3))
-    heap.put(4, entry(4, 4, 4))
-    heap.put(0, entry(0, 0, 0))
-    heap.put(7, entry(7, 7, 7))
-    assert(heap.toIndexedSeq === Seq(
-      entry(6, 6, 6),
-      entry(5, 5, 5),
-      entry(3, 3, 3),
-      entry(1, 1, 1),
-      entry(4, 4, 4),
-      entry(2, 2, 2),
-      entry(0, 0, 0)
-    ))
   }
 }

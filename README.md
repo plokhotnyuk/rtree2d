@@ -44,8 +44,8 @@ Add import, create entries, build an R-tree from them, and use it for search a n
 by point or rectangle requests:
 
 ```scala
-import com.sizmek.rtree2d.core._                                                         
-import EuclideanPlane._                                                                  
+import com.sizmek.rtree2d.core.RTree                                                         
+import com.sizmek.rtree2d.core.RTree._                                                         
                                                                                          
 val box1 = entry(1.0f, 1.0f, 2.0f, 2.0f, "Box 1")                                        
 val box2 = entry(2.0f, 2.0f, 3.0f, 3.0f, "Box 2")                                        
@@ -70,14 +70,14 @@ RTree2D can be used for indexing spherical coordinates, where X-axis is used for
 in degrees. Result distances are in kilometers:
  
 ```scala
-import com.sizmek.rtree2d.core._
-import SphericalEarth._
+import com.sizmek.rtree2d.core.GeoRTree                                                         
+import com.sizmek.rtree2d.core.GeoRTree._                                                         
 
 val city1 = entry(50.0614f, 19.9383f, "Kraków")
 val city2 = entry(50.4500f, 30.5233f, "Kyiv")
 val entries = Seq(city1, city2)
 
-val rtree = RTree(entries, nodeCapacity = 4/* the best capacity for nearest queries for spherical geometry */)
+val rtree = GeoRTree(entries)
 
 assert(rtree.entries == entries)
 assert(rtree.nearestOption(0.0f, 0.0f) == Some(city1))

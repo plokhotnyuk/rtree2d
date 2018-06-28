@@ -1,6 +1,6 @@
 package com.sizmek.rtree2d.core
 
-import java.lang.Float.{intBitsToFloat, floatToRawIntBits}
+import java.lang.Float.{floatToRawIntBits, intBitsToFloat}
 import java.lang.Math._
 import java.util
 import java.util.Comparator
@@ -9,6 +9,57 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 
 object RTree {
+  /**
+    * Create an entry for a point and a value.
+    *
+    * @param x x value of the given point
+    * @param y y value of the given point
+    * @param value a value to store in the r-tree
+    * @tparam A a type of th value being put in the tree
+    * @return a newly created entry
+    */
+  def entry[A](x: Float, y: Float, value: A): RTreeEntry[A] = {
+    if (x != x) throw new IllegalArgumentException("x should not be NaN")
+    if (y != y) throw new IllegalArgumentException("y should not be NaN")
+    new RTreeEntry[A](x, y, x, y, value)
+  }
+
+  /**
+    * Create an entry for a rectangle and a value.
+    *
+    * @param minX x coordinate of the left bottom corner
+    * @param minY y coordinate of the left bottom corner
+    * @param maxX x coordinate of the right top corner
+    * @param maxY y coordinate of the right top corner
+    * @param value a value to store in the r-tree
+    * @tparam A a type of th value being put in the tree
+    * @return a newly created entry
+    */
+  def entry[A](minX: Float, minY: Float, maxX: Float, maxY: Float, value: A): RTreeEntry[A] = {
+    if (!(maxX >= minX))
+      throw new IllegalArgumentException("maxX should be greater than minX and any of them should not be NaN")
+    if (!(maxY >= minY))
+      throw new IllegalArgumentException("maxY should be greater than minY and any of them should not be NaN")
+    new RTreeEntry[A](minX, minY, maxX, maxY, value)
+  }
+
+  /**
+    * Create an entry specified by center point with distance and a value.
+    *
+    * @param x x value of the given point
+    * @param y y value of the given point
+    * @param distance a value of distance to edges of the entry bounding box
+    * @param value a value to store in the r-tree
+    * @tparam A a type of th value being put in the tree
+    * @return a newly created entry
+    */
+  def entry[A](x: Float, y: Float, distance: Float, value: A): RTreeEntry[A] = {
+    if (x != x) throw new IllegalArgumentException("x should not be NaN")
+    if (y != y) throw new IllegalArgumentException("y should not be NaN")
+    if (!(distance >= 0)) throw new IllegalArgumentException("distance should not be less than 0 or NaN")
+    new RTreeEntry[A](x - distance, y - distance, x + distance, y + distance, value)
+  }
+
   /**
     * Construct an RTree from a sequence of entries using STR packing.
     *
@@ -79,6 +130,14 @@ object RTree {
   private[core] def appendSpaces(sb: java.lang.StringBuilder, n: Int): java.lang.StringBuilder =
     if (n > 0) appendSpaces(sb.append(' '), n - 1)
     else sb
+
+  private[core] def distance[A](x: Float, y: Float, t: RTree[A]): Float = {
+    val dy = if (y < t.minY) t.minY - y else if (y < t.maxY) 0 else y - t.maxY
+    val dx = if (x < t.minX) t.minX - x else if (x < t.maxX) 0 else x - t.maxX
+    if (dy == 0) dx
+    else if (dx == 0) dy
+    else sqrt(dx * dx + dy * dy).toFloat
+  }
 
   @tailrec
   private[this] def pack[A](level: Array[RTree[A]], nodeCapacity: Int, xComp: Comparator[RTree[A]],
@@ -172,11 +231,9 @@ sealed trait RTree[A] {
     * @param x x value of the given point
     * @param y y value of the given point
     * @param maxDist an exclusive limit of the distance (infinity by default)
-    * @param distCalc a distance calculator provided according to geometry of indexed entries
     * @return an option of the nearest entry
     */
-  def nearestOption(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
-                   (implicit distCalc: DistanceCalculator): Option[RTreeEntry[A]] = {
+  def nearestOption(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity): Option[RTreeEntry[A]] = {
     var res: RTreeEntry[A] = null
     nearest(x, y, maxDist)((d, e) => {
       res = e
@@ -195,13 +252,11 @@ sealed trait RTree[A] {
     * @param y y value of the given point
     * @param k a maximum number of nearest entries to collect
     * @param maxDist an exclusive limit of the distance (infinity by default)
-    * @param distCalc a distance calculator provided according to geometry of indexed entries
     * @return a sequence of the nearest entries
     */
-  def nearestK(x: Float, y: Float, k: Int, maxDist: Float = Float.PositiveInfinity)
-              (implicit distCalc: DistanceCalculator): IndexedSeq[RTreeEntry[A]] =
+  def nearestK(x: Float, y: Float, k: Int, maxDist: Float = Float.PositiveInfinity): IndexedSeq[RTreeEntry[A]] =
     if (k <= 0) Vector.empty
-    else new RTreeEntryBinaryHeap[A](maxDist, k) {
+    else new DistanceHeap[RTreeEntry[A]](maxDist, k) {
       nearest(x, y, maxDist)((d, e) => put(d, e))
     }.toIndexedSeq
 
@@ -214,11 +269,9 @@ sealed trait RTree[A] {
     * @param y y value of the given point
     * @param maxDist an exclusive limit of the distance (infinity by default)
     * @param f the function that receives found values and their distances and returns the current maximum distance
-    * @param distCalc a distance calculator provided according to geometry of indexed entries
     * @return the distance to a found entry or initially submitted value of maxDist
     */
-  def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
-             (f: (Float, RTreeEntry[A]) => Float)(implicit distCalc: DistanceCalculator): Float
+  def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)(f: (Float, RTreeEntry[A]) => Float): Float
 
   /**
     * Call the provided `f` function with entries whose MBR contains the given point.
@@ -255,7 +308,7 @@ sealed trait RTree[A] {
       array(size) = v
       size += 1
     }
-    new RTreeEntryIndexedSeq[A](array, size)
+    new FixedIndexedSeq[RTreeEntry[A]](array, size)
   }
 
   /**
@@ -275,13 +328,13 @@ sealed trait RTree[A] {
       array(size) = v
       size += 1
     }
-    new RTreeEntryIndexedSeq[A](array, size)
+    new FixedIndexedSeq[RTreeEntry[A]](array, size)
   }
 
   /**
     * @return a sequence of all entries
     */
-  def entries: IndexedSeq[RTreeEntry[A]] = new AdaptedRTreeEntryIndexedSeq[A](RTree.lastLevel(RTree.this))
+  def entries: IndexedSeq[RTreeEntry[A]] = new AdaptedIndexedSeq[RTree[A], RTreeEntry[A]](RTree.lastLevel(RTree.this))
 
   /**
     * Appends a prettified string representation of the r-tree.
@@ -310,7 +363,7 @@ private final case class RTreeNil[A]() extends RTree[A] {
   def isEmpty: Boolean = true
 
   def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
-             (f: (Float, RTreeEntry[A]) => Float)(implicit distCalc: DistanceCalculator): Float = maxDist
+             (f: (Float, RTreeEntry[A]) => Float): Float = maxDist
 
   def search(x: Float, y: Float)(f: RTreeEntry[A] => Unit): Unit = ()
 
@@ -330,12 +383,13 @@ private final case class RTreeNil[A]() extends RTree[A] {
   * @param value a value to store in the r-tree
   * @tparam A a type of th value being put in the tree
   */
-final case class RTreeEntry[A] private[core] (minX: Float, minY: Float, maxX: Float, maxY: Float, value: A) extends RTree[A] {
+final case class RTreeEntry[A] private[core] (minX: Float, minY: Float, maxX: Float, maxY: Float,
+                                              value: A) extends RTree[A] {
   def isEmpty: Boolean = false
 
   def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
-             (f: (Float, RTreeEntry[A]) => Float)(implicit distCalc: DistanceCalculator): Float = {
-    val dist = distCalc.distance(x, y, this)
+             (f: (Float, RTreeEntry[A]) => Float): Float = {
+    val dist = RTree.distance(x, y, this)
     if (dist < maxDist) f(dist, this)
     else maxDist
   }
@@ -356,21 +410,21 @@ private final case class RTreeNode[A](minX: Float, minY: Float, maxX: Float, max
   def isEmpty: Boolean = false
 
   def nearest(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
-             (f: (Float, RTreeEntry[A]) => Float)(implicit distCalc: DistanceCalculator): Float = {
+             (f: (Float, RTreeEntry[A]) => Float): Float = {
     var minDist = maxDist
     val n = to - from
     var i = 0
     if (level(from).isInstanceOf[RTreeEntry[A]]) {
       while (i < n) {
         val e = level(from + i).asInstanceOf[RTreeEntry[A]]
-        val d = distCalc.distance(x, y, e)
+        val d = RTree.distance(x, y, e)
         if (d < minDist) minDist = f(d, e)
         i += 1
       }
     } else {
       val ps = new Array[Long](n)
       while (i < n) {
-        ps(i) = (from + i) | (floatToRawIntBits(distCalc.distance(x, y, level(from + i))).toLong << 32)
+        ps(i) = (from + i) | (floatToRawIntBits(RTree.distance(x, y, level(from + i))).toLong << 32)
         i += 1
       }
       java.util.Arrays.sort(ps) // Assuming that there no NaNs or negative values for distances
@@ -417,97 +471,4 @@ private final case class RTreeNode[A](minX: Float, minY: Float, maxX: Float, max
   override def equals(that: Any): Boolean = throw new UnsupportedOperationException("RTreeNode.equals")
 
   override def hashCode(): Int = throw new UnsupportedOperationException("RTreeNode.hashCode")
-}
-
-/**
-  * A binary heap collection of distance/entry pairs.
-  *
-  * @param maxDist an initial limit of distance
-  * @param maxSize a maximum size of the heap
-  * @tparam A a type of th value being put in entries
-  */
-class RTreeEntryBinaryHeap[A](maxDist: Float, maxSize: Int) {
-  private[this] var size = 0
-  private[this] var distances = new Array[Float](16)
-  private[this] var entries = new Array[RTreeEntry[A]](16)
-
-  def put(d: Float, e: RTreeEntry[A]): Float = {
-    var distances = this.distances
-    var entries = this.entries
-    if (size < maxSize) {
-      size += 1
-      if (size >= distances.length) {
-        val newSize = Math.min(distances.length << 1, maxSize + 1)
-        distances = java.util.Arrays.copyOf(distances, newSize)
-        entries = java.util.Arrays.copyOf(entries, newSize)
-        this.distances = distances
-        this.entries = entries
-      }
-      var i = size
-      var j = i >> 1
-      while (j > 0 && d >= distances(j)) {
-        distances(i) = distances(j)
-        entries(i) = entries(j)
-        i = j
-        j >>= 1
-      }
-      distances(i) = d
-      entries(i) = e
-      if (size == maxSize) distances(1) else maxDist
-    } else if (size > 0 && d < distances(1)) {
-      var i = 1
-      var j = i << 1
-      var k = j + 1
-      if (k <= size && distances(k) >= distances(j)) j = k
-      while (j <= size && distances(j) >= d) {
-        distances(i) = distances(j)
-        entries(i) = entries(j)
-        i = j
-        j = i << 1
-        k = j + 1
-        if (k <= size && distances(k) >= distances(j)) j = k
-      }
-      distances(i) = d
-      entries(i) = e
-      distances(1)
-    } else maxDist
-  }
-
-  def toIndexedSeq: IndexedSeq[RTreeEntry[A]] = new ShiftedRTreeEntryIndexedSeq(entries, size)
-}
-
-private class RTreeEntryIndexedSeq[A](array: Array[RTreeEntry[A]], size0: Int) extends IndexedSeq[RTreeEntry[A]] {
-  override def length: Int = size0
-
-  override def apply(idx: Int): RTreeEntry[A] =
-    if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
-    else array(idx)
-}
-
-private class AdaptedRTreeEntryIndexedSeq[A](array: Array[RTree[A]]) extends IndexedSeq[RTreeEntry[A]] {
-  override def length: Int = array.length
-
-  override def apply(idx: Int): RTreeEntry[A] =
-    if (idx < 0 || idx >= array.length) throw new IndexOutOfBoundsException(idx.toString)
-    else array(idx).asInstanceOf[RTreeEntry[A]]
-}
-
-private class ShiftedRTreeEntryIndexedSeq[A](array: Array[RTreeEntry[A]], size0: Int) extends IndexedSeq[RTreeEntry[A]] {
-  override def length: Int = size0
-
-  override def apply(idx: Int): RTreeEntry[A] =
-    if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
-    else array(idx + 1)
-}
-
-private class DejaVuCounter {
-  private[this] var n: Int = _
-
-  def inc(): Unit = n += 1
-
-  def decIfPositive(): Boolean =
-    if (n > 0) {
-      n -= 1
-      false
-    } else true
 }
