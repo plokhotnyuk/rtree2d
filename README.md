@@ -77,7 +77,7 @@ val city1 = entry(50.0614f, 19.9383f, "Kraków")
 val city2 = entry(50.4500f, 30.5233f, "Kyiv")
 val entries = Seq(city1, city2)
 
-val rtree = RTree(entries, nodeCapacity = 4/* the best capacity for nearest queries for spherical geometry */)
+val rtree = GeoRTree(entries)
 
 assert(rtree.entries == entries)
 assert(rtree.nearestOption(0.0f, 0.0f) == Some(city1))

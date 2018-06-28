@@ -32,9 +32,7 @@ object TestUtils {
     val minLon = min(lon1, lon2)
     val maxLat = max(lat1, lat2)
     val maxLon = max(lon1, lon2)
-    GeoRTreeEntry(minLat, minLon, maxLat, maxLon, lastId.getAndIncrement(),
-      sin(minLat * GeoRTree.radPerDegree), cos(minLat * GeoRTree.radPerDegree),
-      sin(maxLat * GeoRTree.radPerDegree), cos(maxLat * GeoRTree.radPerDegree))
+    GeoRTreeEntry(minLat, minLon, maxLat, maxLon, lastId.getAndIncrement())
   }
   val entryListGen: Gen[Seq[RTreeEntry[Int]]] =
     Gen.oneOf(0, 1, 10, 100, 1000).flatMap(n => Gen.listOfN(n, entryGen))

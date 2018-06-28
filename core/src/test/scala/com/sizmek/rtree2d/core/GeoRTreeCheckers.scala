@@ -12,7 +12,7 @@ class GeoRTreeCheckers extends WordSpec with Checkers {
     PropertyCheckConfiguration(minSuccessful = 100, maxDiscardedFactor = 100)
 
   implicit def orderingByName[A <: GeoRTreeEntry[Int]]: Ordering[A] =
-    Ordering.by(e => (e.minLat, e.minLon, e.maxLat, e.maxLon, e.value, e.sinMinLat, e.cosMinLat, e.sinMaxLat, e.cosMaxLat))
+    Ordering.by(e => (e.minLat, e.minLon, e.maxLat, e.maxLon, e.value))
 
   "GeoRTree" when {
     "asked to calculate distance from point to an RTree" should {

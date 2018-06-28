@@ -12,20 +12,13 @@ class GeoRTreeTest extends FunSuite {
   test("GeoRTree.entry") {
     assert(entry(0, 0, 3) === entry(0, 0, 0, 0, 3))
     assert(entry(-7, -7, 7, 7, 3) === entry(-7, -7, 7, 7, 3))
-    assert(entries(0, 0, distance = 778.36551f/*km*/, 3) === Seq(new GeoRTreeEntry(-7, -7, 7, 7, 3,
-      -0.12186933996466585, 0.9925461520637601, 0.12186933996466585, 0.9925461520637601)))
-    assert(entries(0, 0, distance = 7777777f/*km*/, 3) === Seq(new GeoRTreeEntry(-90, -180, 90, 180, 3,
-      -1.0, 0.0, 1.0, 0.0)))
-    assert(entries(90, 0, distance = 777f/*km*/, 3) === Seq(new GeoRTreeEntry(83.01228f, -180.0f, 90.0f, 180.0f, 3,
-      0.9925722503091157, 0.1216565983261831, 1.0, 0.0)))
-    assert(entries(0, 179, distance = 777f/*km*/, 3) === Seq(new GeoRTreeEntry(-6.987719f, -180.0f, 6.987719f, -174.01228f, 3,
-      -0.12165659832618299, 0.9925722503091157, 0.12165659832618299, 0.9925722503091157),
-      new GeoRTreeEntry(-6.987719f, 172.01228f, 6.987719f, 180.0f, 3,
-        -0.12165659832618299, 0.9925722503091157, 0.12165659832618299, 0.9925722503091157)))
-    assert(entries(0, -179, distance = 777f/*km*/, 3) === Seq(new GeoRTreeEntry(-6.987719f, -180.0f, 6.987719f, -172.01228f, 3,
-      -0.12165659832618299, 0.9925722503091157, 0.12165659832618299, 0.9925722503091157),
-      new GeoRTreeEntry(-6.987719f, 174.01228f, 6.987719f, 180.0f, 3,
-        -0.12165659832618299, 0.9925722503091157, 0.12165659832618299, 0.9925722503091157)))
+    assert(entries(0, 0, distance = 778.36551f/*km*/, 3) === Seq(new GeoRTreeEntry(-7, -7, 7, 7, 3)))
+    assert(entries(0, 0, distance = 7777777f/*km*/, 3) === Seq(new GeoRTreeEntry(-90, -180, 90, 180, 3)))
+    assert(entries(90, 0, distance = 777f/*km*/, 3) === Seq(new GeoRTreeEntry(83.01228f, -180.0f, 90.0f, 180.0f, 3)))
+    assert(entries(0, 179, distance = 777f/*km*/, 3) === Seq(new GeoRTreeEntry(-6.987719f, -180.0f, 6.987719f, -174.01228f, 3),
+      new GeoRTreeEntry(-6.987719f, 172.01228f, 6.987719f, 180.0f, 3)))
+    assert(entries(0, -179, distance = 777f/*km*/, 3) === Seq(new GeoRTreeEntry(-6.987719f, -180.0f, 6.987719f, -172.01228f, 3),
+      new GeoRTreeEntry(-6.987719f, 174.01228f, 6.987719f, 180.0f, 3)))
     assert(intercept[IllegalArgumentException](entry(-666, 0, 3))
       .getMessage === "lat should not be out of range from -90 to 90 or NaN")
     assert(intercept[IllegalArgumentException](entry(666, 0, 3))
@@ -109,26 +102,6 @@ class GeoRTreeTest extends FunSuite {
   test("GeoRTreeNil.maxLon") {
     assert(intercept[UnsupportedOperationException](GeoRTree[Int](Nil).maxLon)
       .getMessage === "GeoRTreeNil.maxLon")
-  }
-
-  test("GeoRTreeNil.sinMinLat") {
-    assert(intercept[UnsupportedOperationException](GeoRTree[Int](Nil).sinMinLat)
-      .getMessage === "GeoRTreeNil.sinMinLat")
-  }
-
-  test("GeoRTreeNil.cosMinLat") {
-    assert(intercept[UnsupportedOperationException](GeoRTree[Int](Nil).cosMinLat)
-      .getMessage === "GeoRTreeNil.cosMinLat")
-  }
-
-  test("GeoRTreeNil.sinMaxLat") {
-    assert(intercept[UnsupportedOperationException](GeoRTree[Int](Nil).sinMaxLat)
-      .getMessage === "GeoRTreeNil.sinMaxLat")
-  }
-
-  test("GeoRTreeNil.cosMaxLat") {
-    assert(intercept[UnsupportedOperationException](GeoRTree[Int](Nil).cosMaxLat)
-      .getMessage === "GeoRTreeNil.cosMaxLat")
   }
 
   test("GeoRTreeNil.entries") {

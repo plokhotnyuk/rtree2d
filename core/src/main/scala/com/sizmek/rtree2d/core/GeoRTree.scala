@@ -36,9 +36,7 @@ object GeoRTree {
       throw new IllegalArgumentException("lat should not be out of range from -90 to 90 or NaN")
     if (!(lon >= -180 && lon <= 180))
       throw new IllegalArgumentException("lon should not be out of range from -180 to 180 or NaN")
-    val sinLat = sin(lat * radPerDegree)
-    val cosLat = cos(lat * radPerDegree)
-    new GeoRTreeEntry[A](lat, lon, lat, lon, value, sinLat, cosLat, sinLat, cosLat)
+    new GeoRTreeEntry[A](lat, lon, lat, lon, value)
   }
 
   /**
@@ -59,10 +57,7 @@ object GeoRTree {
       throw new IllegalArgumentException("maxLat should not be greater than 90 or less than minLat or NaN")
     if (!(maxLon <= 180 && maxLon >= minLon))
       throw new IllegalArgumentException("maxLon should not be greater than 180 or less than minLat  or NaN")
-    val radMinLat = minLat * radPerDegree
-    val radMaxLat = maxLat * radPerDegree
-    new GeoRTreeEntry[A](minLat, minLon, maxLat, maxLon, value,
-      sin(radMinLat), cos(radMinLat), sin(radMaxLat), cos(radMaxLat))
+    new GeoRTreeEntry[A](minLat, minLon, maxLat, maxLon, value)
   }
 
   /**
@@ -92,64 +87,35 @@ object GeoRTree {
     val radLon = lon * radPerDegree
     val radLat = lat * radPerDegree
     val radDeltaLat = distance / earthMeanRadius
-    val radMinLat = radLat - radDeltaLat
-    val radMaxLat = radLat + radDeltaLat
-    var minLat = (radMinLat * degreePerRad).toFloat
-    var maxLat = (radMaxLat * degreePerRad).toFloat
+    var minLat = ((radLat - radDeltaLat) * degreePerRad).toFloat
+    var maxLat = ((radLat + radDeltaLat) * degreePerRad).toFloat
     if (minLat > -90 && maxLat < 90) {
       val deltaLon = asin(sin(radDeltaLat) / cos(radLat))
       val minLon = ((radLon - deltaLon) * degreePerRad).toFloat
       val maxLon = ((radLon + deltaLon) * degreePerRad).toFloat
-      val sinMinLat = sin(radMinLat)
-      val cosMinLat = cos(radMinLat)
-      val sinMaxLat = sin(radMaxLat)
-      val cosMaxLat = cos(radMaxLat)
       if (minLon < -180) {
-        new IndexedSeq2(new GeoRTreeEntry(minLat, -180, maxLat, maxLon, value,
-          sinMinLat, cosMinLat, sinMaxLat, cosMaxLat),
-          new GeoRTreeEntry(minLat, minLon + 360, maxLat, 180, value,
-            sinMinLat, cosMinLat, sinMaxLat, cosMaxLat))
+        new IndexedSeq2(new GeoRTreeEntry(minLat, -180, maxLat, maxLon, value),
+          new GeoRTreeEntry(minLat, minLon + 360, maxLat, 180, value))
       } else if (maxLon > 180) {
-        new IndexedSeq2(new GeoRTreeEntry(minLat, -180, maxLat, maxLon - 360, value,
-          sinMinLat, cosMinLat, sinMaxLat, cosMaxLat),
-          new GeoRTreeEntry(minLat, minLon, maxLat, 180, value,
-            sinMinLat, cosMinLat, sinMaxLat, cosMaxLat))
-      } else new IndexedSeq1(new GeoRTreeEntry(minLat, minLon, maxLat, maxLon, value,
-        sinMinLat, cosMinLat, sinMaxLat, cosMaxLat))
+        new IndexedSeq2(new GeoRTreeEntry(minLat, -180, maxLat, maxLon - 360, value),
+          new GeoRTreeEntry(minLat, minLon, maxLat, 180, value))
+      } else new IndexedSeq1(new GeoRTreeEntry(minLat, minLon, maxLat, maxLon, value))
     } else {
-      var sinMinLat = 0.0
-      var cosMinLat = 0.0
-      var sinMaxLat = 0.0
-      var cosMaxLat = 0.0
-      if (minLat <= -90) {
-        minLat = -90
-        sinMinLat = -1
-        cosMinLat = 0
-      } else {
-        sinMinLat = sin(radMinLat)
-        cosMinLat = cos(radMinLat)
-      }
-      if (maxLat >= 90) {
-        maxLat = 90
-        sinMaxLat = 1
-        cosMaxLat = 0
-      } else {
-        sinMaxLat = sin(radMaxLat)
-        cosMaxLat = cos(radMaxLat)
-      }
-      new IndexedSeq1(new GeoRTreeEntry(minLat, -180, maxLat, 180, value, sinMinLat, cosMinLat, sinMaxLat, cosMaxLat))
+      if (minLat <= -90) minLat = -90
+      if (maxLat >= 90) maxLat = 90
+      new IndexedSeq1(new GeoRTreeEntry(minLat, -180, maxLat, 180, value))
     }
   }
 
   /**
-    * Construct an GeoGeoRTree from a sequence of entries using STR packing.
+    * Construct an GeoRTree from a sequence of entries using STR packing.
     *
     * @param entries the sequence of entries
-    * @param nodeCapacity the maximum number of children nodes (16 by default)
+    * @param nodeCapacity the maximum number of children nodes (4 by default)
     * @tparam A a type of values being put in the tree
     * @return an GeoRTree instance
     */
-  def apply[A](entries: Iterable[GeoRTreeEntry[A]], nodeCapacity: Int = 16): GeoRTree[A] = {
+  def apply[A](entries: Iterable[GeoRTreeEntry[A]], nodeCapacity: Int = 4): GeoRTree[A] = {
     if (nodeCapacity <= 1) throw new IllegalArgumentException("nodeCapacity should be greater than 1")
     pack(entries.toArray[GeoRTree[A]], nodeCapacity, xComparator[A], yComparator[A])
   }
@@ -161,12 +127,12 @@ object GeoRTree {
     * @param rtree the GeoRTree
     * @param remove the sequence of entries to remove
     * @param insert the sequence of entries to insert
-    * @param nodeCapacity the maximum number of children nodes (16 by default)
+    * @param nodeCapacity the maximum number of children nodes (4 by default)
     * @tparam A a type of values being put in the tree
     * @return an GeoRTree instance
     */
   def update[A](rtree: GeoRTree[A], remove: Iterable[GeoRTreeEntry[A]] = Nil, insert: Iterable[GeoRTreeEntry[A]] = Nil,
-                nodeCapacity: Int = 16): GeoRTree[A] =
+                nodeCapacity: Int = 4): GeoRTree[A] =
     if ((rtree.isEmpty || remove.isEmpty) && insert.isEmpty) rtree
     else if (rtree.isEmpty && remove.isEmpty) {
       pack(insert.toArray[GeoRTree[A]], nodeCapacity, xComparator[A], yComparator[A])
@@ -224,24 +190,25 @@ object GeoRTree {
     val maxLon = t.maxLon
     val minLat = t.minLat
     val maxLat = t.maxLat
-    if (lon >= minLon && lon <= maxLon) {
-      if (lat < minLat) ((minLat - lat) * circumference).toFloat
-      else if (lat > maxLat) ((lat - maxLat) * circumference).toFloat
+    (if (lon >= minLon && lon <= maxLon) {
+      if (lat < minLat) (minLat - lat) * circumference
+      else if (lat > maxLat) (lat - maxLat) * circumference
       else 0
-    } else (acos {
+    } else acos(min({
+      val radMinLat = minLat * radPerDegree
       if (minLon == maxLon && minLat == maxLat) {
-        min(sinLat * t.sinMinLat + cosLat * t.cosMinLat * cos((minLon - lon) * radPerDegree), 1)
+        sinLat * sin(radMinLat) + cosLat * cos(radMinLat) * cos((minLon - lon) * radPerDegree)
       } else {
+        val radMaxLat = maxLat * radPerDegree
         val cosLonDelta = cos(min(normalize(minLon - lon), normalize(lon - maxLon)) * radPerDegree)
         val d = max(
-          min(sinLat * t.sinMinLat + cosLat * t.cosMinLat * cosLonDelta, 1),
-          min(sinLat * t.sinMaxLat + cosLat * t.cosMaxLat * cosLonDelta, 1))
+          sinLat * sin(radMinLat) + cosLat * cos(radMinLat) * cosLonDelta,
+          sinLat * sin(radMaxLat) + cosLat * cos(radMaxLat) * cosLonDelta)
         val radExtremumLat = atan(sinLat / (cosLat * cosLonDelta))
-        val extremumLat = radExtremumLat * degreePerRad
-        if (extremumLat <= minLat || extremumLat >= maxLat) d
-        else max(d, min(sinLat * sin(radExtremumLat) + cosLat * cos(radExtremumLat) * cosLonDelta, 1))
+        if (radExtremumLat <= radMinLat || radExtremumLat >= radMaxLat) d
+        else max(sinLat * sin(radExtremumLat) + cosLat * cos(radExtremumLat) * cosLonDelta, d)
       }
-    } * earthMeanRadius).toFloat
+    }, 1)) * earthMeanRadius).toFloat
   }
 
   private[this] def normalize(lonDelta: Float): Float = if (lonDelta < 0) lonDelta + 360 else lonDelta
@@ -289,8 +256,7 @@ object GeoRTree {
         if (maxLat < t.maxLat) maxLat = t.maxLat
         i += 1
       } while (i < to)
-      new GeoRTreeNode(minLat, minLon, maxLat, maxLon, level, from, to,
-        sin(minLat * radPerDegree), cos(minLat * radPerDegree), sin(maxLat * radPerDegree), cos(maxLat * radPerDegree))
+      new GeoRTreeNode(minLat, minLon, maxLat, maxLon, level, from, to)
     }
   }
 
@@ -461,14 +427,6 @@ sealed trait GeoRTree[A] {
     * @return a prettified string representation of the r-tree
     */
   override def toString: String = pretty(new java.lang.StringBuilder, 0).toString
-
-  private[core] def sinMinLat: Double
-
-  private[core] def cosMinLat: Double
-
-  private[core] def sinMaxLat: Double
-
-  private[core] def cosMaxLat: Double
 }
 
 private final case class GeoRTreeNil[A]() extends GeoRTree[A] {
@@ -491,14 +449,6 @@ private final case class GeoRTreeNil[A]() extends GeoRTree[A] {
 
   def pretty(sb: java.lang.StringBuilder, indent: Int): java.lang.StringBuilder =
     GeoRTree.appendSpaces(sb, indent).append("GeoRTreeNil()\n")
-
-  private[core] def sinMinLat: Double = throw new UnsupportedOperationException("GeoRTreeNil.sinMinLat")
-
-  private[core] def cosMinLat: Double = throw new UnsupportedOperationException("GeoRTreeNil.cosMinLat")
-
-  private[core] def sinMaxLat: Double = throw new UnsupportedOperationException("GeoRTreeNil.sinMaxLat")
-
-  private[core] def cosMaxLat: Double = throw new UnsupportedOperationException("GeoRTreeNil.cosMaxLat")
 }
 
 /**
@@ -511,11 +461,8 @@ private final case class GeoRTreeNil[A]() extends GeoRTree[A] {
   * @param value a value to store in the r-tree
   * @tparam A a type of th value being put in the tree
   */
-final case class GeoRTreeEntry[A] private[core] (minLat: Float, minLon: Float, maxLat: Float, maxLon: Float, value: A,
-                                                 private[core] val sinMinLat: Double,
-                                                 private[core] val cosMinLat: Double,
-                                                 private[core] val sinMaxLat: Double,
-                                                 private[core] val cosMaxLat: Double) extends GeoRTree[A] {
+final case class GeoRTreeEntry[A] private[core] (minLat: Float, minLon: Float, maxLat: Float, maxLon: Float,
+                                                 value: A) extends GeoRTree[A] {
   def isEmpty: Boolean = false
 
   def nearest(lat: Float, lon: Float, sinLat: Double, cosLat: Double, maxDist: Float = Float.PositiveInfinity)
@@ -537,8 +484,7 @@ final case class GeoRTreeEntry[A] private[core] (minLat: Float, minLon: Float, m
 }
 
 private final case class GeoRTreeNode[A](minLat: Float, minLon: Float, maxLat: Float, maxLon: Float,
-                                         level: Array[GeoRTree[A]], from: Int, to: Int, sinMinLat: Double,
-                                         cosMinLat: Double, sinMaxLat: Double, cosMaxLat: Double) extends GeoRTree[A] {
+                                         level: Array[GeoRTree[A]], from: Int, to: Int) extends GeoRTree[A] {
   def isEmpty: Boolean = false
 
   def nearest(lat: Float, lon: Float, sinLat: Double, cosLat: Double, maxDist: Float = Float.PositiveInfinity)
