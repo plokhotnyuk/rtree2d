@@ -116,11 +116,11 @@ The `apply` benchmark tests building of R-tries from a sequence of entires.
 
 [![apply](docs/overlap-1/apply.png)](docs/overlap-1/apply.png)
 
-The `nearest` benchmark tests search an entry of the R-tree that is the nearest to the specified point.
+The `nearest` benchmark tests search an entry of the R-tree that is nearest to the specified point.
 
 [![nearest](docs/overlap-1/nearest.png)](docs/overlap-1/nearest.png)
 
-The `nearestK` benchmark tests search up to specified number of entries in the R-tree that the nearest to the specified point.
+The `nearestK` benchmark tests search up to 10 entries in the R-tree that are nearest to the specified point.
 
 [![nearest](docs/overlap-1/nearestK.png)](docs/overlap-1/nearestK.png)
 
