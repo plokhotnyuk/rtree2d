@@ -32,7 +32,8 @@ object TestUtils {
   val distanceEntryListGen: Gen[Seq[(Float, RTreeEntry[Int])]] =
     Gen.oneOf(0, 1, 10, 100, 1000).flatMap(n => Gen.listOfN(n, distanceEntryGen))
 
-  implicit def orderingByName[A <: RTreeEntry[Int]]: Ordering[A] = Ordering.by(e => (e.minX, e.minY, e.maxX, e.maxY, e.value))
+  implicit def orderingByName[A <: RTreeEntry[Int]]: Ordering[A] =
+    Ordering.by(e => (e.minX, e.minY, e.maxX, e.maxY, e.value))
 
   def intersects[T](es: Seq[RTreeEntry[T]], x: Float, y: Float): Seq[RTreeEntry[T]] = intersects(es, x, y, x, y)
 
@@ -45,9 +46,9 @@ object TestUtils {
     e.minX <= maxX && minX <= e.maxX && e.minY <= maxY && minY <= e.maxY
 
   def euclideanDistance[T](x: Float, y: Float, t: RTree[T]): Float = {
-    val dx = Math.max(Math.abs((t.minX + t.maxX) / 2 - x) - (t.maxX - t.minX) / 2, 0)
-    val dy = Math.max(Math.abs((t.minY + t.maxY) / 2 - y) - (t.maxY - t.minY) / 2, 0)
-    Math.sqrt(dx * dx + dy * dy).toFloat
+    val dx = max(abs((t.minX + t.maxX) / 2 - x) - (t.maxX - t.minX) / 2, 0)
+    val dy = max(abs((t.minY + t.maxY) / 2 - y) - (t.maxY - t.minY) / 2, 0)
+    sqrt(dx * dx + dy * dy).toFloat
   }
 
   def alignedHorizontally[T](e: RTree[T], lat: Float, lon: Float): Boolean =

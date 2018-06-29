@@ -437,7 +437,7 @@ class RTreeEntryBinaryHeap[A](maxDist: Float, maxSize: Int) {
     if (size < maxSize) {
       size += 1
       if (size >= distances.length) {
-        val newSize = Math.min(distances.length << 1, maxSize + 1)
+        val newSize = min(distances.length << 1, maxSize + 1)
         distances = java.util.Arrays.copyOf(distances, newSize)
         entries = java.util.Arrays.copyOf(entries, newSize)
         this.distances = distances
