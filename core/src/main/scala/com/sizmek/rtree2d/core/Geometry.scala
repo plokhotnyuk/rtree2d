@@ -88,7 +88,6 @@ object EuclideanPlane {
 
 trait Spherical {
   private[this] val radPerDegree = PI / 180
-  private[this] val degreePerRad = 180 / PI
 
   /**
     * Create an entry specified by a point with spherical coordinates and a value.
@@ -154,15 +153,16 @@ trait Spherical {
     if (!(lon >= -180 && lon <= 180))
       throw new IllegalArgumentException("lon should not be out of range from -180 to 180 or NaN")
     if (!(distance >= 0)) throw new IllegalArgumentException("distance should not be less than 0 or NaN")
+    val radPerDegree = this.radPerDegree
     val radLon = lon * radPerDegree
     val radLat = lat * radPerDegree
     val deltaLat = distance / radius
-    val minLat = ((radLat - deltaLat) * degreePerRad).toFloat
-    val maxLat = ((radLat + deltaLat) * degreePerRad).toFloat
+    val minLat = ((radLat - deltaLat) / radPerDegree).toFloat
+    val maxLat = ((radLat + deltaLat) / radPerDegree).toFloat
     if (minLat > -90 && maxLat < 90) {
       val deltaLon = asin(sin(deltaLat) / cos(radLat))
-      val minLon = ((radLon - deltaLon) * degreePerRad).toFloat
-      val maxLon = ((radLon + deltaLon) * degreePerRad).toFloat
+      val minLon = ((radLon - deltaLon) / radPerDegree).toFloat
+      val maxLon = ((radLon + deltaLon) / radPerDegree).toFloat
       if (minLon < -180) {
         new IndexedSeq2(new RTreeEntry(minLat, -180, maxLat, maxLon, value),
           new RTreeEntry(minLat, minLon + 360, maxLat, 180, value))
@@ -184,7 +184,6 @@ trait Spherical {
     * https://github.com/mourner/geoflatbush/blob/master/index.mjs
     */
   def distanceCalculator(radius: Double): DistanceCalculator = new DistanceCalculator {
-    private[this] val radPerDegree = PI / 180
     private[this] val circumference = radius * radPerDegree
 
     override def distance[A](lat: Float, lon: Float, t: RTree[A]): Float = {
@@ -197,21 +196,29 @@ trait Spherical {
         else if (lat > maxLat) (lat - maxLat) * circumference
         else 0
       } else acos(min({
-        val radLat = lat * radPerDegree
-        val sinLat = sin(radLat)
-        val cosLat = cos(radLat)
+        val radPerDegree = Spherical.this.radPerDegree
+        val sinLat = sin(lat * radPerDegree)
+        val cosLat = sqrt(1 - sinLat * sinLat)
         val radMinLat = minLat * radPerDegree
+        val sinMinLat = sin(radMinLat)
+        val cosMinLat = sqrt(1 - sinMinLat * sinMinLat)
         if (minLon == maxLon && minLat == maxLat) {
-          sinLat * sin(radMinLat) + cosLat * cos((minLon - lon) * radPerDegree) * cos(radMinLat)
+          sinLat * sinMinLat + cosLat * cos((minLon - lon) * radPerDegree) * cosMinLat
         } else {
           val cosLatPerCosLonDelta = cosLat * cos(min(normalize(minLon - lon), normalize(lon - maxLon)) * radPerDegree)
-          val radExtremumLat = atan(sinLat / cosLatPerCosLonDelta)
           val radMaxLat = maxLat * radPerDegree
+          val sinMaxLat = sin(radMaxLat)
+          val cosMaxLat = sqrt(1 - sinMaxLat * sinMaxLat)
           val normalizedDistanceCos = max(
-            sinLat * sin(radMinLat) + cosLatPerCosLonDelta * cos(radMinLat),
-            sinLat * sin(radMaxLat) + cosLatPerCosLonDelta * cos(radMaxLat))
+            sinLat * sinMinLat + cosLatPerCosLonDelta * cosMinLat,
+            sinLat * sinMaxLat + cosLatPerCosLonDelta * cosMaxLat)
+          val radExtremumLat = atan(sinLat / cosLatPerCosLonDelta)
           if (radExtremumLat <= radMinLat || radExtremumLat >= radMaxLat) normalizedDistanceCos
-          else max(sinLat * sin(radExtremumLat) + cosLatPerCosLonDelta * cos(radExtremumLat), normalizedDistanceCos)
+          else {
+            val sinExtremumLat = sin(radExtremumLat)
+            val cosExtremumLat = sqrt(1 - sinExtremumLat * sinExtremumLat)
+            max(sinLat * sinExtremumLat + cosLatPerCosLonDelta * cosExtremumLat, normalizedDistanceCos)
+          }
         }
       }, 1)) * radius
     }.toFloat
@@ -271,9 +278,8 @@ object EllipsoidalEarth {
     * @return a radius (in km)
     */
   def radius(lat: Float): Double = {
-    val radLat = lat * radPerDegree
-    val sinLat = sin(radLat)
-    val cosLat = cos(radLat)
+    val sinLat = sin(lat * radPerDegree)
+    val cosLat = sqrt(1 - sinLat * sinLat)
     val s1 = earthEquatorialRadius * cosLat
     val s2 = earthPolarRadius * sinLat
     val s3 = earthEquatorialRadius * s1
