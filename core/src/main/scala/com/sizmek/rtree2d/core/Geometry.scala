@@ -157,14 +157,14 @@ trait Spherical {
     val radPerDegree = this.radPerDegree
     val radLon = lon * radPerDegree
     val radLat = lat * radPerDegree
-    val deltaLat = distance / radius
+    val latDelta = distance / radius
     val degreePerRad = this.degreePerRad
-    val minLat = ((radLat - deltaLat) * degreePerRad).toFloat
-    val maxLat = ((radLat + deltaLat) * degreePerRad).toFloat
+    val minLat = ((radLat - latDelta) * degreePerRad).toFloat
+    val maxLat = ((radLat + latDelta) * degreePerRad).toFloat
     if (minLat > -90 && maxLat < 90) {
-      val deltaLon = asin(sin(deltaLat) / cos(radLat))
-      val minLon = ((radLon - deltaLon) * degreePerRad).toFloat
-      val maxLon = ((radLon + deltaLon) * degreePerRad).toFloat
+      val lonDelta = asin(sin(latDelta) / cos(radLat))
+      val minLon = ((radLon - lonDelta) * degreePerRad).toFloat
+      val maxLon = ((radLon + lonDelta) * degreePerRad).toFloat
       if (minLon < -180) {
         new IndexedSeq2(new RTreeEntry(minLat, -180, maxLat, maxLon, value),
           new RTreeEntry(minLat, minLon + 360, maxLat, 180, value))
@@ -199,27 +199,25 @@ trait Spherical {
         else 0
       } else acos(min({
         val radPerDegree = Spherical.this.radPerDegree
-        val sinLat = sin(lat * radPerDegree)
-        val cosLat = sqrt(1 - sinLat * sinLat)
-        val radMinLat = minLat * radPerDegree
-        val sinMinLat = sin(radMinLat)
-        val cosMinLat = sqrt(1 - sinMinLat * sinMinLat)
+        val latSin = sin(lat * radPerDegree)
+        val latCos = sqrt(1 - latSin * latSin)
+        val minLatSin = sin(minLat * radPerDegree)
+        val minLatCos = sqrt(1 - minLatSin * minLatSin)
         if (minLon == maxLon && minLat == maxLat) {
-          sinLat * sinMinLat + cosLat * cos((minLon - lon) * radPerDegree) * cosMinLat
+          latSin * minLatSin + latCos * cos((minLon - lon) * radPerDegree) * minLatCos
         } else {
-          val cosLatPerCosLonDelta = cosLat * cos(min(normalize(minLon - lon), normalize(lon - maxLon)) * radPerDegree)
-          val radMaxLat = maxLat * radPerDegree
-          val sinMaxLat = sin(radMaxLat)
-          val cosMaxLat = sqrt(1 - sinMaxLat * sinMaxLat)
+          val maxLatSin = sin(maxLat * radPerDegree)
+          val maxLatCos = sqrt(1 - maxLatSin * maxLatSin)
+          val latCosPerLonDeltaCos = latCos * cos(min(normalize(minLon - lon), normalize(lon - maxLon)) * radPerDegree)
           val normalizedDistanceCos = max(
-            sinLat * sinMinLat + cosLatPerCosLonDelta * cosMinLat,
-            sinLat * sinMaxLat + cosLatPerCosLonDelta * cosMaxLat)
-          val tanExtremumLat = sinLat / cosLatPerCosLonDelta
-          if (tanExtremumLat * cosMinLat <= sinMinLat || tanExtremumLat * cosMaxLat >= sinMaxLat) normalizedDistanceCos
+            latSin * minLatSin + latCosPerLonDeltaCos * minLatCos,
+            latSin * maxLatSin + latCosPerLonDeltaCos * maxLatCos)
+          val extremumLatTan = latSin / latCosPerLonDeltaCos
+          if (extremumLatTan * minLatCos <= minLatSin || extremumLatTan * maxLatCos >= maxLatSin) normalizedDistanceCos
           else {
-            val cosExtremumLat = sqrt(1 / (1 + tanExtremumLat * tanExtremumLat))
-            val sinExtremumLat = tanExtremumLat / cosExtremumLat
-            max(sinLat * sinExtremumLat + cosLatPerCosLonDelta * cosExtremumLat, normalizedDistanceCos)
+            val extremumLatCos = sqrt(1 / (1 + extremumLatTan * extremumLatTan))
+            val extremumLatSin = extremumLatTan / extremumLatCos
+            max(latSin * extremumLatSin + latCosPerLonDeltaCos * extremumLatCos, normalizedDistanceCos)
           }
         }
       }, 1)) * radius
@@ -280,10 +278,10 @@ object EllipsoidalEarth {
     * @return a radius (in km)
     */
   def radius(lat: Float): Double = {
-    val sinLat = sin(lat * radPerDegree)
-    val cosLat = sqrt(1 - sinLat * sinLat)
-    val s1 = earthEquatorialRadius * cosLat
-    val s2 = earthPolarRadius * sinLat
+    val latSin = sin(lat * radPerDegree)
+    val latCos = sqrt(1 - latSin * latSin)
+    val s1 = earthEquatorialRadius * latCos
+    val s2 = earthPolarRadius * latSin
     val s3 = earthEquatorialRadius * s1
     val s4 = earthPolarRadius * s2
     sqrt((s3 * s3 + s4 * s4) / (s1 * s1 + s2 * s2))
