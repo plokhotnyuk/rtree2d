@@ -88,6 +88,7 @@ object EuclideanPlane {
 
 trait Spherical {
   private[this] val radPerDegree = PI / 180
+  private[this] val degreePerRad = 180 / PI
 
   /**
     * Create an entry specified by a point with spherical coordinates and a value.
@@ -157,12 +158,13 @@ trait Spherical {
     val radLon = lon * radPerDegree
     val radLat = lat * radPerDegree
     val deltaLat = distance / radius
-    val minLat = ((radLat - deltaLat) / radPerDegree).toFloat
-    val maxLat = ((radLat + deltaLat) / radPerDegree).toFloat
+    val degreePerRad = this.degreePerRad
+    val minLat = ((radLat - deltaLat) * degreePerRad).toFloat
+    val maxLat = ((radLat + deltaLat) * degreePerRad).toFloat
     if (minLat > -90 && maxLat < 90) {
       val deltaLon = asin(sin(deltaLat) / cos(radLat))
-      val minLon = ((radLon - deltaLon) / radPerDegree).toFloat
-      val maxLon = ((radLon + deltaLon) / radPerDegree).toFloat
+      val minLon = ((radLon - deltaLon) * degreePerRad).toFloat
+      val maxLon = ((radLon + deltaLon) * degreePerRad).toFloat
       if (minLon < -180) {
         new IndexedSeq2(new RTreeEntry(minLat, -180, maxLat, maxLon, value),
           new RTreeEntry(minLat, minLon + 360, maxLat, 180, value))
@@ -212,11 +214,11 @@ trait Spherical {
           val normalizedDistanceCos = max(
             sinLat * sinMinLat + cosLatPerCosLonDelta * cosMinLat,
             sinLat * sinMaxLat + cosLatPerCosLonDelta * cosMaxLat)
-          val radExtremumLat = atan(sinLat / cosLatPerCosLonDelta)
-          if (radExtremumLat <= radMinLat || radExtremumLat >= radMaxLat) normalizedDistanceCos
+          val tanExtremumLat = sinLat / cosLatPerCosLonDelta
+          if (tanExtremumLat * cosMinLat <= sinMinLat || tanExtremumLat * cosMaxLat >= sinMaxLat) normalizedDistanceCos
           else {
-            val sinExtremumLat = sin(radExtremumLat)
-            val cosExtremumLat = sqrt(1 - sinExtremumLat * sinExtremumLat)
+            val cosExtremumLat = sqrt(1 / (1 + tanExtremumLat * tanExtremumLat))
+            val sinExtremumLat = tanExtremumLat / cosExtremumLat
             max(sinLat * sinExtremumLat + cosLatPerCosLonDelta * cosExtremumLat, normalizedDistanceCos)
           }
         }
