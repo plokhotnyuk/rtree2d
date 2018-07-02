@@ -117,13 +117,15 @@ class GeometryTest extends FunSuite {
     assert(distance(0, 0, entry(0, 10, 3)) === distance(0, 180, entry(-10, -170, 10, 160, 3)))
     assert(distance(10, 0, entry(10, 10, 3)) === distance(10, -180, entry(-10, -160, 10, 170, 3)))
     assert(distance(-10, 0, entry(-10, 10, 3)) === distance(-10, 180, entry(-10, -170, 10, 160, 3)))
-    assert(distance(50.4500f, 30.5233f, entry(50.0614f, 19.9383f, 3)) === 753.0f +- 0.5f) // Kraków <-> Kyiv, in km
-    assert(distance(34.6937f, 135.5022f, entry(34.0522f, -118.2437f, 3)) === 9189.5f +- 0.5f) // Osaka <-> Los Angeles, in km
+    // Expected distances calculated by Vincenty’s formula: http://www.cqsrg.org/tools/GCDistance/
+    assert(distance(50.06632f, -5.71475f, entry(58.64402f, -3.07009f, 3)) === 969.954f +- 1.2f) // Sennen, UK <-> John o' Groats, UK, in km
+    assert(distance(50.4500f, 30.5233f, entry(50.0614f, 19.9383f, 3)) === 755.461f +- 2.4f) // Kraków <-> Kyiv, in km
+    assert(distance(34.6937f, 135.5022f, entry(34.0522f, -118.2437f, 3)) === 9209.079f +- 20f) // Osaka <-> Los Angeles, in km
     assert(intercept[UnsupportedOperationException](distance(0, 0, RTree[Int](Nil)))
       .getMessage === "RTreeNil.minY")
   }
 
-  test("SphericalEarth.radius") {
+  test("EllipsoidalEarth.radius") {
     import EllipsoidalEarth._
     assert(radius(0) === 6378.1370)
     assert(radius(90) === 6356.7523)
