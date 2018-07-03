@@ -108,9 +108,14 @@ Main metric tested by benchmarks is an execution time in nanoseconds. So lesser 
 the Run benchmarks section bellow how to test other metrics like allocations in bytes or number of some CPU events.     
 
 Benchmarks have the following parameters:
-- `size` is a number of entries in the R-tree
-- `shuffle` is a flag to turn on/off shuffling of entries before R-tree building
+- `geometry` to switch geometry between `plane` and `spherical` (currently available only for the RTree2D library)
+- `nearestMax` a maximum number of entries to return for nearest query 
+- `nodeCapacity` a maximum number of children nodes (BEWARE: Archery use hard coded 50 for limiting a number of children nodes)
 - `overlap` is a size of entries relative to interval between them 
+- `partToUpdate` a part of RTree to update
+- `rectSize` is a size of rectangle request relative to interval between points
+- `shuffle` is a flag to turn on/off shuffling of entries before R-tree building
+- `size` is a number of entries in the R-tree
 
 The `apply` benchmark tests building of R-tries from a sequence of entires.
 
@@ -181,7 +186,7 @@ series to separated images. Here is an example how it can be called for specifie
 parameter, and patterns of benchmark names:
 
 ```sh
-sbt 'charts -jvm /usr/lib/jvm/java-8-oracle/bin/java -p overlap=1 .*apply.* .*search.*'
+sbt 'charts -jvm /usr/lib/jvm/java-8-oracle/bin/java -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=16 -p partToUpdate=0.1 -p geometry=plane .*apply.* .*search.*'
 ```
 
 Results will be places in a cross-build suffixed subdirectory of the `benchmark/target` directory in `*.png` files:

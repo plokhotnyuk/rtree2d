@@ -25,28 +25,28 @@ case class PointOfInterest(x: Float, y: Float)
 ))
 abstract class BenchmarkBase {
   @Param(Array("1", "10", "100", "1000", "10000", "100000", "1000000", "10000000"))
-  var size = 1000 // size of RTree
+  var size = 1000 // a number of entries in the R-tree
 
   @Param(Array("false", "true"))
-  var shuffle = true // shuffle entries or use them sorted by RTree
+  var shuffle = true // a flag to turn on/off shuffling of entries before R-tree building
 
   @Param(Array("1", "10"))
-  var overlap = 1f // size of entries relative to interval between them
+  var overlap = 1f // a size of entries relative to interval between them
 
-  //@Param(Array("10", "100"))
-  var rectSize = 10.0f // size of rect relative to interval between points
+  @Param(Array("10", "100"))
+  var rectSize = 10.0f // a size of rectangle request relative to interval between points
 
-  //@Param(Array("10", "100"))
-  var nearestMax = 10 // maximum number of entries to return for nearest query
+  @Param(Array("10", "100"))
+  var nearestMax = 10 // a maximum number of entries to return for nearest query
 
-  //@Param(Array("8", "16"))
-  var nodeCapacity = 16 // Archery use hard coded 50 for limiting a number of children nodes
+  @Param(Array("4", "16"))
+  var nodeCapacity = 16 // a maximum number of children nodes (BEWARE: Archery use hard coded 50 for limiting a number of children nodes)
 
-  //@Param(Array("0.01", "0.1"))
-  var partToAddOrRemove = 0.1f // part of RTree to add or remove
+  @Param(Array("0.01", "0.1"))
+  var partToUpdate = 0.1f // a part of RTree to update
 
-  //@Param(Array("plane", "spherical"))
-  var geometry = "plane"
+  @Param(Array("plane", "spherical"))
+  var geometry = "plane" // to switch geometry between `plane` and `spherical` (currently available only for the RTree2D library)
 
   def doShuffle[A](as: Array[A]): Unit = {
     val rnd = new util.Random(7777777)

@@ -11,7 +11,7 @@ import sbt._
 import com.github.plokhotnyuk.jsoniter_scala.macros._
 import com.github.plokhotnyuk.jsoniter_scala.core._
 
-import scala.collection.SortedMap
+import scala.collection.{SortedMap, immutable}
 
 case class BenchmarkMetric(score: Double, scoreConfidence: (Double, Double))
 
@@ -31,8 +31,10 @@ object Bencharts {
     */
   def apply(jmhReport: File, yAxisTitle: String, targetDir: File): Unit = {
     val allResults = readFromArray(IO.readBytes(jmhReport))
-    allResults.groupBy(benchmarkName).foreach { case (benchmark, results) =>
-      val seriess = SortedMap(results.groupBy(otherParams).toSeq:_*)
+    val constParams = allResults.flatMap(_.params.toSeq).groupBy(_._1)
+      .collect { case (k, kvs) if kvs.distinct.size == 1 => kvs.head }.toSeq
+    allResults.groupBy(benchmarkName(constParams)).foreach { case (benchmark, results) =>
+      val seriess = SortedMap(results.groupBy(otherParams(constParams)).toSeq:_*)
         .map { case (params, iterations) =>
           val ySeries = new YIntervalSeries(params)
           // each benchmark has been run with several sizes (10, 100, 1000, etc.)
@@ -62,7 +64,7 @@ object Bencharts {
         }
       })
       val chart = new JFreeChart(benchmark, JFreeChart.DEFAULT_TITLE_FONT, plot, true)
-      ImageIO.write(chart.createBufferedImage(1024, 768), "png", targetDir / s"$benchmark.png")
+      ImageIO.write(chart.createBufferedImage(1200, 900), "png", targetDir / s"$benchmark.png")
     }
   }
 
@@ -71,12 +73,17 @@ object Bencharts {
     setNumberFormatOverride(NumberFormat.getInstance())
   }
 
-  private def benchmarkName(result: BenchmarkResult): String =
-    result.benchmark.split("""\.""").last
+  private def benchmarkName(constParams: Seq[(String, String)])(result: BenchmarkResult): String = {
+    val benchName = result.benchmark.split("""\.""").last
+    constParams.map { case (k, v) =>
+      s"$k=$v"
+    }.sorted.mkString(s"$benchName[", ",", "]")
+  }
 
-  private def otherParams(result: BenchmarkResult): String = {
+  private def otherParams(constParams: Seq[(String, String)])(result: BenchmarkResult): String = {
+    val constParamNames = constParams.map(_._1).toSet
     val benchSuitName = result.benchmark.split("""\.""").reverse.tail.head
-    result.params.filterKeys(_ != "size").map { case (k, v) =>
+    result.params.filterKeys(k => k != "size" && !constParamNames(k)).map { case (k, v) =>
       s"$k=$v"
     }.toSeq.sorted.mkString(s"$benchSuitName[", ",", "]")
   }

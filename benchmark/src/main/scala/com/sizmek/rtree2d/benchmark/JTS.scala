@@ -38,8 +38,8 @@ class JTS extends BenchmarkBase {
     xys = genRequests(points)
     curr = 0
     if (!shuffle) rtreeEntries = rtree.entries.toArray
-    entriesToAdd = java.util.Arrays.copyOf(rtreeEntries, (size * partToAddOrRemove).toInt)
-    entriesToRemove = rtreeEntries.slice(size - (size * partToAddOrRemove).toInt, size)
+    entriesToAdd = java.util.Arrays.copyOf(rtreeEntries, (size * partToUpdate).toInt)
+    entriesToRemove = rtreeEntries.slice(size - (size * partToUpdate).toInt, size)
   }
 
   @Benchmark
