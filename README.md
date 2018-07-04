@@ -101,8 +101,8 @@ for other functions which allows filtering or accumulating found entries without
 
 Charts below are latest results of benchmarks which compare RTree2D with [Archery](https://github.com/non/archery),
 [David Monten's rtree](https://github.com/davidmoten/rtree), and [JTC](https://github.com/locationtech/jts) libraries 
-using JDK 8 on the following environment: Intel® Core™ i7-7700HQ CPU @ 2.8GHz (max 3.8GHz), RAM 16Gb DDR4-2400, 
-Ubuntu 18.04, latest versions of Oracle JDK 8.
+using JDK 10 on the following environment: Intel® Core™ i7-7700HQ CPU @ 3.6GHz (max 4.2GHz), RAM 16Gb DDR4-2400, 
+Ubuntu 18.04, latest versions of Oracle JDK 10.
 
 Main metric tested by benchmarks is an execution time in nanoseconds. So lesser values are better. Please, check out 
 the Run benchmarks section bellow how to test other metrics like allocations in bytes or number of some CPU events.     
@@ -119,32 +119,32 @@ Benchmarks have the following parameters:
 
 The `apply` benchmark tests building of R-tries from a sequence of entires.
 
-[![apply](docs/overlap-1/apply.png)](docs/overlap-1/apply.png)
+[![apply](docs/overlap-1/apply[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)](docs/overlap-1/apply[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)
 
 The `nearest` benchmark tests search an entry of the R-tree that is nearest to the specified point.
 
-[![nearest](docs/overlap-1/nearest.png)](docs/overlap-1/nearest.png)
+[![nearest](docs/overlap-1/nearest[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)](docs/overlap-1/nearest[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)
 
 The `nearestK` benchmark tests search up to 10 entries in the R-tree that are nearest to the specified point.
 
-[![nearest](docs/overlap-1/nearestK.png)](docs/overlap-1/nearestK.png)
+[![nearest](docs/overlap-1/nearestK[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)](docs/overlap-1/nearestK[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)
 
 The `searchByPoint` benchmark tests requests that search entries with intersects with the specified point.
 
-[![searchByPoint](docs/overlap-1/searchByPoint.png)](docs/overlap-1/searchByPoint.png)
+[![searchByPoint](docs/overlap-1/searchByPoint[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)](docs/overlap-1/searchByPoint[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)
 
 The `searchByRectangle` benchmark tests requests that search entries with intersects with the specified rectangle that
 can intersect with up to 100 entries.
 
-[![searchByRectangle](docs/overlap-1/searchByRectangle.png)](docs/overlap-1/searchByRectangle.png)
+[![searchByRectangle](docs/overlap-1/searchByRectangle[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)](docs/overlap-1/searchByRectangle[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)
 
 The `entries` benchmark tests returning of all entries that are indexed in the R-tree.
 
-[![entries](docs/overlap-1/entries.png)](docs/overlap-1/entries.png)
+[![entries](docs/overlap-1/entries[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)](docs/overlap-1/entries[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)
 
 The `update` benchmark tests rebuild of R-tree with removing of +10% entries and adding of +10% another entries to it.
 
-[![update](docs/overlap-1/update.png)](docs/overlap-1/update.png)
+[![update](docs/overlap-1/update[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)](docs/overlap-1/update[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png)
 
 
 Charts with their results are available in subdirectories (each for different value of overlap parameter) of the
@@ -186,17 +186,16 @@ series to separated images. Here is an example how it can be called for specifie
 parameter, and patterns of benchmark names:
 
 ```sh
-sbt 'charts -jvm /usr/lib/jvm/java-8-oracle/bin/java -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=16 -p partToUpdate=0.1 -p geometry=plane .*apply.* .*search.*'
+sbt 'charts -jvm /usr/lib/jvm/jdk-10/bin/java -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=16 -p partToUpdate=0.1 -p geometry=plane .*apply.* .*search.*'
 ```
 
 Results will be places in a cross-build suffixed subdirectory of the `benchmark/target` directory in `*.png` files:
 ```sh
-$ ls benchmark/target/scala-2.12/*.*n*
+$ ls benchmark/target/scala-2.12/*.png
 
-benchmark/target/scala-2.12/apply.png
-benchmark/target/scala-2.12/searchByPoint.png
-benchmark/target/scala-2.12/searchByRectangle.png
-benchmark/target/scala-2.12/benchmark.json
+benchmark/target/scala-2.12/apply[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png
+benchmark/target/scala-2.12/searchByPoint[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png
+benchmark/target/scala-2.12/searchByRectangle[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png
 ``` 
 
 ### Publish locally
