@@ -118,9 +118,14 @@ class GeometryTest extends FunSuite {
     assert(distance(10, 0, entry(10, 10, 3)) === distance(10, -180, entry(-10, -160, 10, 170, 3)))
     assert(distance(-10, 0, entry(-10, 10, 3)) === distance(-10, 180, entry(-10, -170, 10, 160, 3)))
     // Expected distances calculated by Vincenty’s formula: http://www.cqsrg.org/tools/GCDistance/
-    assert(distance(50.06632f, -5.71475f, entry(58.64402f, -3.07009f, 3)) === 969.954f +- 1.2f) // Sennen, UK <-> John o' Groats, UK, in km
-    assert(distance(50.4500f, 30.5233f, entry(50.0614f, 19.9383f, 3)) === 755.461f +- 2.4f) // Kraków <-> Kyiv, in km
-    assert(distance(34.6937f, 135.5022f, entry(34.0522f, -118.2437f, 3)) === 9209.079f +- 20f) // Osaka <-> Los Angeles, in km
+    assert(distance(50.0663f, -5.7148f, entry(58.6440f, -3.0701f, 3)) === 969.955f +- 1.1f) // Sennen, UK <-> John o' Groats, UK, in km
+    assert(distance(50.0663f, -5.7148f, entry(51.5074f, -0.1278f, 3)) === 425.216f +- 1.2f) // Sennen, UK <-> London, UK, in km
+    assert(distance(50.0663f, -5.7148f, entry(50.0614f, 19.9383f, 3)) === 1827.700f +- 5.7f) // Sennen, UK <-> Krakow, UK, in km
+    assert(distance(50.4500f, 30.5233f, entry(50.0614f, 19.9383f, 3)) === 755.461f +- 2.4f) // Kyiv, UA <-> Kraków, PL, in km
+    assert(distance(34.6937f, 135.5022f, entry(34.0522f, -118.2437f, 3)) === 9209.079f +- 20f) // Osaka, JP <-> Los Angeles, US, in km
+    assert(distance(41.9028f, 12.4964f, entry(-34.6037f, -58.3816f, 3)) === 11131.599f +- 20f) // Rome, IT <-> Buenos Aires, AR, in km
+    assert(distance(90, 0, entry(-90, 0, 3)) === 20003.931f +- 12f) // North Pole <-> South Pole, in km
+    assert(distance(0, 0, entry(0, 180, 3)) === 20037.508f +- 23f) // Null Island <-> Anti-meridian, in km
     assert(intercept[UnsupportedOperationException](distance(0, 0, RTree[Int](Nil)))
       .getMessage === "RTreeNil.minY")
   }

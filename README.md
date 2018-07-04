@@ -88,9 +88,8 @@ assert(rtree.searchAll(50f, 30f, 51f, 31f) == Seq(city2))
 assert(rtree.searchAll(0f, -180f, 90f, 180f).forall(entries.contains))
 ```
 
-Used spherical model of the Earth with the mean radius allows to get +0.2% accuracy on poles, -0.1% on the equator, and 
-less than ±0.05% on medium latitudes. Precision of 32-bit float number allows to locate points and calculate distances 
-with an error ±0.5 meters.
+Used spherical model of the Earth with the mean radius allows to get ±0.3% accuracy. Precision of 32-bit float number
+allows to locate points and calculate distances with an error ±1 meter (at anti-meridian).
 
 Please, check out
 [Scala docs in sources](https://github.com/Sizmek/rtree2d/blob/master/core/src/main/scala/com/sizmek/rtree2d/core/RTree.scala) 
