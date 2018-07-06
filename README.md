@@ -34,7 +34,7 @@ resolvers += Resolver.jcenterRepo
 Add the library to a dependency list:
 
 ```sbt
-libraryDependencies += "com.sizmek.rtree2d" %% "core" % "0.5.0"
+libraryDependencies += "com.sizmek.rtree2d" %% "rtree2d-core" % "0.5.0"
  ```
 
 Entries of R-tree are represented by `RTreeEntry` instances which contains payload and 4 coordinates of the minimum 
@@ -156,7 +156,8 @@ Charts with their results are available in subdirectories (each for different va
 To compile, run tests, check coverage for different Scala versions use a command:
 
 ```sh
-sbt clean +coverage +test +coverageReport +mimaReportBinaryIssues
+sbt ++2.11.12 clean coverage test coverageReport mimaReportBinaryIssues
+sbt ++2.12.6 clean coverage test coverageReport mimaReportBinaryIssues
 ```
 
 ### Run benchmarks
@@ -169,10 +170,10 @@ Feel free to modify benchmarks and check how it works with your data, JDK, and S
 To see throughput with allocation rate run benchmarks with GC profiler using the following command:
 
 ```sh
-sbt -no-colors clean 'benchmark/jmh:run -prof gc -rf json -rff rtries.json .*'
+sbt -no-colors clean 'rtree2d-benchmark/jmh:run -prof gc -rf json -rff rtries.json .*'
 ```
 
-It will save benchmark report in `benchmark/rtries.json` file.
+It will save benchmark report in `rtree2d-benchmark/rtries.json` file.
 
 Results that are stored in JSON can be easy plotted in [JMH Visualizer](http://jmh.morethan.io/) by drugging & dropping
 of your file(s) to the drop zone or using the `source` or `sources` parameters with an HTTP link to your file(s) in the 
@@ -185,16 +186,16 @@ series to separated images. Here is an example how it can be called for specifie
 parameter, and patterns of benchmark names:
 
 ```sh
-sbt 'charts -jvm /usr/lib/jvm/jdk-10/bin/java -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=16 -p partToUpdate=0.1 -p geometry=plane .*apply.* .*search.*'
+sbt 'charts -jvm /usr/lib/jvm/jdk-11/bin/java -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=16 -p partToUpdate=0.1 -p geometry=plane .*apply.* .*search.*'
 ```
 
 Results will be places in a cross-build suffixed subdirectory of the `benchmark/target` directory in `*.png` files:
 ```sh
-$ ls benchmark/target/scala-2.12/*.png
+$ ls rtree2d-benchmark/target/scala-2.12/*.png
 
-benchmark/target/scala-2.12/apply[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png
-benchmark/target/scala-2.12/searchByPoint[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png
-benchmark/target/scala-2.12/searchByRectangle[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png
+rtree2d-benchmark/target/scala-2.12/apply[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png
+rtree2d-benchmark/target/scala-2.12/searchByPoint[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png
+rtree2d-benchmark/target/scala-2.12/searchByRectangle[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png
 ``` 
 
 ### Publish locally

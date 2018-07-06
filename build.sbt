@@ -95,11 +95,11 @@ lazy val publishSettings = Seq(
 )
 
 lazy val rtree2d = project.in(file("."))
-  .aggregate(core, benchmark)
+  .aggregate(`rtree2d-core`, `rtree2d-benchmark`)
   .settings(commonSettings: _*)
   .settings(noPublishSettings: _*)
 
-lazy val core = project
+lazy val `rtree2d-core` = project
   .settings(commonSettings: _*)
   .settings(mimaSettings: _*)
   .settings(publishSettings: _*)
@@ -111,9 +111,9 @@ lazy val core = project
     )
   )
 
-lazy val benchmark = project
+lazy val `rtree2d-benchmark` = project
   .enablePlugins(JmhPlugin)
-  .dependsOn(core)
+  .dependsOn(`rtree2d-core`)
   .settings(commonSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(
