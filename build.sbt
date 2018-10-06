@@ -55,7 +55,7 @@ lazy val commonSettings = Seq(
     ),
   ),
   resolvers += Resolver.jcenterRepo,
-  scalaVersion := "2.12.6",
+  scalaVersion := "2.12.7",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
@@ -104,7 +104,7 @@ lazy val `rtree2d-core` = project
   .settings(mimaSettings: _*)
   .settings(publishSettings: _*)
   .settings(
-    crossScalaVersions := Seq("2.13.0-M4", "2.12.6", "2.11.12"),
+    crossScalaVersions := Seq("2.13.0-M4", "2.12.7", "2.11.12"),
     libraryDependencies ++= Seq(
       "org.scalacheck" %% "scalacheck" % "1.14.0" % Test,
       "org.scalatest" %% "scalatest" % "3.0.6-SNAP2" % Test
@@ -117,7 +117,7 @@ lazy val `rtree2d-benchmark` = project
   .settings(commonSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(
-    crossScalaVersions := Seq("2.12.6", "2.11.12"),
+    crossScalaVersions := Seq("2.12.7", "2.11.12"),
     libraryDependencies ++= Seq(
       "org.locationtech.jts" % "jts-core" % "1.15.1",
       "com.github.davidmoten" % "rtree" % "0.8.6",

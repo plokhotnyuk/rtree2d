@@ -2,15 +2,14 @@ language: scala
 matrix:
   include:
     - os: linux
-      jdk: oraclejdk9
-      scala: 2.12.6
-      addons:
-        apt:
-          packages:
-            - oracle-java9-installer # Forces use of newer JDK 9 build
+      jdk: oraclejdk11
+      scala: 2.12.7
     - os: linux
-      jdk: openjdk8
-      scala: 2.12.6
+      jdk: oraclejdk8
+      scala: 2.12.7
+    - os: linux
+      jdk: oraclejdk11
+      scala: 2.11.12
     - os: linux
       jdk: oraclejdk8
       scala: 2.11.12
