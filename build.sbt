@@ -104,11 +104,16 @@ lazy val `rtree2d-core` = project
   .settings(mimaSettings: _*)
   .settings(publishSettings: _*)
   .settings(
-    crossScalaVersions := Seq("2.13.0-M4", "2.12.7", "2.11.12"),
-    libraryDependencies ++= Seq(
-      "org.scalacheck" %% "scalacheck" % "1.14.0" % Test,
-      "org.scalatest" %% "scalatest" % "3.0.6-SNAP3" % Test
-    )
+    crossScalaVersions := Seq("2.13.0-M5", "2.13.0-M4", "2.12.7", "2.11.12"),
+    libraryDependencies ++= {
+      val scalatestV =
+        if (scalaVersion.value == "2.13.0-M4") "3.0.6-SNAP2"
+        else "3.0.6-SNAP3"
+      Seq(
+        "org.scalacheck" %% "scalacheck" % "1.14.0" % Test,
+        "org.scalatest" %% "scalatest" % scalatestV % Test
+      )
+    }
   )
 
 lazy val `rtree2d-benchmark` = project
@@ -118,13 +123,18 @@ lazy val `rtree2d-benchmark` = project
   .settings(noPublishSettings: _*)
   .settings(
     crossScalaVersions := Seq("2.12.7", "2.11.12"),
-    libraryDependencies ++= Seq(
-      "org.locationtech.jts" % "jts-core" % "1.16.0",
-      "com.github.davidmoten" % "rtree" % "0.8.6",
-      "org.spire-math" %% "archery" % "0.6.0",
-      "pl.project13.scala" % "sbt-jmh-extras" % "0.3.4",
-      "org.scalatest" %% "scalatest" % "3.0.6-SNAP3" % Test
-    ),
+    libraryDependencies ++= {
+      val scalatestV =
+        if (scalaVersion.value == "2.13.0-M4") "3.0.6-SNAP2"
+        else "3.0.6-SNAP3"
+      Seq(
+        "org.locationtech.jts" % "jts-core" % "1.16.0",
+        "com.github.davidmoten" % "rtree" % "0.8.6",
+        "org.spire-math" %% "archery" % "0.6.0",
+        "pl.project13.scala" % "sbt-jmh-extras" % "0.3.4",
+        "org.scalatest" %% "scalatest" % scalatestV % Test
+      )
+    },
     charts := Def.inputTaskDyn {
       val jmhParams = Def.spaceDelimited().parsed
       val targetDir = crossTarget.value
