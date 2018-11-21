@@ -10,10 +10,10 @@ queries.
 ## Goals
 
 Main our requirements was:
-- efficiency: we wanted the R-Tree to be able to search throught millions of entries efficiently even in case of highly 
+- *efficiency* - we wanted the R-Tree to be able to search throught millions of entries efficiently even in case of highly 
 overlapped entries, also, we needed to be able to quickly rebuild R-tries with a per minute rate producing minimum 
 pressure on GC
-- immutability: different threads needed to be able to work with the same R-tree without problems,
+- *immutability* - different threads needed to be able to work with the same R-tree without problems,
 at the same time some thread can build a new version of the R-tree reusing immutable entries from the previous version
 
 To archive these goals we have used:
@@ -102,8 +102,8 @@ for other functions which allows filtering or accumulating found entries without
 
 Charts below are latest results of benchmarks which compare RTree2D with [Archery](https://github.com/non/archery),
 [David Monten's rtree](https://github.com/davidmoten/rtree), and [JTC](https://github.com/locationtech/jts) libraries 
-using JDK 10 on the following environment: Intel® Core™ i7-7700HQ CPU @ 3.6GHz (max 4.2GHz), RAM 16Gb DDR4-2400, 
-Ubuntu 18.04, Oracle JDK 11.
+on the following environment: Intel® Core™ i7-7700HQ CPU @ 3.6GHz (max 4.2GHz), RAM 16Gb DDR4-2400, Ubuntu 18.04, 
+Oracle JDK 11.
 
 Main metric tested by benchmarks is an execution time in nanoseconds. So lesser values are better. Please, check out 
 the Run benchmarks section bellow how to test other metrics like allocations in bytes or number of some CPU events.     
@@ -159,7 +159,7 @@ To compile, run tests, check coverage for different Scala versions use a command
 
 ```sh
 sbt ++2.11.12 clean coverage test coverageReport mimaReportBinaryIssues
-sbt ++2.12.6 clean coverage test coverageReport mimaReportBinaryIssues
+sbt ++2.12.7 clean coverage test coverageReport mimaReportBinaryIssues
 ```
 
 ### Run benchmarks
