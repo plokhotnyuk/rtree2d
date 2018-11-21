@@ -87,10 +87,10 @@ assert(rtree.nearestK(50f, 20f, k = 2, maxDist = 1000f) == Seq(city2, city1))
 assert(rtree.searchAll(50f, 30f, 51f, 31f) == Seq(city2))
 assert(rtree.searchAll(0f, -180f, 90f, 180f).forall(entries.contains))
 ```
-Precision of 32-bit float number allows to locate points with an error ±1 meter at anti-meridian.
+Precision of 32-bit float number allows to locate points with a maximum error ±1 meter at anti-meridian.
 
 Used spherical model of the Earth with [the Mean radius](https://en.wikipedia.org/wiki/Earth_radius#Mean_radius) and
-[Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula) allows to get ±0.3% accuracy in calculation of
+[Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula) allow to get ±0.3% accuracy in calculation of
 distances comparing with [Vincenty’s formulae](http://www.cqsrg.org/tools/GCDistance/) on a spheroid model. 
 
 Please, check out
@@ -103,7 +103,7 @@ for other functions which allows filtering or accumulating found entries without
 Charts below are latest results of benchmarks which compare RTree2D with [Archery](https://github.com/non/archery),
 [David Monten's rtree](https://github.com/davidmoten/rtree), and [JTC](https://github.com/locationtech/jts) libraries 
 using JDK 10 on the following environment: Intel® Core™ i7-7700HQ CPU @ 3.6GHz (max 4.2GHz), RAM 16Gb DDR4-2400, 
-Ubuntu 18.04, latest versions of Oracle JDK 10.
+Ubuntu 18.04, Oracle JDK 11.
 
 Main metric tested by benchmarks is an execution time in nanoseconds. So lesser values are better. Please, check out 
 the Run benchmarks section bellow how to test other metrics like allocations in bytes or number of some CPU events.     
