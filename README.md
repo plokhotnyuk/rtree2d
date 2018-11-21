@@ -91,7 +91,7 @@ Precision of 32-bit float number allows to locate points with a maximum error ±
 
 Used spherical model of the Earth with [the Mean radius](https://en.wikipedia.org/wiki/Earth_radius#Mean_radius) and
 [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula) allow to get ±0.3% accuracy in calculation of
-distances comparing with [Vincenty’s formulae](http://www.cqsrg.org/tools/GCDistance/) on a spheroid model. 
+distances comparing with [Vincenty’s formulae](http://www.cqsrg.org/tools/GCDistance/) on an oblate spheroid model. 
 
 Please, check out
 [Scala docs in sources](https://github.com/Sizmek/rtree2d/blob/master/core/src/main/scala/com/sizmek/rtree2d/core/RTree.scala) 
