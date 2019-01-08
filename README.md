@@ -102,7 +102,7 @@ for other functions which allows filtering or accumulating found entries without
 
 Charts below are latest results of benchmarks which compare RTree2D with [Archery](https://github.com/non/archery),
 [David Monten's rtree](https://github.com/davidmoten/rtree), and [JTC](https://github.com/locationtech/jts) libraries 
-on the following environment: Intel® Core™ i7-7700HQ CPU @ 3.6GHz (max 4.2GHz), RAM 16Gb DDR4-2400, Ubuntu 18.04, 
+on the following environment: Intel® Core™ i7-7700 CPU @ 3.6GHz (max 4.2GHz), RAM 16Gb DDR4-2400, Ubuntu 18.04, 
 Oracle JDK 11.
 
 Main metric tested by benchmarks is an execution time in nanoseconds. So lesser values are better. Please, check out 
