@@ -55,7 +55,7 @@ lazy val commonSettings = Seq(
     ),
   ),
   resolvers += Resolver.jcenterRepo,
-  scalaVersion := "2.12.7",
+  scalaVersion := "2.12.8",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
@@ -104,7 +104,7 @@ lazy val `rtree2d-core` = project
   .settings(mimaSettings: _*)
   .settings(publishSettings: _*)
   .settings(
-    crossScalaVersions := Seq("2.13.0-M5", "2.13.0-M4", "2.12.7", "2.11.12"),
+    crossScalaVersions := Seq("2.13.0-M5", "2.13.0-M4", "2.12.8", "2.11.12"),
     libraryDependencies ++= {
       val scalatestV =
         if (scalaVersion.value == "2.13.0-M4") "3.0.6-SNAP2"
@@ -122,7 +122,7 @@ lazy val `rtree2d-benchmark` = project
   .settings(commonSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(
-    crossScalaVersions := Seq("2.12.7", "2.11.12"),
+    crossScalaVersions := Seq("2.12.8", "2.11.12"),
     libraryDependencies ++= {
       val scalatestV =
         if (scalaVersion.value == "2.13.0-M4") "3.0.6-SNAP2"

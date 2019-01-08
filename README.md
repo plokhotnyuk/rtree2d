@@ -159,7 +159,7 @@ To compile, run tests, check coverage for different Scala versions use a command
 
 ```sh
 sbt ++2.11.12 clean coverage test coverageReport mimaReportBinaryIssues
-sbt ++2.12.7 clean coverage test coverageReport mimaReportBinaryIssues
+sbt ++2.12.8 clean coverage test coverageReport mimaReportBinaryIssues
 ```
 
 ### Run benchmarks
