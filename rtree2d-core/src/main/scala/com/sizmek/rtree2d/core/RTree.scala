@@ -375,12 +375,10 @@ private final case class RTreeNode[A](minX: Float, minY: Float, maxX: Float, max
       }
       java.util.Arrays.sort(ps) // Assuming that there no NaNs or negative values for distances
       i = 0
-      while (i < n && {
-        intBitsToFloat((ps(i) >> 32).toInt) < minDist && {
-          minDist = level((ps(i) & 0x7fffffff).toInt).nearest(x, y, minDist)(f)
-          true
-        }
-      }) i += 1
+      while (i < n && intBitsToFloat((ps(i) >> 32).toInt) < minDist) {
+        minDist = level((ps(i) & 0x7fffffff).toInt).nearest(x, y, minDist)(f)
+        i += 1
+      }
     }
     minDist
   }
@@ -479,25 +477,28 @@ class RTreeEntryBinaryHeap[A](maxDist: Float, maxSize: Int) {
 private class RTreeEntryIndexedSeq[A](array: Array[RTreeEntry[A]], size0: Int) extends IndexedSeq[RTreeEntry[A]] {
   override def length: Int = size0
 
-  override def apply(idx: Int): RTreeEntry[A] =
+  override def apply(idx: Int): RTreeEntry[A] = {
     if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
-    else array(idx)
+    array(idx)
+  }
 }
 
 private class AdaptedRTreeEntryIndexedSeq[A](array: Array[RTree[A]]) extends IndexedSeq[RTreeEntry[A]] {
   override def length: Int = array.length
 
-  override def apply(idx: Int): RTreeEntry[A] =
+  override def apply(idx: Int): RTreeEntry[A] = {
     if (idx < 0 || idx >= array.length) throw new IndexOutOfBoundsException(idx.toString)
-    else array(idx).asInstanceOf[RTreeEntry[A]]
+    array(idx).asInstanceOf[RTreeEntry[A]]
+  }
 }
 
 private class ShiftedRTreeEntryIndexedSeq[A](array: Array[RTreeEntry[A]], size0: Int) extends IndexedSeq[RTreeEntry[A]] {
   override def length: Int = size0
 
-  override def apply(idx: Int): RTreeEntry[A] =
+  override def apply(idx: Int): RTreeEntry[A] = {
     if (idx < 0 || idx >= size0) throw new IndexOutOfBoundsException(idx.toString)
-    else array(idx + 1)
+    array(idx + 1)
+  }
 }
 
 private class DejaVuCounter {
