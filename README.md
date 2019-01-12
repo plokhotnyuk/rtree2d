@@ -172,7 +172,7 @@ Feel free to modify benchmarks and check how it works with your data, JDK, and S
 To see throughput with allocation rate run benchmarks with GC profiler using the following command:
 
 ```sh
-sbt -no-colors clean 'rtree2d-benchmark/jmh:run -prof gc -rf json -rff rtries.json .*'
+sbt -java-home /usr/lib/jvm/jdk1.8.0 clean 'rtree2d-benchmark/jmh:run -prof gc -rf json -rff rtries.json .*'
 ```
 
 It will save benchmark report in `rtree2d-benchmark/rtries.json` file.
@@ -188,7 +188,7 @@ series to separated images. Here is an example how it can be called for specifie
 parameter, and patterns of benchmark names:
 
 ```sh
-sbt 'charts -jvm /usr/lib/jvm/jdk-11/bin/java -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=16 -p partToUpdate=0.1 -p geometry=plane .*apply.* .*search.*'
+sbt -java-home /usr/lib/jvm/jdk1.8.0 clean 'charts -jvm /usr/lib/jvm/jdk-11/bin/java -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=16 -p partToUpdate=0.1 -p geometry=plane .*'
 ```
 
 Results will be places in a cross-build suffixed subdirectory of the `benchmark/target` directory in `*.png` files:
@@ -196,9 +196,16 @@ Results will be places in a cross-build suffixed subdirectory of the `benchmark/
 $ ls rtree2d-benchmark/target/scala-2.12/*.png
 
 rtree2d-benchmark/target/scala-2.12/apply[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png
-rtree2d-benchmark/target/scala-2.12/searchByPoint[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png
+...
 rtree2d-benchmark/target/scala-2.12/searchByRectangle[geometry=plane,nearestMax=10,nodeCapacity=16,overlap=1,partToUpdate=0.1,rectSize=10].png
 ``` 
+
+For testing of RTree2D with `spherical` geometry and different node capacities use the following command (chart files 
+will be placed in the same directory as above):
+
+```sh
+sbt -java-home /usr/lib/jvm/jdk1.8.0 clean 'charts -jvm /usr/lib/jvm/jdk-11/bin/java -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=4,8,16 -p partToUpdate=0.1 -p geometry=spherical RTree2D.*'
+```
 
 ### Publish locally
 
