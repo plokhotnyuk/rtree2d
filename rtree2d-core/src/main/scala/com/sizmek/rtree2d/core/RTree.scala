@@ -370,13 +370,13 @@ private final case class RTreeNode[A](minX: Float, minY: Float, maxX: Float, max
     } else {
       val ps = new Array[Long](n)
       while (i < n) {
-        ps(i) = (from + i) | (floatToRawIntBits(distCalc.distance(x, y, level(from + i))).toLong << 32)
+        ps(i) = (floatToRawIntBits(distCalc.distance(x, y, level(from + i))).toLong << 32) | i
         i += 1
       }
       java.util.Arrays.sort(ps) // Assuming that there no NaNs or negative values for distances
       i = 0
       while (i < n && intBitsToFloat((ps(i) >> 32).toInt) < minDist) {
-        minDist = level((ps(i) & 0x7fffffff).toInt).nearest(x, y, minDist)(f)
+        minDist = level(from + (ps(i) & 0x7fffffff).toInt).nearest(x, y, minDist)(f)
         i += 1
       }
     }
@@ -441,29 +441,29 @@ class RTreeEntryBinaryHeap[A](maxDist: Float, maxSize: Int) {
         this.distances = distances
         this.entries = entries
       }
-      var i = size
-      var j = i >> 1
-      while (j > 0 && d >= distances(j)) {
+      var i, j = size
+      while ({
+        j >>= 1
+        j > 0 && d >= distances(j)
+      }) {
         distances(i) = distances(j)
         entries(i) = entries(j)
         i = j
-        j >>= 1
       }
       distances(i) = d
       entries(i) = e
       if (size == maxSize) distances(1) else maxDist
     } else if (size > 0 && d < distances(1)) {
-      var i = 1
-      var j = i << 1
-      var k = j + 1
-      if (k <= size && distances(k) >= distances(j)) j = k
-      while (j <= size && distances(j) >= d) {
+      var i, j = 1
+      while ({
+        j <<= 1
+        val k = j + 1
+        if (k <= size && distances(k) >= distances(j)) j = k
+        j <= size && distances(j) >= d
+      }) {
         distances(i) = distances(j)
         entries(i) = entries(j)
         i = j
-        j = i << 1
-        k = j + 1
-        if (k <= size && distances(k) >= distances(j)) j = k
       }
       distances(i) = d
       entries(i) = e
