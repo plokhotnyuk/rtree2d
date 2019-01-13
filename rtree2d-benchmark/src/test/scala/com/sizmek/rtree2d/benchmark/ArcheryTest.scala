@@ -3,7 +3,7 @@ package com.sizmek.rtree2d.benchmark
 import org.scalatest.{Matchers, WordSpec}
 
 class ArcheryTest extends WordSpec with Matchers {
-  private def benchmark = new Archery {
+  private def benchmark: Archery = new Archery {
     setup()
   }
   "Archery" should {

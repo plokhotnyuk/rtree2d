@@ -3,7 +3,7 @@ package com.sizmek.rtree2d.benchmark
 import org.scalatest.{Matchers, WordSpec}
 
 class JTSTest extends WordSpec with Matchers {
-  private def benchmark = new JTS {
+  private def benchmark: JTS = new JTS {
     setup()
   }
   "JTS" should {

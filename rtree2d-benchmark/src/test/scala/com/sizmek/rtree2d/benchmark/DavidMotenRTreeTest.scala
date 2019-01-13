@@ -5,7 +5,7 @@ import org.scalatest.{Matchers, WordSpec}
 import collection.JavaConverters._
 
 class DavidMotenRTreeTest extends WordSpec with Matchers {
-  private def benchmark = new DavidMotenRTree {
+  private def benchmark: DavidMotenRTree = new DavidMotenRTree {
     setup()
   }
   "DavidMotenRTree" should {
