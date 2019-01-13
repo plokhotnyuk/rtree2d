@@ -10,7 +10,7 @@ queries.
 ## Goals
 
 Main our requirements was:
-- *efficiency* - we wanted the R-Tree to be able to search throught millions of entries efficiently even in case of highly 
+- *efficiency* - we wanted the R-Tree to be able to search through millions of entries efficiently even in case of highly 
 overlapped entries, also, we needed to be able to quickly rebuild R-tries with a per minute rate producing minimum 
 pressure on GC
 - *immutability* - different threads needed to be able to work with the same R-tree without problems,
@@ -191,7 +191,8 @@ parameter, and patterns of benchmark names:
 sbt -java-home /usr/lib/jvm/jdk1.8.0 clean 'charts -jvm /usr/lib/jvm/jdk-11/bin/java -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=16 -p partToUpdate=0.1 -p geometry=plane .*'
 ```
 
-Results will be places in a cross-build suffixed subdirectory of the `benchmark/target` directory in `*.png` files:
+Results will be places in a cross-build suffixed subdirectory of the `benchmark/target` directory in `*.png` files
+(one file with a chart for each benchmark):
 ```sh
 $ ls rtree2d-benchmark/target/scala-2.12/*.png
 
