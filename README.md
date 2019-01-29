@@ -101,7 +101,7 @@ for other functions which allows filtering or accumulating found entries without
 ## How it works
 
 Charts below are latest results of benchmarks which compare RTree2D with [Archery](https://github.com/non/archery),
-[David Monten's rtree](https://github.com/davidmoten/rtree), and [JTC](https://github.com/locationtech/jts) libraries 
+[David Monten's rtree](https://github.com/davidmoten/rtree), and [JTS](https://github.com/locationtech/jts) libraries 
 on the following environment: Intel® Core™ i7-7700 CPU @ 3.6GHz (max 4.2GHz), RAM 16Gb DDR4-2400, Ubuntu 18.04, 
 Oracle JDK 11.
 
