@@ -33,7 +33,7 @@ class JTS extends BenchmarkBase {
       rtreeEntries(i) = (new Envelope(p.x - eps, p.x + eps, p.y - eps, p.y + eps), p)
       i += 1
     }
-    rtree = new STRtreeWrapper(nodeCapacity, rtreeEntries)
+    rtree = STRtreeWrapper(nodeCapacity, rtreeEntries)
     doShuffle(points)
     xys = genRequests(points)
     curr = 0
@@ -43,7 +43,7 @@ class JTS extends BenchmarkBase {
   }
 
   @Benchmark
-  def apply: STRtreeWrapper = new STRtreeWrapper(nodeCapacity, rtreeEntries)
+  def apply: STRtreeWrapper = STRtreeWrapper(nodeCapacity, rtreeEntries)
 
   @Benchmark
   def entries: Seq[(Envelope, PointOfInterest)] = rtree.entries
@@ -82,48 +82,32 @@ class JTS extends BenchmarkBase {
   }
 
   @Benchmark
-  def update: STRtreeWrapper = new STRtreeWrapper(nodeCapacity, rtree.entries.diff(entriesToRemove) ++ entriesToAdd)
+  def update: STRtreeWrapper = STRtreeWrapper(nodeCapacity, rtree.entries.diff(entriesToRemove) ++ entriesToAdd)
 }
 
-class STRtreeWrapper(nodeCapacity: Int, es: Seq[(Envelope, PointOfInterest)]) extends STRtree(nodeCapacity) {
-  es.foreach(e => insert(e._1, e))
-  build()
-
-  def entries: Seq[(Envelope, PointOfInterest)] = {
-    val res = new ArrayBuffer[(Envelope, PointOfInterest)]
-    entries(root, res)
-    res
+case class STRtreeWrapper(nodeCapacity: Int, entries: Seq[(Envelope, PointOfInterest)]) {
+  private[this] val strTree = new STRtree(nodeCapacity) {
+    entries.foreach(e => insert(e._1, e))
+    build()
+  }
+  private[this] val itemDistance = new ItemDistance {
+    override def distance(item1: ItemBoundable, item2: ItemBoundable): Double =
+      item1.getBounds.asInstanceOf[Envelope].distance(item2.getBounds.asInstanceOf[Envelope])
   }
 
   def search(minX: Float, minY: Float, maxX: Float, maxY: Float): Seq[(Envelope, PointOfInterest)] = {
     val res = new ArrayBuffer[(Envelope, PointOfInterest)]
-    query(new Envelope(minX, maxX, minY, maxY), new ItemVisitor {
+    strTree.query(new Envelope(minX, maxX, minY, maxY), new ItemVisitor {
       override def visitItem(item: scala.Any): Unit = res += item.asInstanceOf[(Envelope, PointOfInterest)]
     })
     res
   }
 
   def nearest(x: Float, y: Float): Option[(Envelope, PointOfInterest)] =
-    Option(nearestNeighbour(new Envelope(x, x, y, y), null, new ItemDistance {
-      override def distance(item1: ItemBoundable, item2: ItemBoundable): Double =
-        item1.getBounds.asInstanceOf[Envelope].distance(item2.getBounds.asInstanceOf[Envelope])
-    }).asInstanceOf[(Envelope, PointOfInterest)])
+    Option(strTree.nearestNeighbour(new Envelope(x, x, y, y), null, itemDistance).asInstanceOf[(Envelope, PointOfInterest)])
 
   def nearestK(x: Float, y: Float, k: Int): Seq[(Envelope, PointOfInterest)] = {
-    val res = nearestNeighbour(new Envelope(x, x, y, y), null, new ItemDistance {
-      override def distance(item1: ItemBoundable, item2: ItemBoundable): Double =
-        item1.getBounds.asInstanceOf[Envelope].distance(item2.getBounds.asInstanceOf[Envelope])
-    }, k)
+    val res = strTree.nearestNeighbour(new Envelope(x, x, y, y), null, itemDistance, k)
     util.Arrays.copyOf(res, res.length, classOf[Array[(Envelope, PointOfInterest)]])
-  }
-
-  private[this] def entries(top: AbstractNode, acc: ArrayBuffer[(Envelope, PointOfInterest)]): Unit = {
-    val it = top.getChildBoundables.iterator
-    while (it.hasNext) {
-      it.next() match {
-        case n: AbstractNode => entries(n, acc)
-        case b: ItemBoundable => acc += b.getItem.asInstanceOf[(Envelope, PointOfInterest)]
-      }
-    }
   }
 }
