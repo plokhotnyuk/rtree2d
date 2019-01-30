@@ -1,7 +1,7 @@
 # RTree2D
 
-[![build status](https://travis-ci.com/Sizmek/rtree2d.svg?branch=master)](https://travis-ci.com/Sizmek/rtree2d)
-[![codecov](https://codecov.io/gh/Sizmek/rtree2d/branch/master/graph/badge.svg)](https://codecov.io/gh/Sizmek/rtree2d)
+[![build status](https://travis-ci.com/sizmek-public/rtree2d.svg?branch=master)](https://travis-ci.com/sizmek-public/rtree2d)
+[![codecov](https://codecov.io/gh/sizmek-public/rtree2d/branch/master/graph/badge.svg)](https://codecov.io/gh/sizmek-public/rtree2d)
 
 RTree2D is a 2D immutable [R-tree](https://en.wikipedia.org/wiki/R-tree) with 
 [STR (Sort-Tile-Recursive)](https://archive.org/details/DTIC_ADA324493) packing for ultra-fast nearest and intersection 
@@ -94,8 +94,8 @@ Used spherical model of the Earth with [the Mean radius](https://en.wikipedia.or
 distances comparing with [Vincenty’s formulae](http://www.cqsrg.org/tools/GCDistance/) on an oblate spheroid model. 
 
 Please, check out
-[Scala docs in sources](https://github.com/Sizmek/rtree2d/blob/master/core/src/main/scala/com/sizmek/rtree2d/core/RTree.scala) 
-and [tests](https://github.com/Sizmek/rtree2d/blob/master/core/src/test/scala/com/sizmek/rtree2d/core/RTreeTest.scala)
+[Scala docs in sources](https://github.com/sizmek-public/rtree2d/blob/master/core/src/main/scala/com/sizmek/rtree2d/core/RTree.scala) 
+and [tests](https://github.com/sizmek-public/rtree2d/blob/master/core/src/test/scala/com/sizmek/rtree2d/core/RTreeTest.scala)
 for other functions which allows filtering or accumulating found entries without allocations. 
 
 ## How it works
