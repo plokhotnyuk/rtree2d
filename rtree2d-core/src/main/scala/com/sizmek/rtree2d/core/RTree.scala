@@ -177,13 +177,12 @@ sealed trait RTree[A] {
     */
   def nearestOption(x: Float, y: Float, maxDist: Float = Float.PositiveInfinity)
                    (implicit distCalc: DistanceCalculator): Option[RTreeEntry[A]] = {
-    var res: RTreeEntry[A] = null
+    var res: Option[RTreeEntry[A]] = None
     nearest(x, y, maxDist)((d, e) => {
-      res = e
+      res = new Some(e)
       d
     })
-    if (res eq null) None
-    else new Some(res)
+    res
   }
 
   /**
