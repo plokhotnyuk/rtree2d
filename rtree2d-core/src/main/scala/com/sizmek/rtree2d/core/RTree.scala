@@ -98,8 +98,8 @@ object RTree {
         do {
           val packTo = min(i + nodeCapacity, sliceTo)
           nextLevel(j) = packNode(level, i, packTo)
-          j += 1
           i = packTo
+          j += 1
         } while (i < sliceTo)
       } while (i < l)
       pack(nextLevel, nodeCapacity, xComp, yComp)
@@ -117,11 +117,11 @@ object RTree {
       var maxX = t.maxX
       do {
         t = level(i)
-        if (minY > t.minY) minY = t.minY
-        if (maxY < t.maxY) maxY = t.maxY
-        if (minX > t.minX) minX = t.minX
-        if (maxX < t.maxX) maxX = t.maxX
         i += 1
+        minY = min(t.minY, minY)
+        maxY = max(t.maxY, maxY)
+        minX = min(t.minX, minX)
+        maxX = max(t.maxX, maxX)
       } while (i < to)
       new RTreeNode(minX, minY, maxX, maxY, level, from, to)
     }
