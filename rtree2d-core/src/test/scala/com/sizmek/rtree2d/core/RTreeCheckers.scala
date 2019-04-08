@@ -4,7 +4,7 @@ import com.sizmek.rtree2d.core.TestUtils._
 import org.scalacheck.Prop._
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
-import org.scalatest.prop.Checkers
+import org.scalatestplus.scalacheck.Checkers
 
 class RTreeCheckers extends WordSpec with Checkers {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =

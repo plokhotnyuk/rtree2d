@@ -62,7 +62,6 @@ lazy val commonSettings = Seq(
     "-feature",
     "-unchecked",
     "-Ywarn-dead-code",
-    "-Xfuture",
     "-Xlint"
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, x)) if x >= 12 => Seq("-opt:l:method")
@@ -104,16 +103,11 @@ lazy val `rtree2d-core` = project
   .settings(mimaSettings: _*)
   .settings(publishSettings: _*)
   .settings(
-    crossScalaVersions := Seq("2.13.0-M5", "2.13.0-M4", "2.12.8", "2.11.12"),
-    libraryDependencies ++= {
-      val scalatestV =
-        if (scalaVersion.value == "2.13.0-M4") "3.0.6-SNAP2"
-        else "3.0.6-SNAP3"
-      Seq(
-        "org.scalacheck" %% "scalacheck" % "1.14.0" % Test,
-        "org.scalatest" %% "scalatest" % scalatestV % Test
-      )
-    }
+    crossScalaVersions := Seq("2.13.0-RC1", "2.13.0-M5", "2.12.8", "2.11.12"),
+    libraryDependencies ++= Seq(
+      "org.scalacheck" %% "scalacheck" % "1.14.0" % Test,
+      "org.scalatest" %% "scalatest" % (if (scalaVersion.value == "2.13.0-M5") "3.0.7" else "3.0.8-RC2") % Test
+    )
   )
 
 lazy val `rtree2d-benchmark` = project
@@ -123,18 +117,13 @@ lazy val `rtree2d-benchmark` = project
   .settings(noPublishSettings: _*)
   .settings(
     crossScalaVersions := Seq("2.12.8", "2.11.12"),
-    libraryDependencies ++= {
-      val scalatestV =
-        if (scalaVersion.value == "2.13.0-M4") "3.0.6-SNAP2"
-        else "3.0.6-SNAP3"
-      Seq(
-        "org.locationtech.jts" % "jts-core" % "1.16.1",
-        "com.github.davidmoten" % "rtree" % "0.8.6",
-        "org.spire-math" %% "archery" % "0.6.0",
-        "pl.project13.scala" % "sbt-jmh-extras" % "0.3.6",
-        "org.scalatest" %% "scalatest" % scalatestV % Test
-      )
-    },
+    libraryDependencies ++= Seq(
+      "org.locationtech.jts" % "jts-core" % "1.16.1",
+      "com.github.davidmoten" % "rtree" % "0.8.6",
+      "org.spire-math" %% "archery" % "0.6.0",
+      "pl.project13.scala" % "sbt-jmh-extras" % "0.3.6",
+      "org.scalatest" %% "scalatest" % "3.0.8-RC2" % Test
+    ),
     charts := Def.inputTaskDyn {
       val jmhParams = Def.spaceDelimited().parsed
       val targetDir = crossTarget.value

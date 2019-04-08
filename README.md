@@ -231,7 +231,7 @@ Double check binary and source compatibility, including behavior, and release us
 are required):
 
 ```sh
-sbt release
+sbt -J-XX:MaxMetaspaceSize=1g release
 ```
 
 Do not push changes to github until promoted artifacts for the new version are not available for download on 
