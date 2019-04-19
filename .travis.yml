@@ -2,16 +2,10 @@ language: scala
 matrix:
   include:
     - os: linux
-      jdk: oraclejdk11
-      scala: 2.12.8
-    - os: linux
       jdk: oraclejdk8
       scala: 2.12.8
     - os: linux
-      jdk: oraclejdk11
-      scala: 2.11.12
-    - os: linux
-      jdk: oraclejdk8
+      jdk: openjdk8
       scala: 2.11.12
 cache: sbt
 script:
