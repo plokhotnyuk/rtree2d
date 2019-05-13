@@ -4,7 +4,7 @@ addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.2")
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.1")
 addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.3.5")
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.6.0-M3")
-addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.4")
+addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.5")
 addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "0.3.0")
 libraryDependencies ++= Seq(
   "org.jfree" % "jfreechart" % "1.5.0",
