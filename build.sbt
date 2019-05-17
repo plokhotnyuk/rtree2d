@@ -101,13 +101,13 @@ lazy val publishSettings = Seq(
 
 lazy val rtree2d = project.in(file("."))
   .aggregate(`rtree2d-core`, `rtree2d-benchmark`)
-  .settings(commonSettings: _*)
-  .settings(noPublishSettings: _*)
+  .settings(commonSettings)
+  .settings(noPublishSettings)
 
 lazy val `rtree2d-core` = project
-  .settings(commonSettings: _*)
-  .settings(mimaSettings: _*)
-  .settings(publishSettings: _*)
+  .settings(commonSettings)
+  .settings(mimaSettings)
+  .settings(publishSettings)
   .settings(
     crossScalaVersions := Seq("2.13.0-RC2", "2.13.0-RC1", "2.12.8", "2.11.12"),
     libraryDependencies ++= {
@@ -124,8 +124,8 @@ lazy val `rtree2d-core` = project
 lazy val `rtree2d-benchmark` = project
   .enablePlugins(JmhPlugin)
   .dependsOn(`rtree2d-core`)
-  .settings(commonSettings: _*)
-  .settings(noPublishSettings: _*)
+  .settings(commonSettings)
+  .settings(noPublishSettings)
   .settings(
     crossScalaVersions := Seq("2.12.8", "2.11.12"),
     libraryDependencies ++= Seq(
