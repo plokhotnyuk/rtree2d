@@ -59,6 +59,7 @@ lazy val commonSettings = Seq(
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
+    "-target:jvm-1.8",
     "-feature",
     "-unchecked",
     "-Ywarn-dead-code",
@@ -89,6 +90,11 @@ lazy val publishSettings = Seq(
       "scm:git@github.com:Sizmek/rtree2d.git"
     )
   ),
+  publishConfiguration := {
+    val javaVersion = System.getProperty("java.specification.version")
+    if (javaVersion != "1.8") throw new IllegalStateException("Cancelling publish, please use JDK 1.8")
+    publishConfiguration.value
+  },
   publishMavenStyle := true,
   pomIncludeRepository := { _ => false }
 )
