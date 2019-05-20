@@ -1,7 +1,7 @@
 # RTree2D
 
 [![AppVeyor build](https://ci.appveyor.com/api/projects/status/7idch49kp83v06b6?svg=true)](https://ci.appveyor.com/project/plokhotnyuk/rtree2d)
-[![TravisCI build](https://travis-ci.com/plokhotnyuk/rtree2d.svg?branch=master)](https://travis-ci.com/plokhotnyuk/rtree2d)
+[![TravisCI build](https://travis-ci.org/plokhotnyuk/rtree2d.svg?branch=master)](https://travis-ci.org/plokhotnyuk/rtree2d)
 [![codecov](https://codecov.io/gh/plokhotnyuk/rtree2d/branch/master/graph/badge.svg)](https://codecov.io/gh/plokhotnyuk/rtree2d)
 
 RTree2D is a 2D immutable [R-tree](https://en.wikipedia.org/wiki/R-tree) with 
