@@ -112,7 +112,7 @@ lazy val `rtree2d-core` = project
     crossScalaVersions := Seq("2.13.0-RC2", "2.13.0-RC1", "2.12.8", "2.11.12"),
     libraryDependencies ++= Seq(
       "org.scalacheck" %% "scalacheck" % "1.14.0" % Test,
-      "org.scalatest" %% "scalatest" % (if (scalaVersion.value == "2.13.0-RC1") "3.0.8-RC3" else "3.0.8-RC4") % Test
+      "org.scalatest" %% "scalatest" % (if (scalaVersion.value == "2.13.0-RC1") "3.0.8-RC3" else "3.0.8-RC5") % Test
     )
   )
 
@@ -128,7 +128,7 @@ lazy val `rtree2d-benchmark` = project
       "com.github.davidmoten" % "rtree" % "0.8.6",
       "org.spire-math" %% "archery" % "0.6.0",
       "pl.project13.scala" % "sbt-jmh-extras" % "0.3.4",
-      "org.scalatest" %% "scalatest" % "3.0.8-RC4" % Test
+      "org.scalatest" %% "scalatest" % "3.0.8-RC5" % Test
     ),
     charts := Def.inputTaskDyn {
       val jmhParams = Def.spaceDelimited().parsed
