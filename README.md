@@ -28,7 +28,7 @@ To archive these goals we have used:
 Add the library to a dependency list:
 
 ```sbt
-libraryDependencies += "com.github.plokhotnyuk.rtree2d" %% "rtree2d-core" % "0.8.0"
+libraryDependencies += "com.github.plokhotnyuk.rtree2d" %% "rtree2d-core" % "0.9.0"
  ```
 
 Entries of R-tree are represented by `RTreeEntry` instances which contains payload and 4 coordinates of the minimum 
