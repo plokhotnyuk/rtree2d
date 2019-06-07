@@ -1,4 +1,4 @@
-package com.sizmek.rtree2d.core
+package com.github.plokhotnyuk.rtree2d.core
 
 import org.scalatest.FunSuite
 import org.scalatest.Matchers._

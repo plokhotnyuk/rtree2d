@@ -29,32 +29,32 @@ def mimaSettings = mimaDefaultSettings ++ Seq(
 )
 
 lazy val commonSettings = Seq(
-  organization := "com.sizmek.rtree2d",
-  organizationHomepage := Some(url("https://sizmek.com")),
-  homepage := Some(url("https://github.com/Sizmek/rtree2d")),
+  organization := "com.github.plokhotnyuk.rtree2d",
+  organizationHomepage := Some(url("https://github.com/plokhotnyuk")),
+  homepage := Some(url("https://github.com/plokhotnyuk/rtree2d")),
   licenses := Seq(("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html"))),
   startYear := Some(2018),
   developers := List(
     Developer(
       id = "loony-bean",
       name = "Alexey Suslov",
-      email = "alexey.suslov@sizmek.com",
+      email = "alexey.suslov@gmail.com",
       url = url("https://github.com/loony-bean")
     ),
     Developer(
       id = "AnderEnder",
       name = "Andrii Radyk",
-      email = "andrii.radyk@sizmek.com",
+      email = "ander.ender@gmail.com",
       url = url("https://github.com/AnderEnder")
     ),
     Developer(
       id = "plokhotnyuk",
       name = "Andriy Plokhotnyuk",
-      email = "andriy.plokhotnyuk@sizmek.com",
-      url = url("https://twitter.com/aplokhotnyuk")
+      email = "plokhotnyuk@gmail.com",
+      url = url("https://github.com/plokhotnyuk")
     ),
   ),
-  resolvers += Resolver.jcenterRepo,
+  resolvers += "Sonatype OSS Staging" at "https://oss.sonatype.org/content/repositories/staging",
   scalaVersion := "2.12.8",
   scalacOptions ++= Seq(
     "-deprecation",
@@ -75,19 +75,16 @@ lazy val commonSettings = Seq(
 
 lazy val noPublishSettings = Seq(
   skip in publish := true,
-  publishArtifact := false,
-  bintrayRelease := ((): Unit),
-  bintrayEnsureBintrayPackageExists := ((): Unit),
-  bintrayEnsureLicenses := ((): Unit)
+  publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging)
 )
 
 lazy val publishSettings = Seq(
-  bintrayOrganization := Some("sizmek"),
-  bintrayRepository := "sizmek-maven",
+  publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
+  sonatypeProfileName := "com.github.plokhotnyuk",
   scmInfo := Some(
     ScmInfo(
-      url("https://github.com/Sizmek/rtree2d"),
-      "scm:git@github.com:Sizmek/rtree2d.git"
+      url("https://github.com/plokhotnyuk/rtree2d"),
+      "scm:git@github.com:plokhotnyuk/rtree2d.git"
     )
   ),
   publishConfiguration := {
@@ -109,11 +106,19 @@ lazy val `rtree2d-core` = project
   .settings(mimaSettings)
   .settings(publishSettings)
   .settings(
-    crossScalaVersions := Seq("2.13.0-RC2", "2.13.0-RC1", "2.12.8", "2.11.12"),
-    libraryDependencies ++= Seq(
-      "org.scalacheck" %% "scalacheck" % "1.14.0" % Test,
-      "org.scalatest" %% "scalatest" % (if (scalaVersion.value == "2.13.0-RC1") "3.0.8-RC3" else "3.0.8-RC5") % Test
-    )
+    crossScalaVersions := Seq("2.13.0", "2.12.8", "2.11.12"),
+    libraryDependencies ++=
+      (if (scalaVersion.value == "2.13.0") {
+        Seq(
+          "org.scalacheck" % "scalacheck_2.13.0-RC3" % "1.14.0" % Test,
+          "org.scalatest" % "scalatest_2.13.0-RC3" % "3.0.8-RC5" % Test
+        )
+      } else {
+        Seq(
+          "org.scalacheck" %% "scalacheck" % "1.14.0" % Test,
+          "org.scalatest" %% "scalatest" % "3.0.8-RC5" % Test
+        )
+      })
   )
 
 lazy val `rtree2d-benchmark` = project

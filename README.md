@@ -25,17 +25,10 @@ To archive these goals we have used:
 
 ## How to use
 
-The library is published to JCenter, so please add a resolver for it in your `build.sbt` file or ensure that it is 
-already added:
-
-```sbt
-resolvers += Resolver.jcenterRepo
-```
-
 Add the library to a dependency list:
 
 ```sbt
-libraryDependencies += "com.sizmek.rtree2d" %% "rtree2d-core" % "0.8.0"
+libraryDependencies += "com.github.plokhotnyuk.rtree2d" %% "rtree2d-core" % "0.8.0"
  ```
 
 Entries of R-tree are represented by `RTreeEntry` instances which contains payload and 4 coordinates of the minimum 
@@ -45,7 +38,7 @@ Add import, create entries, build an R-tree from them, and use it for search a n
 by point or rectangle requests:
 
 ```scala
-import com.sizmek.rtree2d.core._                                                         
+import com.github.plokhotnyuk.rtree2d.core._                                                         
 import EuclideanPlane._                                                                  
                                                                                          
 val box1 = entry(1.0f, 1.0f, 2.0f, 2.0f, "Box 1")                                        
@@ -71,7 +64,7 @@ RTree2D can be used for indexing spherical coordinates, where X-axis is used for
 in degrees. Result distances are in kilometers:
  
 ```scala
-import com.sizmek.rtree2d.core._
+import com.github.plokhotnyuk.rtree2d.core._
 import SphericalEarth._
 
 val city1 = entry(50.0614f, 19.9383f, "Kraków")
@@ -95,8 +88,8 @@ Used spherical model of the Earth with [the Mean radius](https://en.wikipedia.or
 distances comparing with [Vincenty’s formulae](http://www.cqsrg.org/tools/GCDistance/) on an oblate spheroid model. 
 
 Please, check out
-[Scala docs in sources](https://github.com/plokhotnyuk/rtree2d/blob/master/core/src/main/scala/com/sizmek/rtree2d/core/RTree.scala) 
-and [tests](https://github.com/plokhotnyuk/rtree2d/blob/master/core/src/test/scala/com/sizmek/rtree2d/core/RTreeTest.scala)
+[Scala docs in sources](https://github.com/plokhotnyuk/rtree2d/blob/master/core/src/main/scala/com/github/plokhotnyuk/rtree2d/core/RTree.scala) 
+and [tests](https://github.com/plokhotnyuk/rtree2d/blob/master/core/src/test/scala/com/github/plokhotnyuk/rtree2d/core/RTreeTest.scala)
 for other functions which allows filtering or accumulating found entries without allocations. 
 
 ## How it works
@@ -159,8 +152,8 @@ Charts with their results are available in subdirectories (each for different va
 To compile, run tests, check coverage for different Scala versions use a command:
 
 ```sh
-sbt ++2.11.12 clean coverage test coverageReport mimaReportBinaryIssues
-sbt ++2.12.8 clean coverage test coverageReport mimaReportBinaryIssues
+sbt -J-XX:MaxMetaspaceSize=512m clean +test
+sbt -J-XX:MaxMetaspaceSize=512m clean coverage test coverageReport mimaReportBinaryIssues
 ```
 
 ### Run benchmarks
@@ -232,9 +225,9 @@ Double check binary and source compatibility, including behavior, and release us
 are required):
 
 ```sh
-sbt -J-XX:MaxMetaspaceSize=1g release
+sbt -J-XX:MaxMetaspaceSize=512m release
 ```
 
 Do not push changes to github until promoted artifacts for the new version are not available for download on 
-[jCenter](http://jcenter.bintray.com/com/sizmek/rtree2d/core_2.12/) to avoid binary compatibility check failures in 
-triggered Travis CI builds. 
+[Maven Central Repository](http://repo1.maven.org/maven2/com/github/plokhotnyuk/rtree2d) 
+to avoid binary compatibility check failures in triggered Travis CI builds. 

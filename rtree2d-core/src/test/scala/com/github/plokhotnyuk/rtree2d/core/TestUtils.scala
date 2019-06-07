@@ -1,4 +1,4 @@
-package com.sizmek.rtree2d.core
+package com.github.plokhotnyuk.rtree2d.core
 
 import java.lang.Math._
 import java.util.concurrent.atomic.AtomicInteger

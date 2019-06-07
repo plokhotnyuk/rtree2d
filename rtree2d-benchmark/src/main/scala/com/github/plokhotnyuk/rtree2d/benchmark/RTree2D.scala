@@ -1,6 +1,8 @@
-package com.sizmek.rtree2d.benchmark
+package com.github.plokhotnyuk.rtree2d.benchmark
 
-import com.sizmek.rtree2d.core._
+import com.github.plokhotnyuk.rtree2d.core
+import com.github.plokhotnyuk.rtree2d.core.{DistanceCalculator, EuclideanPlane, RTree, RTreeEntry, SphericalEarth}
+import com.github.plokhotnyuk.rtree2d.core._
 import org.openjdk.jmh.annotations._
 
 class RTree2D extends BenchmarkBase {
@@ -41,7 +43,7 @@ class RTree2D extends BenchmarkBase {
   }
 
   @Benchmark
-  def apply: RTree[PointOfInterest] = RTree(rtreeEntries, nodeCapacity)
+  def apply: RTree[PointOfInterest] = core.RTree(rtreeEntries, nodeCapacity)
 
   @Benchmark
   def entries: Seq[RTreeEntry[PointOfInterest]] = rtree.entries

@@ -1,6 +1,6 @@
-package com.sizmek.rtree2d.core
+package com.github.plokhotnyuk.rtree2d.core
 
-import com.sizmek.rtree2d.core.TestUtils._
+import TestUtils._
 import org.scalacheck.Prop._
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec

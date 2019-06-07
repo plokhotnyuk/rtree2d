@@ -1,4 +1,4 @@
-package com.sizmek.rtree2d.benchmark
+package com.github.plokhotnyuk.rtree2d.benchmark
 
 import java.util.concurrent.TimeUnit
 
