@@ -9,6 +9,6 @@ matrix:
       scala: 2.12.8
 cache: sbt
 script:
-  - travis_wait sbt -no-colors ++$TRAVIS_SCALA_VERSION clean coverage test coverageReport mimaReportBinaryIssues
+  - travis_wait sbt -no-colors ++$TRAVIS_SCALA_VERSION -Dsbt.supershell=false clean coverage test coverageReport mimaReportBinaryIssues
 after_success:
   - bash <(curl -s https://codecov.io/bash)
