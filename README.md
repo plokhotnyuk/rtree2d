@@ -152,8 +152,8 @@ Charts with their results are available in subdirectories (each for different va
 To compile, run tests, check coverage for different Scala versions use a command:
 
 ```sh
-sbt -J-XX:MaxMetaspaceSize=512m clean +test
-sbt -J-XX:MaxMetaspaceSize=512m clean coverage test coverageReport mimaReportBinaryIssues
+sbt clean +test
+sbt clean coverage test coverageReport mimaReportBinaryIssues
 ```
 
 ### Run benchmarks
@@ -225,7 +225,7 @@ Double check binary and source compatibility, including behavior, and release us
 are required):
 
 ```sh
-sbt -J-XX:MaxMetaspaceSize=512m release
+sbt release
 ```
 
 Do not push changes to github until promoted artifacts for the new version are not available for download on 
