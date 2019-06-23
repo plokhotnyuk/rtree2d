@@ -3,6 +3,7 @@
 [![AppVeyor build](https://ci.appveyor.com/api/projects/status/7idch49kp83v06b6/branch/master?svg=true)](https://ci.appveyor.com/project/plokhotnyuk/rtree2d/branch/master)
 [![TravisCI build](https://travis-ci.org/plokhotnyuk/rtree2d.svg?branch=master)](https://travis-ci.org/plokhotnyuk/rtree2d)
 [![codecov](https://codecov.io/gh/plokhotnyuk/rtree2d/branch/master/graph/badge.svg)](https://codecov.io/gh/plokhotnyuk/rtree2d)
+[![Maven Central](https://img.shields.io/badge/maven--central-0.9.0-blue.svg)](https://search.maven.org/search?q=com.github.plokhotnyuk.rtree2d)
 
 RTree2D is a 2D immutable [R-tree](https://en.wikipedia.org/wiki/R-tree) with 
 [STR (Sort-Tile-Recursive)](https://archive.org/details/DTIC_ADA324493) packing for ultra-fast nearest and intersection 
