@@ -2,10 +2,10 @@ package com.github.plokhotnyuk.rtree2d.benchmark
 
 import java.util
 
-import com.github.davidmoten.rtree.Entries._
-import com.github.davidmoten.rtree._
-import com.github.davidmoten.rtree.geometry.Geometries._
-import com.github.davidmoten.rtree.geometry._
+import com.github.davidmoten.rtree2.Entries._
+import com.github.davidmoten.rtree2._
+import com.github.davidmoten.rtree2.geometry.Geometries._
+import com.github.davidmoten.rtree2.geometry._
 import org.openjdk.jmh.annotations._
 
 import collection.JavaConverters._
@@ -38,7 +38,7 @@ class DavidMotenRTree extends BenchmarkBase {
     doShuffle(points)
     xys = genRequests(points)
     curr = 0
-    if (!shuffle) rtreeEntries = rtree.entries().toBlocking.toIterable.asScala.toArray
+    if (!shuffle) rtreeEntries = rtree.entries().asScala.toArray
     entriesToAdd = java.util.Arrays.copyOf(rtreeEntries, (size * partToUpdate).toInt)
     entriesToRemove = rtreeEntries.slice(size - (size * partToUpdate).toInt, size)
   }
@@ -49,7 +49,7 @@ class DavidMotenRTree extends BenchmarkBase {
 
   @Benchmark
   def entries: Seq[Entry[PointOfInterest, Rectangle]] = {
-    val res = rtree.entries().toBlocking.toIterable.asScala.toArray
+    val res = rtree.entries().asScala.toArray
     res
   }
 
@@ -57,15 +57,14 @@ class DavidMotenRTree extends BenchmarkBase {
   def nearest: Option[Entry[PointOfInterest, Rectangle]] = {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0
-    rtree.nearest(point(xys(i), xys(i + 1)), Double.PositiveInfinity, 1).toBlocking.toIterable.asScala.headOption
+    rtree.nearest(point(xys(i), xys(i + 1)), Double.PositiveInfinity, 1).asScala.headOption
   }
 
   @Benchmark
   def nearestK: Seq[Entry[PointOfInterest, Rectangle]] = {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0
-    val res = rtree.nearest(point(xys(i), xys(i + 1)), Double.PositiveInfinity, nearestMax)
-      .toBlocking.toIterable.asScala.toArray
+    val res = rtree.nearest(point(xys(i), xys(i + 1)), Double.PositiveInfinity, nearestMax).asScala.toArray
     res
   }
 
@@ -73,7 +72,7 @@ class DavidMotenRTree extends BenchmarkBase {
   def searchByPoint: Seq[Entry[PointOfInterest, Rectangle]] = {
     val i = curr
     curr = if (i + 2 < xys.length) i + 2 else 0
-    val res = rtree.search(point(xys(i), xys(i + 1))).toBlocking.toIterable.asScala.toArray
+    val res = rtree.search(point(xys(i), xys(i + 1))).asScala.toArray
     res
   }
 
@@ -84,13 +83,13 @@ class DavidMotenRTree extends BenchmarkBase {
     val x = xys(i)
     val y = xys(i + 1)
     val e = rectEps
-    val res = rtree.search(rectangle(x - e, y - e, x + e, y + e)).toBlocking.toIterable.asScala.toArray
+    val res = rtree.search(rectangle(x - e, y - e, x + e, y + e)).asScala.toArray
     res
   }
 
   @Benchmark
   def update: RTree[PointOfInterest, Rectangle] = {
-    val es = rtree.entries().toBlocking.toIterable.asScala.toArray.diff(entriesToRemove) ++ entriesToAdd
+    val es = rtree.entries().asScala.toArray.diff(entriesToRemove) ++ entriesToAdd
     RTree.minChildren(1).maxChildren(nodeCapacity).loadingFactor(1.0).create(util.Arrays.asList(es:_*))
   }
 }
