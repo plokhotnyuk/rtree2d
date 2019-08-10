@@ -6,7 +6,7 @@ matrix:
       scala: 2.13.0
     - os: linux
       jdk: openjdk8
-      scala: 2.12.8
+      scala: 2.12.9
     - os: linux
       jdk: openjdk8
       scala: 2.11.12
