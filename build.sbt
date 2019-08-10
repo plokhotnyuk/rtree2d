@@ -31,7 +31,7 @@ lazy val commonSettings = Seq(
     ),
   ),
   resolvers += "Sonatype OSS Staging" at "https://oss.sonatype.org/content/repositories/staging",
-  scalaVersion := "2.12.9",
+  scalaVersion := "2.13.0",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
