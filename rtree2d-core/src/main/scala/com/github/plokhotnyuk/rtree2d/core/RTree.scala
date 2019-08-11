@@ -92,16 +92,18 @@ object RTree {
       val sliceCapacity = ceil(sqrt(nodeCount)).toInt * nodeCapacity
       val nextLevel = new Array[RTree[A]](nodeCount)
       var i, j = 0
-      do {
+      while ({
         val sliceTo = min(i + sliceCapacity, l)
         util.Arrays.sort(level, i, sliceTo, yComp)
-        do {
+        while ({
           val packTo = min(i + nodeCapacity, sliceTo)
           nextLevel(j) = packNode(level, i, packTo)
           i = packTo
           j += 1
-        } while (i < sliceTo)
-      } while (i < l)
+          i < sliceTo
+        }) ()
+        i < l
+      }) ()
       pack(nextLevel, nodeCapacity, xComp, yComp)
     }
   }
@@ -115,14 +117,15 @@ object RTree {
       var maxY = t.maxY
       var minX = t.minX
       var maxX = t.maxX
-      do {
+      while ({
         t = level(i)
         i += 1
         minY = min(t.minY, minY)
         maxY = max(t.maxY, maxY)
         minX = min(t.minX, minX)
         maxX = max(t.maxX, maxX)
-      } while (i < to)
+        i < to
+      }) ()
       new RTreeNode(minX, minY, maxX, maxY, level, from, to)
     }
   }

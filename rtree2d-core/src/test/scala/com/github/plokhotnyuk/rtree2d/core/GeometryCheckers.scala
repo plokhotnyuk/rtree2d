@@ -3,16 +3,16 @@ package com.github.plokhotnyuk.rtree2d.core
 import TestUtils._
 import org.scalacheck.Gen
 import org.scalacheck.Prop._
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.scalacheck.Checkers
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-class GeometryCheckers extends AnyWordSpec with Checkers {
+class GeometryCheckers extends AnyWordSpec with Matchers with ScalaCheckPropertyChecks {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 1000)
   "EuclideanPlane.distanceCalculator" when {
     "asked to calculate distance from point to an RTree" should {
-      "return a distance to a nearest part of the RTree bounding box or 0 if the point is inside it" in check {
+      "return a distance to a nearest part of the RTree bounding box or 0 if the point is inside it" in {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
             val t = RTree(entries)
@@ -26,7 +26,7 @@ class GeometryCheckers extends AnyWordSpec with Checkers {
   }
   "SphericalEarth.distanceCalculator" when {
     "asked to calculate distance from point to an RTree" should {
-      "return 0 if the point is inside it" in check {
+      "return 0 if the point is inside it" in {
         forAll(latLonEntryGen, Gen.choose[Float](0, 1), Gen.choose[Float](0, 1)) {
           (t: RTreeEntry[Int], rdx: Float, rdy: Float) =>
             val lat = t.minX + rdx * (t.maxX - t.minX)
@@ -36,7 +36,7 @@ class GeometryCheckers extends AnyWordSpec with Checkers {
             }
         }
       }
-      "return a distance to the nearest edge of the RTree bounding box if point doesn't intersect and is aligned vertically" in check {
+      "return a distance to the nearest edge of the RTree bounding box if point doesn't intersect and is aligned vertically" in {
         forAll(latLonEntryGen, latGen, lonGen) {
           (t: RTreeEntry[Int], lat: Float, lon: Float) =>
             propBoolean(!intersects(t, lat, lon) && alignedVertically(t, lat, lon)) ==> {
@@ -54,7 +54,7 @@ class GeometryCheckers extends AnyWordSpec with Checkers {
             }
         }
       }
-      "return a distance to the nearest edge of the RTree bounding box if point doesn't not intersect and is aligned horizontally" in check {
+      "return a distance to the nearest edge of the RTree bounding box if point doesn't not intersect and is aligned horizontally" in {
         forAll(latLonEntryGen, latGen, lonGen) {
           (t: RTreeEntry[Int], lat: Float, lon: Float) =>
             propBoolean(!intersects(t, lat, lon) && alignedHorizontally(t, lat, lon)) ==> {
@@ -72,7 +72,7 @@ class GeometryCheckers extends AnyWordSpec with Checkers {
             }
         }
       }
-      "return a distance to the nearest corner of the RTree bounding box if point doesn't not intersect and is not aligned vertically or horizontally" in check {
+      "return a distance to the nearest corner of the RTree bounding box if point doesn't not intersect and is not aligned vertically or horizontally" in {
         forAll(latLonEntryGen, latGen, lonGen) {
           (t: RTreeEntry[Int], lat: Float, lon: Float) =>
             propBoolean(!intersects(t, lat, lon) && !alignedHorizontally(t, lat, lon) && !alignedVertically(t, lat, lon)) ==> {
