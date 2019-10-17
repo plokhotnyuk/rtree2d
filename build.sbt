@@ -1,5 +1,4 @@
-import sbt.Keys.scalacOptions
-import sbt.url
+import sbt._
 import scala.sys.process._
 
 lazy val oldVersion = "git describe --abbrev=0".!!.trim.replaceAll("^v", "")
@@ -30,7 +29,7 @@ lazy val commonSettings = Seq(
       url = url("https://github.com/plokhotnyuk")
     ),
   ),
-  resolvers += "Sonatype OSS Staging" at "https://oss.sonatype.org/content/repositories/staging",
+  resolvers += Resolver.sonatypeRepo("staging"),
   scalaVersion := "2.12.10",
   scalacOptions ++= Seq(
     "-deprecation",
@@ -46,17 +45,8 @@ lazy val commonSettings = Seq(
     case _ => Seq()
   }),
   testOptions in Test += Tests.Argument("-oDF"),
-  parallelExecution in ThisBuild := false
-)
-
-lazy val noPublishSettings = Seq(
-  skip in publish := true,
-  publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
-  mimaPreviousArtifacts := Set()
-)
-
-lazy val publishSettings = Seq(
-  publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging),
+  parallelExecution in ThisBuild := false,
+  publishTo := sonatypePublishToBundle.value,
   sonatypeProfileName := "com.github.plokhotnyuk",
   scmInfo := Some(
     ScmInfo(
@@ -66,6 +56,14 @@ lazy val publishSettings = Seq(
   ),
   publishMavenStyle := true,
   pomIncludeRepository := { _ => false },
+)
+
+lazy val noPublishSettings = Seq(
+  skip in publish := true,
+  mimaPreviousArtifacts := Set()
+)
+
+lazy val publishSettings = Seq(
   mimaCheckDirection := {
     def isPatch = {
       val Array(newMajor, newMinor, _) = version.value.split('.')
@@ -98,7 +96,7 @@ lazy val `rtree2d-core` = project
   .settings(
     crossScalaVersions := Seq("2.13.0", scalaVersion.value, "2.11.12"),
     libraryDependencies ++= Seq(
-      "org.scalacheck" %% "scalacheck" % "1.14.0" % Test,
+      "org.scalacheck" %% "scalacheck" % "1.14.2" % Test,
       "org.scalatest" %% "scalatest" % "3.0.8" % Test
     )
   )
