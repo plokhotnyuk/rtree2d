@@ -30,9 +30,10 @@ object Bencharts {
     * @param targetDir Directory in which the images will be written
     */
   def apply(jmhReport: File, yAxisTitle: String, targetDir: File): Unit = {
-    val allResults = readFromArray(IO.readBytes(jmhReport))(make[Seq[BenchmarkResult]](CodecMakerConfig()))
-    val constParams = allResults.flatMap(_.params.toSeq).groupBy(_._1)
-      .collect { case (k, kvs) if kvs.distinct.size == 1 => kvs.head }.toSeq
+    val allResults = readFromArray(IO.readBytes(jmhReport))(make[Seq[BenchmarkResult]](CodecMakerConfig))
+    val constParams = allResults.flatMap(_.params.toSeq).groupBy(_._1).collect {
+      case (_, kvs) if kvs.distinct.size == 1 => kvs.head
+    }.toSeq
     allResults.groupBy(benchmarkName(constParams)).foreach { case (benchmark, results) =>
       val dataset = new YIntervalSeriesCollection {
         SortedMap(results.groupBy(otherParams(constParams)).toSeq:_*).foreach { case (params, iterations) =>
