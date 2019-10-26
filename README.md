@@ -1,6 +1,6 @@
 # RTree2D
 
-[![AppVeyor build](https://ci.appveyor.com/api/projects/status/7idch49kp83v06b6/branch/master?svg=true)](https://ci.appveyor.com/project/plokhotnyuk/rtree2d/branch/master)
+[![Actions build](https://github.com/plokhotnyuk/rtree2d/workflows/build/badge.svg)](https://github.com/plokhotnyuk/rtree2d/actions)
 [![TravisCI build](https://travis-ci.org/plokhotnyuk/rtree2d.svg?branch=master)](https://travis-ci.org/plokhotnyuk/rtree2d)
 [![codecov](https://codecov.io/gh/plokhotnyuk/rtree2d/branch/master/graph/badge.svg)](https://codecov.io/gh/plokhotnyuk/rtree2d)
 [![Maven Central](https://img.shields.io/badge/maven--central-0.9.0-blue.svg)](https://search.maven.org/search?q=com.github.plokhotnyuk.rtree2d)
