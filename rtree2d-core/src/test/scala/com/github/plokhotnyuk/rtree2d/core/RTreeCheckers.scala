@@ -2,11 +2,12 @@ package com.github.plokhotnyuk.rtree2d.core
 
 import TestUtils._
 import org.scalacheck.Prop._
-import org.scalatest.Matchers._
-import org.scalatest.WordSpec
+import matchers.should.Matchers._
 import org.scalatestplus.scalacheck.Checkers
+import org.scalatest.matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class RTreeCheckers extends WordSpec with Checkers {
+class RTreeCheckers extends AnyWordSpec with Checkers {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 1000)
   "RTree" when {

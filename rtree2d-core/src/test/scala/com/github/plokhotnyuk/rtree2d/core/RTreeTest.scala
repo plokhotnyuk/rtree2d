@@ -1,8 +1,8 @@
 package com.github.plokhotnyuk.rtree2d.core
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class RTreeTest extends FunSuite {
+class RTreeTest extends AnyFunSuite {
   import EuclideanPlane._
 
   private val entries =

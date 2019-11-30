@@ -1,9 +1,10 @@
 package com.github.plokhotnyuk.rtree2d.core
 
-import org.scalatest.FunSuite
-import org.scalatest.Matchers._
+import matchers.should.Matchers._
+import org.scalatest.matchers
+import org.scalatest.funsuite.AnyFunSuite
 
-class GeometryTest extends FunSuite {
+class GeometryTest extends AnyFunSuite {
   test("EuclideanPlane.entry") {
     import EuclideanPlane._
     assert(entry(0, 0, 3) === entry(0, 0, 0, 0, 3))

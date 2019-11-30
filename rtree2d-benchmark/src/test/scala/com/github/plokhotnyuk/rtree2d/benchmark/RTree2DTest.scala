@@ -1,8 +1,9 @@
 package com.github.plokhotnyuk.rtree2d.benchmark
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class RTree2DTest extends WordSpec with Matchers {
+class RTree2DTest extends AnyWordSpec with Matchers {
   private def benchmark(geom: String): RTree2D = new RTree2D {
     geometry = geom
     setup()

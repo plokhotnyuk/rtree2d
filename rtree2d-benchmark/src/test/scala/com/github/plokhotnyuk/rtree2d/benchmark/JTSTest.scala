@@ -1,8 +1,9 @@
 package com.github.plokhotnyuk.rtree2d.benchmark
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class JTSTest extends WordSpec with Matchers {
+class JTSTest extends AnyWordSpec with Matchers {
   private def benchmark: JTS = new JTS {
     setup()
   }
