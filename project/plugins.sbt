@@ -10,5 +10,5 @@ addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "0.6.1")
 
 libraryDependencies ++= Seq(
   "org.jfree" % "jfreechart" % "1.5.0",
-  "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.0.3"
+  "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.0.4"
 )
