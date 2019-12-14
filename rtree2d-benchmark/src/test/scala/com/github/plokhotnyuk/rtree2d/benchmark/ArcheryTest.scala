@@ -1,8 +1,9 @@
 package com.github.plokhotnyuk.rtree2d.benchmark
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class ArcheryTest extends WordSpec with Matchers {
+class ArcheryTest extends AnyWordSpec with Matchers {
   private def benchmark: Archery = new Archery {
     setup()
   }

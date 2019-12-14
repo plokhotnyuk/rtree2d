@@ -3,11 +3,11 @@ package com.github.plokhotnyuk.rtree2d.core
 import TestUtils._
 import org.scalacheck.Gen
 import org.scalacheck.Prop._
-import org.scalatest.Matchers._
-import org.scalatest.WordSpec
+import org.scalatest.matchers.should.Matchers._
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.Checkers
 
-class GeometryCheckers extends WordSpec with Checkers {
+class GeometryCheckers extends AnyWordSpec with Checkers {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 1000)
   "EuclideanPlane.distanceCalculator" when {

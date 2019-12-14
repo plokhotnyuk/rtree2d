@@ -1,10 +1,11 @@
 package com.github.plokhotnyuk.rtree2d.benchmark
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 import collection.JavaConverters._
 
-class DavidMotenRTreeTest extends WordSpec with Matchers {
+class DavidMotenRTreeTest extends AnyWordSpec with Matchers {
   private def benchmark: DavidMotenRTree = new DavidMotenRTree {
     setup()
   }
