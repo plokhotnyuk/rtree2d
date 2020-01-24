@@ -40,7 +40,6 @@ lazy val commonSettings = Seq(
     "-Ywarn-dead-code",
     "-Xlint"
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, x)) if x >= 12 => Seq("-opt:l:method")
     case Some((2, x)) if x == 11 => Seq("-Ybackend:GenBCode", "-Ydelambdafy:method")
     case _ => Seq()
   }),
