@@ -81,7 +81,8 @@ lazy val publishSettings = Seq(
 
     if (isCheckingRequired) Set(organization.value %% moduleName.value % oldVersion)
     else Set()
-  }
+  },
+  mimaReportSignatureProblems := true
 )
 
 lazy val rtree2d = project.in(file("."))
