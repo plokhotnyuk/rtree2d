@@ -2,16 +2,16 @@ package com.github.plokhotnyuk.rtree2d.core
 
 import TestUtils._
 import org.scalacheck.Prop._
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.scalacheck.Checkers
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-class RTreeCheckers extends AnyWordSpec with Checkers {
+class RTreeCheckers extends AnyWordSpec with Matchers with ScalaCheckPropertyChecks {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 1000)
   "RTree" when {
     "update" should {
-      "withdraw matched entries from a rtree" in check {
+      "withdraw matched entries from a rtree" in {
         forAll(entryListGen, entryListGen) {
           (entries1: Seq[RTreeEntry[Int]], entries2: Seq[RTreeEntry[Int]]) =>
             val entries12 = entries1 ++ entries2
@@ -19,14 +19,14 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
             RTree.update(RTree(entries12), entries2, Nil).entries.sorted === expected
         }
       }
-      "build new rtree with old and inserted entries" in check {
+      "build new rtree with old and inserted entries" in {
         forAll(entryListGen, entryListGen) {
           (entries1: Seq[RTreeEntry[Int]], entries3: Seq[RTreeEntry[Int]]) =>
             val expected = (entries1 ++ entries3).sorted
             RTree.update(RTree(entries1), Nil, entries3).entries.sorted === expected
         }
       }
-      "remove and insert at the same time properly" in check {
+      "remove and insert at the same time properly" in {
         forAll(entryListGen, entryListGen, entryListGen) {
           (entries1: Seq[RTreeEntry[Int]], entries2: Seq[RTreeEntry[Int]], entries3: Seq[RTreeEntry[Int]]) =>
             val entries12 = entries1 ++ entries2
@@ -36,7 +36,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
       }
     }
     "asked for entries" should {
-      "return all entries" in check {
+      "return all entries" in {
         forAll(entryListGen) {
           (entries: Seq[RTreeEntry[Int]]) =>
             val expected = entries.sorted
@@ -45,7 +45,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
       }
     }
     "asked for nearest one" should {
-      "return any of entries which intersects with point" in check {
+      "return any of entries which intersects with point" in {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
             import EuclideanPlane._
@@ -56,7 +56,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
             }
         }
       }
-      "return the nearest entry if point does not intersect with entries" in check {
+      "return the nearest entry if point does not intersect with entries" in {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
             import EuclideanPlane._
@@ -66,7 +66,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
             }
         }
       }
-      "return the nearest entry with in a specified distance limit or none if all entries are out of the limit" in check {
+      "return the nearest entry with in a specified distance limit or none if all entries are out of the limit" in {
         forAll(entryListGen, floatGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, maxDist: Float) =>
             import EuclideanPlane._
@@ -77,7 +77,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
             }
         }
       }
-      "don't return any entry for empty tree" in check {
+      "don't return any entry for empty tree" in {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
             import EuclideanPlane._
@@ -88,7 +88,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
       }
     }
     "asked for nearest K" should {
-      "return up to K entries which intersects with point" in check {
+      "return up to K entries which intersects with point" in {
         forAll(entryListGen, floatGen, floatGen, positiveIntGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, k: Int) =>
             import EuclideanPlane._
@@ -99,7 +99,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
             }
         }
       }
-      "return up to K nearest entries if point does not intersect with entries" in check {
+      "return up to K nearest entries if point does not intersect with entries" in {
         forAll(entryListGen, floatGen, floatGen, positiveIntGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, k: Int) =>
             import EuclideanPlane._
@@ -109,7 +109,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
             }
         }
       }
-      "return up to K nearest entries with in a specified distance limit or none if all entries are out of the limit" in check {
+      "return up to K nearest entries with in a specified distance limit or none if all entries are out of the limit" in {
         forAll(entryListGen, floatGen, floatGen, floatGen, positiveIntGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, maxDist: Float, k: Int) =>
             import EuclideanPlane._
@@ -119,7 +119,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
             }
         }
       }
-      "don't return any entry for empty tree" in check {
+      "don't return any entry for empty tree" in {
         forAll(entryListGen, floatGen, floatGen, positiveIntGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, k: Int) =>
             import EuclideanPlane._
@@ -130,7 +130,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
       }
     }
     "full searched by point" should {
-      "receive value of all matched entries" in check {
+      "receive value of all matched entries" in {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
             val expected = intersects(entries, x, y).sorted
@@ -139,7 +139,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
             }
         }
       }
-      "don't receive any value if no matches" in check {
+      "don't receive any value if no matches" in {
         forAll(entryListGen, floatGen, floatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
             val expected = intersects(entries, x, y)
@@ -150,7 +150,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
       }
     }
     "full searched by rectangle" should {
-      "receive value of all matched entries" in check {
+      "receive value of all matched entries" in {
         forAll(entryListGen, floatGen, floatGen, positiveFloatGen, positiveFloatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, w: Float, h: Float) =>
             val (minX, minY, maxX, maxY) = (x, y, x + w, y + h)
@@ -160,7 +160,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
             }
         }
       }
-      "don't receive any value if no matches" in check {
+      "don't receive any value if no matches" in {
         forAll(entryListGen, floatGen, floatGen, positiveFloatGen, positiveFloatGen) {
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, w: Float, h: Float) =>
             val (minX, minY, maxX, maxY) = (x, y, x + w, y + h)
@@ -174,7 +174,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
   }
   "RTreeEntryBinaryHeap" when {
     "number of added distance/entry pairs not greater than the max size" should {
-      "return max distance provided in constructor" in check {
+      "return max distance provided in constructor" in {
         forAll(distanceEntryListGen, positiveFloatGen, positiveIntGen) {
           (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxDist: Float, maxSize: Int) =>
             propBoolean(distanceEntryPairs.size < maxSize && distanceEntryPairs.forall { case (d, e) => d < maxDist }) ==> {
@@ -183,7 +183,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
             }
         }
       }
-      "return sequence with all submitted distance/entry pairs" in check {
+      "return sequence with all submitted distance/entry pairs" in {
         forAll(distanceEntryListGen, positiveFloatGen, positiveIntGen) {
           (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxDist: Float, maxSize: Int) =>
             propBoolean(distanceEntryPairs.size <= maxSize) ==> {
@@ -195,7 +195,7 @@ class RTreeCheckers extends AnyWordSpec with Checkers {
       }
     }
     "number of added distance/entry pairs greater than the max size" should {
-      "return sequence with most nearest distance/entry pairs from all submitted" in check {
+      "return sequence with most nearest distance/entry pairs from all submitted" in {
         forAll(distanceEntryListGen, positiveIntGen) {
           (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxSize: Int) =>
             val size = distanceEntryPairs.size

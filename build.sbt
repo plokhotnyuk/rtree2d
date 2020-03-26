@@ -42,7 +42,7 @@ lazy val commonSettings = Seq(
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, x)) if x == 11 => Seq("-Ybackend:GenBCode", "-Ydelambdafy:method")
     case _ => Seq()
-  }),
+  }) ++ { if (isDotty.value) Seq("-language:Scala2,implicitConversions") else Nil },
   testOptions in Test += Tests.Argument("-oDF"),
   parallelExecution in ThisBuild := false,
   publishTo := sonatypePublishToBundle.value,
@@ -94,11 +94,18 @@ lazy val `rtree2d-core` = project
   .settings(commonSettings)
   .settings(publishSettings)
   .settings(
-    crossScalaVersions := Seq("2.13.1", scalaVersion.value, "2.11.12"),
+    crossScalaVersions := Seq("0.22.0-RC1", "2.13.1", scalaVersion.value, "2.11.12"),
     libraryDependencies ++= Seq(
-      "org.scalatestplus" %% "scalacheck-1-14" % "3.1.1.1" % Test,
-      "org.scalatest" %% "scalatest" % "3.1.0" % Test
-    )
+      "org.scalatest" %% "scalatest" % "3.1.1" % Test
+    ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((0, _)) => Seq(
+        ("org.scalatestplus" %% "scalacheck-1-14" % "3.1.1.1").intransitive().withDottyCompat("0.22.0-RC1") % Test,
+        ("org.scalacheck" %% "scalacheck" % "1.14.3").withDottyCompat("0.22.0-RC1") % Test
+      )
+      case _=> Seq(
+        "org.scalatestplus" %% "scalacheck-1-14" % "3.1.1.1" % Test
+      )
+    })
   )
 
 lazy val `rtree2d-benchmark` = project
