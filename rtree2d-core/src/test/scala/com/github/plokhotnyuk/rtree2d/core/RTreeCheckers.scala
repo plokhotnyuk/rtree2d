@@ -50,9 +50,8 @@ class RTreeCheckers extends AnyWordSpec with Matchers with ScalaCheckPropertyChe
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
             import EuclideanPlane._
             val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).sortBy(_._1)
-            propBoolean(sorted.nonEmpty && sorted.exists { case (d, e) => d == 0.0f }) ==> {
-              val result = RTree(entries).nearestOption(x, y).get
-              sorted.map(_._2).contains(result)
+            propBoolean(sorted.nonEmpty && sorted.exists(_._1 == 0.0f)) ==> {
+              entries.contains(RTree(entries).nearestOption(x, y).get)
             }
         }
       }
@@ -61,7 +60,7 @@ class RTreeCheckers extends AnyWordSpec with Matchers with ScalaCheckPropertyChe
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float) =>
             import EuclideanPlane._
             val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).sortBy(_._1)
-            propBoolean(sorted.nonEmpty && !sorted.exists { case (d, e) => d == 0.0f }) ==> {
+            propBoolean(sorted.nonEmpty && !sorted.exists(_._1 == 0.0f)) ==> {
               RTree(entries).nearestOption(x, y) === Some(sorted.head._2)
             }
         }
@@ -72,8 +71,8 @@ class RTreeCheckers extends AnyWordSpec with Matchers with ScalaCheckPropertyChe
             import EuclideanPlane._
             val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).filter(_._1 < maxDist).sortBy(_._1)
             propBoolean(sorted.nonEmpty) ==> {
-              val result = RTree(entries).nearestOption(x, y, maxDist)
-              sorted.map { case (d, e) =>Some(e) }.contains(result)
+              val result = RTree(entries).nearestOption(x, y, maxDist).get
+              entries.contains(result)
             }
         }
       }
@@ -93,9 +92,9 @@ class RTreeCheckers extends AnyWordSpec with Matchers with ScalaCheckPropertyChe
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, k: Int) =>
             import EuclideanPlane._
             val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).sortBy(_._1)
-            propBoolean(sorted.nonEmpty && sorted.exists { case (d, e) => d == 0.0f }) ==> {
+            propBoolean(sorted.nonEmpty && sorted.exists(_._1 == 0.0f)) ==> {
               val result = RTree(entries).nearestK(x, y, k)
-              result.forall(sorted.map(_._2).contains)
+              result.forall(entries.contains)
             }
         }
       }
@@ -104,7 +103,7 @@ class RTreeCheckers extends AnyWordSpec with Matchers with ScalaCheckPropertyChe
           (entries: Seq[RTreeEntry[Int]], x: Float, y: Float, k: Int) =>
             import EuclideanPlane._
             val sorted = entries.map(e => (distanceCalculator.distance(x, y, e), e)).sortBy(_._1)
-            propBoolean(sorted.nonEmpty && !sorted.exists { case (d, e) => d == 0.0f } && sorted.size == sorted.map(_._1).distinct.size) ==> {
+            propBoolean(sorted.nonEmpty && !sorted.exists(_._1 == 0.0f) && sorted.size == sorted.map(_._1).distinct.size) ==> {
               RTree(entries).nearestK(x, y, k).toSet === sorted.take(k).map(_._2).toSet
             }
         }
@@ -177,7 +176,7 @@ class RTreeCheckers extends AnyWordSpec with Matchers with ScalaCheckPropertyChe
       "return max distance provided in constructor" in {
         forAll(distanceEntryListGen, positiveFloatGen, positiveIntGen) {
           (distanceEntryPairs: Seq[(Float, RTreeEntry[Int])], maxDist: Float, maxSize: Int) =>
-            propBoolean(distanceEntryPairs.size < maxSize && distanceEntryPairs.forall { case (d, e) => d < maxDist }) ==> {
+            propBoolean(distanceEntryPairs.size < maxSize && distanceEntryPairs.forall(_._1 < maxDist)) ==> {
               val heap = new RTreeEntryBinaryHeap[Int](maxDist, maxSize)
               distanceEntryPairs.forall { case (d, e) => heap.put(d, e) == maxDist }
             }
