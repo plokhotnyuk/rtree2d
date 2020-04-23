@@ -94,7 +94,7 @@ lazy val `rtree2d-core` = project
   .settings(commonSettings)
   .settings(publishSettings)
   .settings(
-    crossScalaVersions := Seq("0.22.0-RC1", "2.13.1", scalaVersion.value, "2.11.12"),
+    crossScalaVersions := Seq("0.22.0-RC1", "2.13.2", scalaVersion.value, "2.11.12"),
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.1.1" % Test
     ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
