@@ -1,6 +1,6 @@
 package com.github.plokhotnyuk.rtree2d.core
 
-import java.lang.Float.{intBitsToFloat, floatToRawIntBits}
+import java.lang.Float.{intBitsToFloat, floatToIntBits}
 import java.lang.Math._
 import java.util
 import java.util.Comparator
@@ -19,7 +19,7 @@ object RTree {
     */
   def apply[A](entries: Iterable[RTreeEntry[A]], nodeCapacity: Int = 16): RTree[A] = {
     if (nodeCapacity <= 1) throw new IllegalArgumentException("nodeCapacity should be greater than 1")
-    pack(entries.toArray[RTree[A]], nodeCapacity, xComparator[A], yComparator[A])
+    pack(entries.toArray[RTree[A]], nodeCapacity, new XComparator[A], new XComparator[A])
   }
 
   /**
@@ -37,13 +37,13 @@ object RTree {
                 nodeCapacity: Int = 16): RTree[A] =
     if ((rtree.isEmpty || remove.isEmpty) && insert.isEmpty) rtree
     else if (rtree.isEmpty && remove.isEmpty) {
-      pack(insert.toArray[RTree[A]], nodeCapacity, xComparator[A], yComparator[A])
+      pack(insert.toArray[RTree[A]], nodeCapacity, new XComparator[A], new XComparator[A])
     } else if (remove.isEmpty) {
       val es1 = RTree.lastLevel(rtree)
       val l1 = es1.length
       val es = util.Arrays.copyOf(es1, l1 + insert.size)
       insert.copyToArray(es, l1)
-      pack(es, nodeCapacity, xComparator[A], yComparator[A])
+      pack(es, nodeCapacity, new XComparator[A], new XComparator[A])
     } else {
       val cs = new mutable.AnyRefMap[RTree[A], DejaVuCounter](remove.size)
       remove.foreach(e => cs.getOrElseUpdate(e, new DejaVuCounter).inc())
@@ -62,7 +62,7 @@ object RTree {
         }
         i += 1
       }
-      pack(if (es.length == n) es else util.Arrays.copyOf(es, n), nodeCapacity, xComparator[A], yComparator[A])
+      pack(if (es.length == n) es else util.Arrays.copyOf(es, n), nodeCapacity, new XComparator[A], new XComparator[A])
     }
 
   @tailrec
@@ -128,14 +128,6 @@ object RTree {
       }) ()
       new RTreeNode(minX, minY, maxX, maxY, level, from, to)
     }
-  }
-
-  private[this] def xComparator[A]: Comparator[RTree[A]] = new Comparator[RTree[A]] {
-    override def compare(t1: RTree[A], t2: RTree[A]): Int = floatToRawIntBits((t1.minX + t1.maxX) - (t2.minX + t2.maxX))
-  }
-
-  private[this] def yComparator[A]: Comparator[RTree[A]] = new Comparator[RTree[A]] {
-    override def compare(t1: RTree[A], t2: RTree[A]): Int = floatToRawIntBits((t1.minY + t1.maxY) - (t2.minY + t2.maxY))
   }
 }
 
@@ -372,7 +364,7 @@ private final case class RTreeNode[A](minX: Float, minY: Float, maxX: Float, max
     } else {
       val ps = new Array[Long](n)
       while (i < n) {
-        ps(i) = (floatToRawIntBits(distCalc.distance(x, y, level(from + i))).toLong << 32) | i
+        ps(i) = (floatToIntBits(distCalc.distance(x, y, level(from + i))).toLong << 32) | i
         i += 1
       }
       java.util.Arrays.sort(ps) // Assuming that there no NaNs or negative values for distances

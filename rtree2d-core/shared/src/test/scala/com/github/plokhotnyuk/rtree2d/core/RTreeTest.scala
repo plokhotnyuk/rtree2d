@@ -217,12 +217,12 @@ class RTreeTest extends AnyFunSuite {
       """RTreeNil()
         |""".stripMargin)
     assert(RTree[Int](entries.take(1)).toString ===
-      """RTreeEntry(1.0,1.0,2.9,2.9,1)
+      s"""RTreeEntry(${1.0f},${1.0f},${2.9f},${2.9f},1)
         |""".stripMargin)
     assert(RTree[Int](entries.take(2)).toString ===
-      """RTreeNode(1.0,1.0,3.9,3.9)
-        |  RTreeEntry(1.0,1.0,2.9,2.9,1)
-        |  RTreeEntry(2.0,2.0,3.9,3.9,2)
+      s"""RTreeNode(${1.0f},${1.0f},${3.9f},${3.9f})
+        |  RTreeEntry(${1.0f},${1.0f},${2.9f},${2.9f},1)
+        |  RTreeEntry(${2.0f},${2.0f},${3.9f},${3.9f},2)
         |""".stripMargin)
   }
 
