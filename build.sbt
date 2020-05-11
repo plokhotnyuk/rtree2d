@@ -94,13 +94,13 @@ lazy val `rtree2d-core` = project
   .settings(commonSettings)
   .settings(publishSettings)
   .settings(
-    crossScalaVersions := Seq("0.22.0-RC1", "2.13.2", scalaVersion.value, "2.11.12"),
+    crossScalaVersions := Seq("0.23.0", "2.13.2", scalaVersion.value, "2.11.12"),
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.1.1" % Test
+      "org.scalatest" %% "scalatest" % "3.1.2" % Test
     ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((0, _)) => Seq(
-        ("org.scalatestplus" %% "scalacheck-1-14" % "3.1.1.1").intransitive().withDottyCompat("0.22.0-RC1") % Test,
-        ("org.scalacheck" %% "scalacheck" % "1.14.3").withDottyCompat("0.22.0-RC1") % Test
+        ("org.scalatestplus" %% "scalacheck-1-14" % "3.1.1.1").intransitive().withDottyCompat("0.23.0") % Test,
+        ("org.scalacheck" %% "scalacheck" % "1.14.3").withDottyCompat("0.23.0") % Test
       )
       case _=> Seq(
         "org.scalatestplus" %% "scalacheck-1-14" % "3.1.1.1" % Test

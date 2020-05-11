@@ -5,8 +5,9 @@ import org.scalatest.funsuite.AnyFunSuite
 class RTreeTest extends AnyFunSuite {
   import EuclideanPlane._
 
-  private val entries =
-    ((1 to 100) :+ 100).map(x => entry(minX = x, minY = x, maxX = x + 1.9f, maxY = x + 1.9f, value = x))
+  private val entries = ((1 to 100) :+ 100).map { x =>
+    entry(minX = x.toFloat, minY = x.toFloat, maxX = x.toFloat + 1.9f, maxY = x.toFloat + 1.9f, value = x)
+  }
   private val rtree = RTree[Int](entries)
 
   test("RTreeNil.minX") {
