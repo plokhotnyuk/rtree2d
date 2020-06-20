@@ -19,7 +19,7 @@ object RTree {
     */
   def apply[A](entries: Iterable[RTreeEntry[A]], nodeCapacity: Int = 16): RTree[A] = {
     if (nodeCapacity <= 1) throw new IllegalArgumentException("nodeCapacity should be greater than 1")
-    pack(entries.toArray[RTree[A]], nodeCapacity, new XComparator[A], new XComparator[A])
+    pack(entries.toArray[RTree[A]], nodeCapacity, new XComparator[A], new YComparator[A])
   }
 
   /**
@@ -37,13 +37,13 @@ object RTree {
                 nodeCapacity: Int = 16): RTree[A] =
     if ((rtree.isEmpty || remove.isEmpty) && insert.isEmpty) rtree
     else if (rtree.isEmpty && remove.isEmpty) {
-      pack(insert.toArray[RTree[A]], nodeCapacity, new XComparator[A], new XComparator[A])
+      pack(insert.toArray[RTree[A]], nodeCapacity, new XComparator[A], new YComparator[A])
     } else if (remove.isEmpty) {
       val es1 = RTree.lastLevel(rtree)
       val l1 = es1.length
       val es = util.Arrays.copyOf(es1, l1 + insert.size)
       insert.copyToArray(es, l1)
-      pack(es, nodeCapacity, new XComparator[A], new XComparator[A])
+      pack(es, nodeCapacity, new XComparator[A], new YComparator[A])
     } else {
       val cs = new mutable.AnyRefMap[RTree[A], DejaVuCounter](remove.size)
       remove.foreach(e => cs.getOrElseUpdate(e, new DejaVuCounter).inc())
@@ -62,7 +62,7 @@ object RTree {
         }
         i += 1
       }
-      pack(if (es.length == n) es else util.Arrays.copyOf(es, n), nodeCapacity, new XComparator[A], new XComparator[A])
+      pack(if (es.length == n) es else util.Arrays.copyOf(es, n), nodeCapacity, new XComparator[A], new YComparator[A])
     }
 
   @tailrec
