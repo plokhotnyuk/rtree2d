@@ -95,7 +95,7 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform)
   .settings(publishSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % "3.1.2" % Test
+      "org.scalatest" %%% "scalatest" % "3.2.0" % Test
     ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((0, _)) => Seq(
         ("org.scalatestplus" %%% "scalacheck-1-14" % "3.1.2.0").intransitive().withDottyCompat("0.23.0") % Test,
@@ -135,7 +135,7 @@ lazy val `rtree2d-benchmark` = project
       "org.openjdk.jmh" % "jmh-generator-asm" % "1.23",
       "org.openjdk.jmh" % "jmh-generator-bytecode" % "1.23",
       "org.openjdk.jmh" % "jmh-generator-reflection" % "1.23",
-      "org.scalatest" %% "scalatest" % "3.1.2" % Test
+      "org.scalatest" %% "scalatest" % "3.2.0" % Test
     ),
     charts := Def.inputTaskDyn {
       val jmhParams = Def.spaceDelimited().parsed
