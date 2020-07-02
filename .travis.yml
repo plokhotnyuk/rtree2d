@@ -1,6 +1,14 @@
 language: scala
 git:
   depth: 300
+cache:
+  directories:
+    - $HOME/.cache/coursier
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt
+before_cache:
+  # Cleanup locks to avoid unnecessary cache updates
+  - find $HOME/.sbt -name "*.lock" | xargs rm
 matrix:
   include:
     - os: linux
@@ -9,6 +17,5 @@ matrix:
     - os: linux
       jdk: openjdk8
       scala: 2.11.12
-cache: sbt
 script:
   - travis_wait 60 sbt -batch ++$TRAVIS_SCALA_VERSION! clean coverage test mimaReportBinaryIssues coverageAggregate coveralls
