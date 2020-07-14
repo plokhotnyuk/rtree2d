@@ -31,7 +31,7 @@ lazy val commonSettings = Seq(
     ),
   ),
   resolvers += Resolver.sonatypeRepo("staging"),
-  scalaVersion := "2.12.11",
+  scalaVersion := "2.12.12",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
