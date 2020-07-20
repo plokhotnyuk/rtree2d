@@ -18,5 +18,5 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.2.7")
 
 libraryDependencies ++= Seq(
   "org.jfree" % "jfreechart" % "1.5.0",
-  "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.5.0"
+  "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.6.0"
 )
