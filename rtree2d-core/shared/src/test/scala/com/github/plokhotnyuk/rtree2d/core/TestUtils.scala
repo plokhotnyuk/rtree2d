@@ -28,9 +28,9 @@ object TestUtils {
     lat2 <- latGen
     lon2 <- lonGen
   } yield RTreeEntry(min(lat1, lat2), min(lon1, lon2), max(lat1, lat2), max(lon1, lon2), lastId.getAndIncrement())
-  val entryListGen: Gen[Seq[RTreeEntry[Int]]] = Gen.oneOf(0, 1, 10, 100, 1000).flatMap(n => Gen.listOfN(n, entryGen))
+  val entryListGen: Gen[Seq[RTreeEntry[Int]]] = Gen.choose(0, 1000).flatMap(n => Gen.listOfN(n, entryGen))
   val distanceEntryListGen: Gen[Seq[(Float, RTreeEntry[Int])]] =
-    Gen.oneOf(0, 1, 10, 100, 1000).flatMap(n => Gen.listOfN(n, distanceEntryGen))
+    Gen.choose(0, 1000).flatMap(n => Gen.listOfN(n, distanceEntryGen))
 
   implicit def orderingByName[A <: RTreeEntry[Int]]: Ordering[A] =
     Ordering.by(e => (e.minX, e.minY, e.maxX, e.maxY, e.value))

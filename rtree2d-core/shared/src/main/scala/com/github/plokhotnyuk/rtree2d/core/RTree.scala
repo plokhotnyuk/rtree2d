@@ -85,6 +85,7 @@ object RTree {
                             yComp: Comparator[RTree[A]]): RTree[A] = {
     val l = level.length
     if (l == 0) new RTreeNil
+    else if (l == 1) level(0)
     else if (l <= nodeCapacity) packNode(level, 0, l)
     else {
       util.Arrays.sort(level, xComp)
@@ -111,23 +112,19 @@ object RTree {
   private[this] def packNode[A](level: Array[RTree[A]], from: Int, to: Int): RTree[A] = {
     var t = level(from)
     var i = from + 1
-    if (i == to) t
-    else {
-      var minY = t.minY
-      var maxY = t.maxY
-      var minX = t.minX
-      var maxX = t.maxX
-      while ({
-        t = level(i)
-        i += 1
-        minY = min(t.minY, minY)
-        maxY = max(t.maxY, maxY)
-        minX = min(t.minX, minX)
-        maxX = max(t.maxX, maxX)
-        i < to
-      }) ()
-      new RTreeNode(minX, minY, maxX, maxY, level, from, to)
+    var minY = t.minY
+    var maxY = t.maxY
+    var minX = t.minX
+    var maxX = t.maxX
+    while (i < to) {
+      t = level(i)
+      i += 1
+      minY = min(t.minY, minY)
+      maxY = max(t.maxY, maxY)
+      minX = min(t.minX, minX)
+      maxX = max(t.maxX, maxX)
     }
+    new RTreeNode(minX, minY, maxX, maxY, level, from, to)
   }
 }
 
