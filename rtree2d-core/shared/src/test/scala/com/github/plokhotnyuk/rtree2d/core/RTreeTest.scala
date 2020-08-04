@@ -179,6 +179,7 @@ class RTreeTest extends AnyFunSuite {
     val (entries1, entries2) = entries.splitAt(entries.size / 2)
     assert(RTree.update(RTree(entries1), Nil, entries2).entries.size === rtree.entries.size)
     assert(RTree.update(rtree, Nil, rtree.entries).entries.size === (rtree.entries ++ rtree.entries).size)
+    assert(RTree.update(RTree(Nil), Nil, rtree.entries).entries.size === rtree.entries.size)
     assert(RTree.update(rtree, entries1, entries1).entries.size === entries.size)
     assert(RTree.update(rtree, entries1, Nil).entries.size === entries2.size)
     assert(RTree.update(RTree.update(rtree, Nil, rtree.entries), entries1, Nil).entries.size === (rtree.entries ++ entries2).size)
