@@ -131,10 +131,10 @@ lazy val `rtree2d-benchmark` = project
       "com.github.davidmoten" % "rtree2" % "0.9-RC1",
       "org.spire-math" %% "archery" % "0.6.0",
       "pl.project13.scala" % "sbt-jmh-extras" % "0.3.7",
-      "org.openjdk.jmh" % "jmh-core" % "1.23",
-      "org.openjdk.jmh" % "jmh-generator-asm" % "1.23",
-      "org.openjdk.jmh" % "jmh-generator-bytecode" % "1.23",
-      "org.openjdk.jmh" % "jmh-generator-reflection" % "1.23",
+      "org.openjdk.jmh" % "jmh-core" % "1.24",
+      "org.openjdk.jmh" % "jmh-generator-asm" % "1.24",
+      "org.openjdk.jmh" % "jmh-generator-bytecode" % "1.24",
+      "org.openjdk.jmh" % "jmh-generator-reflection" % "1.24",
       "org.scalatest" %% "scalatest" % "3.2.0" % Test
     ),
     charts := Def.inputTaskDyn {
