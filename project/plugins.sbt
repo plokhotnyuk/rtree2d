@@ -11,16 +11,12 @@ addSbtPlugin("ch.epfl.lamp" % "sbt-dotty" % "0.4.2")
 addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.4")
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.13")
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "2.0.1")
-addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.3.7")
+addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.4.0")
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.6.1")
 addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "0.7.0")
 addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.2.7")
 
 libraryDependencies ++= Seq(
   "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.6.0",
-  "org.jfree" % "jfreechart" % "1.5.0",
-  "org.openjdk.jmh" % "jmh-core" % "1.25.2",
-  "org.openjdk.jmh" % "jmh-generator-asm" % "1.25.2",
-  "org.openjdk.jmh" % "jmh-generator-bytecode" % "1.25.2",
-  "org.openjdk.jmh" % "jmh-generator-reflection" % "1.25.2"
+  "org.jfree" % "jfreechart" % "1.5.0"
 )
