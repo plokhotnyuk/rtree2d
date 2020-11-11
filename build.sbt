@@ -98,11 +98,11 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform)
       "org.scalatest" %%% "scalatest" % "3.2.0" % Test
     ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((0, _)) => Seq(
-        ("org.scalatestplus" %%% "scalacheck-1-15" % "3.2.2.0").intransitive().withDottyCompat("0.23.0") % Test,
+        ("org.scalatestplus" %%% "scalacheck-1-15" % "3.2.3.0").intransitive().withDottyCompat("0.23.0") % Test,
         ("org.scalacheck" %%% "scalacheck" % "1.15.0").withDottyCompat("0.23.0") % Test
       )
       case _=> Seq(
-        "org.scalatestplus" %%% "scalacheck-1-15" % "3.2.2.0" % Test
+        "org.scalatestplus" %%% "scalacheck-1-15" % "3.2.3.0" % Test
       )
     })
   )
