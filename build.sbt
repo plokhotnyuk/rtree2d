@@ -95,16 +95,9 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform)
   .settings(publishSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % "3.2.0" % Test
-    ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((0, _)) => Seq(
-        ("org.scalatestplus" %%% "scalacheck-1-15" % "3.2.3.0").intransitive().withDottyCompat("0.23.0") % Test,
-        ("org.scalacheck" %%% "scalacheck" % "1.15.2").withDottyCompat("0.23.0") % Test
-      )
-      case _=> Seq(
-        "org.scalatestplus" %%% "scalacheck-1-15" % "3.2.3.0" % Test
-      )
-    })
+      "org.scalatest" %%% "scalatest" % "3.2.4-M1" % Test,
+      "org.scalatestplus" %%% "scalacheck-1-15" % "3.2.4.0-M1" % Test
+    )
   )
   .jsSettings(
     crossScalaVersions := Seq("2.13.3", scalaVersion.value, "2.11.12"),
@@ -112,7 +105,7 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform)
     coverageEnabled := false // FIXME: No support for Scala.js 1.0 yet, see https://github.com/scoverage/scalac-scoverage-plugin/pull/287
   )
   .jvmSettings(
-    crossScalaVersions := Seq("0.24.0", "2.13.3", scalaVersion.value, "2.11.12")
+    crossScalaVersions := Seq("3.0.0-M3", "2.13.3", scalaVersion.value, "2.11.12")
   )
 
 lazy val `rtree2d-coreJVM` = `rtree2d-core`.jvm
