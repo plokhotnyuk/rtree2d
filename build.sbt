@@ -105,12 +105,12 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform)
     )
   )
   .jsSettings(
-    crossScalaVersions := Seq("2.13.3", scalaVersion.value, "2.11.12"),
+    crossScalaVersions := Seq("2.13.3", scalaVersion.value, "2.13.5"),
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule).withESFeatures(_.withUseECMAScript2015(false))),
     coverageEnabled := false // FIXME: No support for Scala.js 1.0 yet, see https://github.com/scoverage/scalac-scoverage-plugin/pull/287
   )
   .jvmSettings(
-    crossScalaVersions := Seq("3.0.0-M3", "2.13.3", scalaVersion.value, "2.11.12")
+    crossScalaVersions := Seq("3.0.0-M3", "2.13.3", scalaVersion.value, "2.13.5")
   )
 
 lazy val `rtree2d-coreJVM` = `rtree2d-core`.jvm
@@ -123,7 +123,7 @@ lazy val `rtree2d-benchmark` = project
   .settings(commonSettings)
   .settings(noPublishSettings)
   .settings(
-    crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
+    crossScalaVersions := Seq(scalaVersion.value, "2.13.5"),
     libraryDependencies ++= Seq(
       "org.locationtech.jts" % "jts-core" % "1.18.0",
       "com.github.davidmoten" % "rtree2" % "0.9-RC1",

@@ -22,6 +22,6 @@ matrix:
       dist: focal
       arch: amd64
       jdk: openjdk11
-      scala: 2.11.12
+      scala: 2.13.5
 script:
   - travis_wait 60 sbt -batch ++$TRAVIS_SCALA_VERSION! clean coverage test mimaReportBinaryIssues coverageAggregate coveralls
