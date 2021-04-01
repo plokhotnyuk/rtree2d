@@ -39,11 +39,12 @@ lazy val commonSettings = Seq(
     "-feature",
     "-unchecked"
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((3, _)) => Seq("-language:Scala2,implicitConversions")
     case Some((2, x)) if x == 11 => Seq("-Ybackend:GenBCode", "-Ydelambdafy:method")
     case _ => Seq()
-  }) ++ { if (isDotty.value) Seq("-language:Scala2,implicitConversions") else Nil },
-  testOptions in Test += Tests.Argument("-oDF"),
-  parallelExecution in ThisBuild := false,
+  }),
+  Test / testOptions += Tests.Argument("-oDF"),
+  ThisBuild / parallelExecution := false,
   publishTo := sonatypePublishToBundle.value,
   sonatypeProfileName := "com.github.plokhotnyuk",
   scmInfo := Some(
@@ -57,7 +58,7 @@ lazy val commonSettings = Seq(
 )
 
 lazy val noPublishSettings = Seq(
-  skip in publish := true,
+  publish / skip := true,
   mimaPreviousArtifacts := Set()
 )
 
@@ -140,8 +141,8 @@ lazy val `rtree2d-benchmark` = project
       val jmhParams = Def.spaceDelimited().parsed
       val targetDir = crossTarget.value
       val jmhReport = targetDir / "benchmark.json"
-      val runTask = run in Jmh
-      Def.inputTask {
+      val runTask = Jmh / run
+        Def.inputTask {
         val _ = runTask.evaluated
         Bencharts(jmhReport, "Execution time (ns/op)", targetDir)
         targetDir
