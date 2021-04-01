@@ -35,13 +35,12 @@ lazy val commonSettings = Seq(
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
-    "-target:jvm-1.8",
     "-feature",
     "-unchecked"
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((3, _)) => Seq("-language:Scala2,implicitConversions")
-    case Some((2, x)) if x == 11 => Seq("-Ybackend:GenBCode", "-Ydelambdafy:method")
-    case _ => Seq()
+    case Some((2, x)) if x == 11 => Seq("-Ybackend:GenBCode", "-Ydelambdafy:method", "-target:jvm-1.8")
+    case _ => Seq("-target:jvm-1.8")
   }),
   Test / testOptions += Tests.Argument("-oDF"),
   ThisBuild / parallelExecution := false,
