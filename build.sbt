@@ -4,6 +4,8 @@ import scala.sys.process._
 
 lazy val oldVersion = "git describe --abbrev=0".!!.trim.replaceAll("^v", "")
 
+lazy val isWindows = System.getProperty("os.name", "").toLowerCase().indexOf("win") >= 0
+
 lazy val commonSettings = Seq(
   organization := "com.github.plokhotnyuk.rtree2d",
   organizationHomepage := Some(url("https://github.com/plokhotnyuk")),
@@ -90,19 +92,23 @@ lazy val publishSettings = Seq(
 )
 
 lazy val rtree2d = project.in(file("."))
-  .aggregate(`rtree2d-coreJVM`, `rtree2d-coreJS`, `rtree2d-benchmark`)
+  .aggregate((if (isWindows) winProjects else unixProjects):_*)
   .settings(commonSettings)
   .settings(noPublishSettings)
 
-lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform)
+lazy val winProjects = Seq[ProjectReference](`rtree2d-coreJVM`, `rtree2d-coreJS`, `rtree2d-benchmark`)
+
+lazy val unixProjects = Seq[ProjectReference](`rtree2d-coreJVM`, `rtree2d-coreJS`, `rtree2d-coreNative`, `rtree2d-benchmark`)
+
+lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .settings(commonSettings)
   .settings(publishSettings)
   .settings(
     libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, 11)) => Seq(
-        "org.scalatest" %%% "scalatest" % "3.2.3" % Test,
-        "org.scalatestplus" %%% "scalacheck-1-15" % "3.2.3.0" % Test
+        "org.scalatest" %%% "scalatest" % "3.2.4-M1" % Test,
+        "org.scalatestplus" %%% "scalacheck-1-15" % "3.2.4.0-M1" % Test
       )
       case _=> Seq(
         "org.scalatest" %%% "scalatest" % "3.2.7" % Test,
@@ -122,6 +128,8 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform)
 lazy val `rtree2d-coreJVM` = `rtree2d-core`.jvm
 
 lazy val `rtree2d-coreJS` = `rtree2d-core`.js
+
+lazy val `rtree2d-coreNative` = `rtree2d-core`.native
 
 lazy val `rtree2d-benchmark` = project
   .enablePlugins(JmhPlugin)
