@@ -116,6 +116,9 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       )
     })
   )
+  .nativeSettings(
+    crossScalaVersions := Seq("2.13.5", scalaVersion.value),
+  )
   .jsSettings(
     crossScalaVersions := Seq("2.13.5", scalaVersion.value, "2.11.12"),
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule).withESFeatures(_.withUseECMAScript2015(false))),
