@@ -18,8 +18,7 @@ jobs:
     strategy:
       matrix:
         java:
-          - graalvm@
-          - zulu@
+          - zulu@1.8
           - zulu@1.11
         os:
           - ubuntu-latest
@@ -41,4 +40,10 @@ jobs:
           java-version: ${{matrix.java}}
       - name: Compile, test and check binary compatibility
         run: "sbt -batch clean +test +mimaReportBinaryIssues"
+        shell: bash
+      - name: Test with coverage
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.java == 'zulu@1.8' }}
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: "sbt -batch ++2.12.12! coverage rtree2d-coreJVM/test rtree2d-benchmark/test coverageAggregate coveralls"
         shell: bash
