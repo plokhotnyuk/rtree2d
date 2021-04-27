@@ -41,7 +41,7 @@ lazy val commonSettings = Seq(
     "-unchecked"
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((3, _)) => Seq("-language:Scala2,implicitConversions")
-    case Some((2, x)) if x == 11 => Seq("-Ybackend:GenBCode", "-Ydelambdafy:method", "-target:jvm-1.8")
+    case Some((2, 11)) => Seq("-Ybackend:GenBCode", "-Ydelambdafy:method", "-target:jvm-1.8")
     case _ => Seq("-target:jvm-1.8")
   }),
   Test / testOptions += Tests.Argument("-oDF"),
@@ -111,8 +111,8 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
         "org.scalatestplus" %%% "scalacheck-1-15" % "3.2.4.0-M1" % Test
       )
       case _=> Seq(
-        "org.scalatest" %%% "scalatest" % "3.2.7" % Test,
-        "org.scalatestplus" %%% "scalacheck-1-15" % "3.2.7.0" % Test
+        "org.scalatest" %%% "scalatest" % "3.2.8" % Test,
+        "org.scalatestplus" %%% "scalacheck-1-15" % "3.2.8.0" % Test
       )
     })
   )
@@ -120,12 +120,12 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     crossScalaVersions := Seq("2.13.5", scalaVersion.value),
   )
   .jsSettings(
-    crossScalaVersions := Seq("2.13.5", scalaVersion.value, "2.11.12"),
+    crossScalaVersions := Seq("3.0.0-RC3", "2.13.5", scalaVersion.value, "2.11.12"),
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule).withESFeatures(_.withUseECMAScript2015(false))),
     coverageEnabled := false // FIXME: No support for Scala.js 1.0 yet, see https://github.com/scoverage/scalac-scoverage-plugin/pull/287
   )
   .jvmSettings(
-    crossScalaVersions := Seq("3.0.0-RC2", "2.13.5", scalaVersion.value, "2.11.12")
+    crossScalaVersions := Seq("3.0.0-RC3", "2.13.5", scalaVersion.value, "2.11.12")
   )
 
 lazy val `rtree2d-coreJVM` = `rtree2d-core`.jvm
@@ -145,7 +145,7 @@ lazy val `rtree2d-benchmark` = project
       "org.locationtech.jts" % "jts-core" % "1.18.1",
       "com.github.davidmoten" % "rtree2" % "0.9-RC1",
       "org.spire-math" %% "archery" % "0.6.0",
-      "org.scalatest" %% "scalatest" % "3.2.7" % Test
+      "org.scalatest" %% "scalatest" % "3.2.8" % Test
     ),
     charts := Def.inputTaskDyn {
       val jmhParams = Def.spaceDelimited().parsed
