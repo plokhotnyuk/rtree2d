@@ -208,15 +208,18 @@ trait Spherical {
         } else {
           val maxLatSin = sin(maxLat * radPerDegree)
           val maxLatCos = sqrt(1 - maxLatSin * maxLatSin)
-          val latCosPerLonDeltaCos = latCos * cos(min(normalize(minLon - lon), normalize(lon - maxLon)) * radPerDegree)
+          val closestLon =
+            if (normalize(minLon - lon) <= normalize(lon - maxLon)) minLon
+            else maxLon
+          val latCosPerLonDeltaCos = latCos * cos((closestLon - lon) * radPerDegree)
+          val extremumLat = atan(latSin / latCosPerLonDeltaCos)
           val normalizedDistanceCos = max(
             latSin * minLatSin + latCosPerLonDeltaCos * minLatCos,
             latSin * maxLatSin + latCosPerLonDeltaCos * maxLatCos)
-          val extremumLatTan = latSin / latCosPerLonDeltaCos
-          if (extremumLatTan * minLatCos <= minLatSin || extremumLatTan * maxLatCos >= maxLatSin) normalizedDistanceCos
+          if (extremumLat <= minLat || extremumLat >= maxLat) normalizedDistanceCos
           else {
-            val extremumLatCos = sqrt(1 / (1 + extremumLatTan * extremumLatTan))
-            val extremumLatSin = extremumLatTan / extremumLatCos
+            val extremumLatSin = sin(extremumLat * radPerDegree)
+            val extremumLatCos = sqrt(1 - extremumLatSin * extremumLatSin)
             max(latSin * extremumLatSin + latCosPerLonDeltaCos * extremumLatCos, normalizedDistanceCos)
           }
         }

@@ -128,6 +128,8 @@ class GeometryTest extends AnyFunSuite {
     assert(distance(0, 0, entry(0, 180, 3)) === 20037.508f +- 23f) // Null Island <-> Anti-meridian, in km
     assert(intercept[UnsupportedOperationException](distance(0, 0, RTree[Int](Nil)))
       .getMessage === "RTreeNil.minY")
+    // The issue test: https://github.com/plokhotnyuk/rtree2d/issues/262
+    assert(distance(18.0f, -74.3f, entry(17.84f, -67.38f, 18.62f, -65.51f, 3)) === 731.6392f +- 1.0f)
   }
 
   test("EllipsoidalEarth.radius") {
