@@ -143,7 +143,7 @@ lazy val `rtree2d-benchmark` = project
   .settings(
     crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
     libraryDependencies ++= Seq(
-      "org.locationtech.jts" % "jts-core" % "1.18.1",
+      "org.locationtech.jts" % "jts-core" % "1.18.2",
       "com.github.davidmoten" % "rtree2" % "0.9-RC1",
       "org.spire-math" %% "archery" % "0.6.0",
       "org.scalatest" %% "scalatest" % "3.2.9" % Test
