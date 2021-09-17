@@ -18,8 +18,9 @@ jobs:
     strategy:
       matrix:
         java:
+          - zulu@1.17
+          - graalvm-ce-java11@21
           - zulu@1.8
-          - zulu@1.11
         os:
           - ubuntu-latest
           - macOS-latest
@@ -34,16 +35,16 @@ jobs:
           fetch-depth: 300
       - name: Fetch tags
         run: git fetch --depth=300 origin +refs/tags/*:refs/tags/*
-      - uses: coursier/cache-action@v5
-      - uses: olafurpg/setup-scala@v12
+      - uses: coursier/cache-action@v6.3
+      - uses: olafurpg/setup-scala@v13
         with:
           java-version: ${{matrix.java}}
       - name: Compile, test and check binary compatibility
         run: "sbt -batch clean +test +mimaReportBinaryIssues"
         shell: bash
       - name: Test with coverage
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.java == 'zulu@1.8' }}
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: "sbt -batch ++2.12.12! coverage rtree2d-coreJVM/test rtree2d-benchmark/test coverageAggregate coveralls"
+        run: "sbt -batch ++2.12.15! coverage rtree2d-coreJVM/test rtree2d-benchmark/test coverageAggregate coveralls"
         shell: bash
