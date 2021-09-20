@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/plokhotnyuk/rtree2d/badge.svg?branch=master)](https://coveralls.io/github/plokhotnyuk/rtree2d?branch=master)
 [![Scala Steward](https://img.shields.io/badge/Scala_Steward-helping-brightgreen.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAMAAAARSr4IAAAAVFBMVEUAAACHjojlOy5NWlrKzcYRKjGFjIbp293YycuLa3pYY2LSqql4f3pCUFTgSjNodYRmcXUsPD/NTTbjRS+2jomhgnzNc223cGvZS0HaSD0XLjbaSjElhIr+AAAAAXRSTlMAQObYZgAAAHlJREFUCNdNyosOwyAIhWHAQS1Vt7a77/3fcxxdmv0xwmckutAR1nkm4ggbyEcg/wWmlGLDAA3oL50xi6fk5ffZ3E2E3QfZDCcCN2YtbEWZt+Drc6u6rlqv7Uk0LdKqqr5rk2UCRXOk0vmQKGfc94nOJyQjouF9H/wCc9gECEYfONoAAAAASUVORK5CYII=)](https://scala-steward.org)
 [![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.0.0.svg)](https://www.scala-js.org)
-[![Maven Central](https://img.shields.io/badge/maven--central-0.11.7-blue.svg)](https://search.maven.org/search?q=com.github.plokhotnyuk.rtree2d)
+[![Maven Central](https://img.shields.io/badge/maven--central-0.11.8-blue.svg)](https://search.maven.org/search?q=com.github.plokhotnyuk.rtree2d)
 
 RTree2D is a 2D immutable [R-tree](https://en.wikipedia.org/wiki/R-tree) with 
 [STR (Sort-Tile-Recursive)](https://archive.org/details/DTIC_ADA324493) packing for ultra-fast nearest and intersection 
@@ -30,7 +30,7 @@ To archive these goals we have used:
 Add the library to a dependency list:
 
 ```sbt
-libraryDependencies += "com.github.plokhotnyuk.rtree2d" %% "rtree2d-core" % "0.11.7"
+libraryDependencies += "com.github.plokhotnyuk.rtree2d" %% "rtree2d-core" % "0.11.8"
  ```
 
 Entries of R-tree are represented by `RTreeEntry` instances which contains payload and 4 coordinates of the minimum 
