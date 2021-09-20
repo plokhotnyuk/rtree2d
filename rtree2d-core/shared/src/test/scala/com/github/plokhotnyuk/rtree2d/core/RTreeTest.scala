@@ -302,4 +302,64 @@ class RTreeTest extends AnyFunSuite {
       RTreeEntry(-814.5254f,-227.29942f,-683.1148f,-222.56693f,207150))
     RTree(entries, 4).entries.toSet == entries.toSet
   }
+
+  test("issue 292") {
+    import SphericalEarth._
+    val entries = List(
+      RTreeEntry(-21.69785f,21.64581f,-21.69785f,21.64581f,"BWGNZ"),
+        RTreeEntry(-18.36536f,21.84219f,-18.36536f,21.84219f,"BWSWX"),
+        RTreeEntry(-21.66667f,22.05f,-21.66667f,22.05f,"BWSUN"),
+        RTreeEntry(-19.98333f,23.41667f,-19.98333f,23.41667f,"BWMUB"),
+        RTreeEntry(-23.9988f,21.77962f,-23.9988f,21.77962f,"BWHUK"),
+        RTreeEntry(-26.05f,22.45f,-26.05f,22.45f,"BWTBY"),
+        RTreeEntry(-24.60167f,24.72806f,-24.60167f,24.72806f,"BWJWA"),
+        RTreeEntry(-25.22435f,25.67728f,-25.22435f,25.67728f,"BWLOQ"),
+        RTreeEntry(-19.16422f,23.75201f,-19.16422f,23.75201f,"BWKHW"),
+        RTreeEntry(-17.80165f,25.16024f,-17.80165f,25.16024f,"BWBBK"),
+        RTreeEntry(-21.3115f,25.37642f,-21.3115f,25.37642f,"BWORP"),
+        RTreeEntry(-21.41494f,25.59263f,-21.41494f,25.59263f,"BWLET"),
+        RTreeEntry(-24.62694f,25.86556f,-24.62694f,25.86556f,"BWMGS"),
+        RTreeEntry(-24.87158f,25.86989f,-24.87158f,25.86989f,"BWRSA"),
+        RTreeEntry(-24.65451f,25.90859f,-24.65451f,25.90859f,"BWGBE"),
+        RTreeEntry(-24.66667f,25.91667f,-24.66667f,25.91667f,"BWGAB"),
+        RTreeEntry(-22.38754f,26.71077f,-22.38754f,26.71077f,"BWSER"),
+        RTreeEntry(-23.10275f,26.83411f,-23.10275f,26.83411f,"BWMAH"),
+        RTreeEntry(-22.54605f,27.12507f,-22.54605f,27.12507f,"BWPAL"),
+        RTreeEntry(-21.97895f,27.84296f,-21.97895f,27.84296f,"BWPKW"),
+        RTreeEntry(-21.17f,27.50778f,-21.17f,27.50778f,"BWFRW"))
+    val tree = RTree(entries, 4)
+    tree.toString == """RTreeNode(-26.05,21.64581,-17.80165,27.84296)
+                       |    RTreeNode(-26.05,21.64581,-17.80165,25.91667)
+                       |      RTreeNode(-21.69785,21.64581,-18.36536,23.41667)
+                       |        RTreeEntry(-21.69785,21.64581,-21.69785,21.64581,BWGNZ)
+                       |        RTreeEntry(-18.36536,21.84219,-18.36536,21.84219,BWSWX)
+                       |        RTreeEntry(-21.66667,22.05,-21.66667,22.05,BWSUN)
+                       |        RTreeEntry(-19.98333,23.41667,-19.98333,23.41667,BWMUB)
+                       |      RTreeNode(-26.05,21.77962,-23.9988,25.67728)
+                       |        RTreeEntry(-23.9988,21.77962,-23.9988,21.77962,BWHUK)
+                       |        RTreeEntry(-26.05,22.45,-26.05,22.45,BWTBY)
+                       |        RTreeEntry(-24.60167,24.72806,-24.60167,24.72806,BWJWA)
+                       |        RTreeEntry(-25.22435,25.67728,-25.22435,25.67728,BWLOQ)
+                       |      RTreeNode(-21.41494,23.75201,-17.80165,25.59263)
+                       |        RTreeEntry(-19.16422,23.75201,-19.16422,23.75201,BWKHW)
+                       |        RTreeEntry(-17.80165,25.16024,-17.80165,25.16024,BWBBK)
+                       |        RTreeEntry(-21.3115,25.37642,-21.3115,25.37642,BWORP)
+                       |        RTreeEntry(-21.41494,25.59263,-21.41494,25.59263,BWLET)
+                       |      RTreeNode(-24.87158,25.86556,-24.62694,25.91667)
+                       |        RTreeEntry(-24.62694,25.86556,-24.62694,25.86556,BWMGS)
+                       |        RTreeEntry(-24.87158,25.86989,-24.87158,25.86989,BWRSA)
+                       |        RTreeEntry(-24.65451,25.90859,-24.65451,25.90859,BWGBE)
+                       |        RTreeEntry(-24.66667,25.91667,-24.66667,25.91667,BWGAB)
+                       |    RTreeNode(-23.10275,26.71077,-21.17,27.84296)
+                       |      RTreeNode(-23.10275,26.71077,-21.97895,27.84296)
+                       |        RTreeEntry(-22.38754,26.71077,-22.38754,26.71077,BWSER)
+                       |        RTreeEntry(-23.10275,26.83411,-23.10275,26.83411,BWMAH)
+                       |        RTreeEntry(-22.54605,27.12507,-22.54605,27.12507,BWPAL)
+                       |        RTreeEntry(-21.97895,27.84296,-21.97895,27.84296,BWPKW)
+                       |      RTreeNode(-21.17,27.50778,-21.17,27.50778)
+                       |        RTreeEntry(-21.17,27.50778,-21.17,27.50778,BWFRW)
+                       |""".stripMargin
+    tree.nearestOption(24.65527f, 25.91904f, 50.0f) == Some(RTreeEntry(-24.65451f,25.90859f,-24.65451f,25.90859f,"BWGBE"))
+  }
+
 }
