@@ -201,24 +201,26 @@ trait Spherical {
         val radPerDegree = Spherical.this.radPerDegree
         val latSin = sin(lat * radPerDegree)
         val latCos = sqrt(1 - latSin * latSin)
-        val minLatSin = sin(minLat * radPerDegree)
+        val minLatRad = minLat * radPerDegree
+        val minLatSin = sin(minLatRad)
         val minLatCos = sqrt(1 - minLatSin * minLatSin)
         if (minLon == maxLon && minLat == maxLat) {
           latSin * minLatSin + latCos * cos((minLon - lon) * radPerDegree) * minLatCos
         } else {
-          val maxLatSin = sin(maxLat * radPerDegree)
+          val maxLatRad = maxLat * radPerDegree
+          val maxLatSin = sin(maxLatRad)
           val maxLatCos = sqrt(1 - maxLatSin * maxLatSin)
           val closestLon =
             if (normalize(minLon - lon) <= normalize(lon - maxLon)) minLon
             else maxLon
           val latCosPerLonDeltaCos = latCos * cos((closestLon - lon) * radPerDegree)
-          val extremumLat = atan(latSin / latCosPerLonDeltaCos) * degreePerRad
+          val extremumLatRad = atan(latSin / latCosPerLonDeltaCos)
           val normalizedDistanceCos = max(
             latSin * minLatSin + latCosPerLonDeltaCos * minLatCos,
             latSin * maxLatSin + latCosPerLonDeltaCos * maxLatCos)
-          if (extremumLat <= minLat || extremumLat >= maxLat) normalizedDistanceCos
+          if (extremumLatRad <= minLatRad || extremumLatRad >= maxLatRad) normalizedDistanceCos
           else {
-            val extremumLatSin = sin(extremumLat * radPerDegree)
+            val extremumLatSin = sin(extremumLatRad)
             val extremumLatCos = sqrt(1 - extremumLatSin * extremumLatSin)
             max(latSin * extremumLatSin + latCosPerLonDeltaCos * extremumLatCos, normalizedDistanceCos)
           }
