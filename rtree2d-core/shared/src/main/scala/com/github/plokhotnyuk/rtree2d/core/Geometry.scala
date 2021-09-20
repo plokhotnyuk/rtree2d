@@ -212,7 +212,7 @@ trait Spherical {
             if (normalize(minLon - lon) <= normalize(lon - maxLon)) minLon
             else maxLon
           val latCosPerLonDeltaCos = latCos * cos((closestLon - lon) * radPerDegree)
-          val extremumLat = atan(latSin / latCosPerLonDeltaCos)
+          val extremumLat = atan(latSin / latCosPerLonDeltaCos) * degreePerRad
           val normalizedDistanceCos = max(
             latSin * minLatSin + latCosPerLonDeltaCos * minLatCos,
             latSin * maxLatSin + latCosPerLonDeltaCos * maxLatCos)
