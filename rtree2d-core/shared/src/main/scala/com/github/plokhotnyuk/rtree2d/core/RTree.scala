@@ -1,7 +1,6 @@
 package com.github.plokhotnyuk.rtree2d.core
 
 import java.lang.Float.{intBitsToFloat, floatToIntBits}
-import java.lang.Math._
 import java.util
 import java.util.Comparator
 
@@ -89,15 +88,15 @@ object RTree {
     else if (l <= nodeCapacity) packNode(level, 0, l)
     else {
       util.Arrays.sort(level, xComp)
-      val nodeCount = ceil(l.toFloat / nodeCapacity).toInt
-      val sliceCapacity = ceil(sqrt(nodeCount)).toInt * nodeCapacity
+      val nodeCount = Math.ceil(l.toDouble / nodeCapacity).toInt
+      val sliceCapacity = Math.ceil(Math.sqrt(nodeCount)).toInt * nodeCapacity
       val nextLevel = new Array[RTree[A]](nodeCount)
       var i, j = 0
       while ({
-        val sliceTo = min(i + sliceCapacity, l)
+        val sliceTo = Math.min(i + sliceCapacity, l)
         util.Arrays.sort(level, i, sliceTo, yComp)
         while ({
-          val packTo = min(i + nodeCapacity, sliceTo)
+          val packTo = Math.min(i + nodeCapacity, sliceTo)
           nextLevel(j) = packNode(level, i, packTo)
           i = packTo
           j += 1
@@ -126,6 +125,10 @@ object RTree {
     }
     new RTreeNode(minX, minY, maxX, maxY, level, from, to)
   }
+
+  private[this] def min(x: Float, y: Float): Float = if (x < y) x else y
+
+  private[this] def max(x: Float, y: Float): Float = if (x < y) y else x
 }
 
 /**
@@ -426,7 +429,7 @@ class RTreeEntryBinaryHeap[A](maxDist: Float, maxSize: Int) {
     if (size < maxSize) {
       size += 1
       if (size >= distances.length) {
-        val newSize = min(distances.length << 1, maxSize + 1)
+        val newSize = Math.min(distances.length << 1, maxSize + 1)
         distances = java.util.Arrays.copyOf(distances, newSize)
         entries = java.util.Arrays.copyOf(entries, newSize)
         this.distances = distances

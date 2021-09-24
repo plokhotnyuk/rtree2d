@@ -42,7 +42,7 @@ class GeometryTest extends AnyFunSuite {
     assert(distance(0, 0, entry(-1, -1, 1, 1, 3)) === 0.0f)
     assert(distance(0, 0, entry(3, 4, 5, 6, 3)) === 5f)
     assert(intercept[UnsupportedOperationException](distance(0, 0, RTree[Int](Nil)))
-      .getMessage === "RTreeNil.minY")
+      .getMessage === "RTreeNil.minX")
   }
 
   test("SphericalEarth.entry") {

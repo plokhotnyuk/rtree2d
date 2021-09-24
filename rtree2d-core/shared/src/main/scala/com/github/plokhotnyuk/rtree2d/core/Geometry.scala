@@ -1,7 +1,5 @@
 package com.github.plokhotnyuk.rtree2d.core
 
-import java.lang.Math._
-
 /**
   * A type class for distance calculations that can be used for `nearest` requests
   * to an R-tree instances.
@@ -27,11 +25,19 @@ object EuclideanPlane {
     */
   implicit val distanceCalculator: DistanceCalculator = new DistanceCalculator {
     override def distance[A](x: Float, y: Float, t: RTree[A]): Float = {
-      val dy = if (y < t.minY) t.minY - y else if (y < t.maxY) 0 else y - t.maxY
-      val dx = if (x < t.minX) t.minX - x else if (x < t.maxX) 0 else x - t.maxX
+      var dx = t.minX - x
+      var dy = t.minY - y
+      if (dx < 0) {
+        dx = x - t.maxX
+        if (dx < 0) dx = 0
+      }
+      if (dy < 0) {
+        dy = y - t.maxY
+        if (dy < 0) dy = 0
+      }
       if (dy == 0) dx
       else if (dx == 0) dy
-      else sqrt(dx * dx + dy * dy).toFloat
+      else Math.sqrt(dx * dx + dy * dy).toFloat
     }
   }
 
@@ -87,8 +93,8 @@ object EuclideanPlane {
 }
 
 trait Spherical {
-  private[this] val radPerDegree = PI / 180
-  private[this] val degreePerRad = 180 / PI
+  private[this] val radPerDegree = Math.PI / 180
+  private[this] val degreePerRad = 180 / Math.PI
 
   /**
     * Create an entry specified by a point with spherical coordinates and a value.
@@ -154,17 +160,14 @@ trait Spherical {
     if (!(lon >= -180 && lon <= 180))
       throw new IllegalArgumentException("lon should not be out of range from -180 to 180 or NaN")
     if (!(distance >= 0)) throw new IllegalArgumentException("distance should not be less than 0 or NaN")
-    val radPerDegree = this.radPerDegree
-    val radLon = lon * radPerDegree
-    val radLat = lat * radPerDegree
-    val latDelta = distance / radius
-    val degreePerRad = this.degreePerRad
-    val minLat = ((radLat - latDelta) * degreePerRad).toFloat
-    val maxLat = ((radLat + latDelta) * degreePerRad).toFloat
+    val latDeltaRad = distance / radius
+    val latDelta = (latDeltaRad * degreePerRad).toFloat
+    val minLat = lat - latDelta
+    val maxLat = lat + latDelta
     if (minLat > -90 && maxLat < 90) {
-      val lonDelta = asin(sin(latDelta) / cos(radLat))
-      val minLon = ((radLon - lonDelta) * degreePerRad).toFloat
-      val maxLon = ((radLon + lonDelta) * degreePerRad).toFloat
+      val lonDelta = (Math.asin(Math.sin(latDeltaRad) / Math.cos(lat * radPerDegree)) * degreePerRad).toFloat
+      val minLon = lon - lonDelta
+      val maxLon = lon + lonDelta
       if (minLon < -180) {
         new IndexedSeq2(new RTreeEntry(minLat, -180, maxLat, maxLon, value),
           new RTreeEntry(minLat, minLon + 360, maxLat, 180, value))
@@ -197,39 +200,47 @@ trait Spherical {
         if (lat < minLat) (minLat - lat) * circumference
         else if (lat > maxLat) (lat - maxLat) * circumference
         else 0
-      } else acos(min({
+      } else Math.acos(min({
         val radPerDegree = Spherical.this.radPerDegree
-        val latSin = sin(lat * radPerDegree)
-        val latCos = sqrt(1 - latSin * latSin)
+        val latSin = Math.sin(lat * radPerDegree)
+        val latCos = Math.sqrt(1 - latSin * latSin)
         val minLatRad = minLat * radPerDegree
-        val minLatSin = sin(minLatRad)
-        val minLatCos = sqrt(1 - minLatSin * minLatSin)
+        val minLatSin = Math.sin(minLatRad)
+        val minLatCos = Math.sqrt(1 - minLatSin * minLatSin)
         if (minLon == maxLon && minLat == maxLat) {
-          latSin * minLatSin + latCos * cos((minLon - lon) * radPerDegree) * minLatCos
+          latSin * minLatSin + latCos * Math.cos((minLon - lon) * radPerDegree) * minLatCos
         } else {
           val maxLatRad = maxLat * radPerDegree
-          val maxLatSin = sin(maxLatRad)
-          val maxLatCos = sqrt(1 - maxLatSin * maxLatSin)
+          val maxLatSin = Math.sin(maxLatRad)
+          val maxLatCos = Math.sqrt(1 - maxLatSin * maxLatSin)
           val closestLon =
             if (normalize(minLon - lon) <= normalize(lon - maxLon)) minLon
             else maxLon
-          val latCosPerLonDeltaCos = latCos * cos((closestLon - lon) * radPerDegree)
-          val extremumLatRad = atan(latSin / latCosPerLonDeltaCos)
+          val latCosPerLonDeltaCos = latCos * Math.cos((closestLon - lon) * radPerDegree)
+          val extremumLatRad = Math.atan(latSin / latCosPerLonDeltaCos)
           val normalizedDistanceCos = max(
             latSin * minLatSin + latCosPerLonDeltaCos * minLatCos,
             latSin * maxLatSin + latCosPerLonDeltaCos * maxLatCos)
           if (extremumLatRad <= minLatRad || extremumLatRad >= maxLatRad) normalizedDistanceCos
           else {
-            val extremumLatSin = sin(extremumLatRad)
-            val extremumLatCos = sqrt(1 - extremumLatSin * extremumLatSin)
+            val extremumLatSin = Math.sin(extremumLatRad)
+            val extremumLatCos = Math.sqrt(1 - extremumLatSin * extremumLatSin)
             max(latSin * extremumLatSin + latCosPerLonDeltaCos * extremumLatCos, normalizedDistanceCos)
           }
         }
       }, 1)) * radius
     }.toFloat
 
+    private[this] def min(x: Double, y: Double): Double = if (x < y) x else y
+
+    private[this] def max(x: Double, y: Double): Double = if (x < y) y else x
+
     private[this] def normalize(lonDelta: Float): Float = if (lonDelta < 0) lonDelta + 360 else lonDelta
   }
+
+  private[this] def min(x: Float, y: Float): Float = if (x < y) x else y
+
+  private[this] def max(x: Float, y: Float): Float = if (x < y) y else x
 }
 
 object SphericalEarth extends Spherical {
@@ -272,7 +283,7 @@ object SphericalEarth extends Spherical {
 }
 
 object EllipsoidalEarth {
-  private[this] val radPerDegree = PI / 180
+  private[this] val radPerDegree = Math.PI / 180
   private[this] val earthEquatorialRadius = 6378.1370
   private[this] val earthPolarRadius = 6356.7523
 
@@ -283,13 +294,13 @@ object EllipsoidalEarth {
     * @return a radius (in km)
     */
   def radius(lat: Float): Double = {
-    val latSin = sin(lat * radPerDegree)
-    val latCos = sqrt(1 - latSin * latSin)
+    val latSin = Math.sin(lat * radPerDegree)
+    val latCos = Math.sqrt(1 - latSin * latSin)
     val s1 = earthEquatorialRadius * latCos
     val s2 = earthPolarRadius * latSin
     val s3 = earthEquatorialRadius * s1
     val s4 = earthPolarRadius * s2
-    sqrt((s3 * s3 + s4 * s4) / (s1 * s1 + s2 * s2))
+    Math.sqrt((s3 * s3 + s4 * s4) / (s1 * s1 + s2 * s2))
   }
 }
 
