@@ -114,12 +114,12 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     crossScalaVersions := Seq("2.13.8", scalaVersion.value)
   )
   .jsSettings(
-    crossScalaVersions := Seq("3.1.1", "2.13.8", scalaVersion.value),
+    crossScalaVersions := Seq("3.1.2", "2.13.8", scalaVersion.value),
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule).withESFeatures(_.withESVersion(ESVersion.ES2015))),
     coverageEnabled := false // FIXME: No support for Scala.js 1.0 yet, see https://github.com/scoverage/scalac-scoverage-plugin/pull/287
   )
   .jvmSettings(
-    crossScalaVersions := Seq("3.1.1", "2.13.8", scalaVersion.value)
+    crossScalaVersions := Seq("3.1.2", "2.13.8", scalaVersion.value)
   )
 
 lazy val `rtree2d-coreJVM` = `rtree2d-core`.jvm
