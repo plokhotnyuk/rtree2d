@@ -33,7 +33,7 @@ lazy val commonSettings = Seq(
     )
   ),
   resolvers += Resolver.sonatypeRepo("staging"),
-  scalaVersion := "2.12.15",
+  scalaVersion := "2.12.16",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
@@ -105,21 +105,16 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(commonSettings)
   .settings(publishSettings)
   .settings(
+    crossScalaVersions := Seq("3.1.3", "2.13.8", "2.12.16"),
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % "3.2.12" % Test,
-      "org.scalatestplus" %%% "scalacheck-1-15" % "3.2.11.0" % Test
+      "org.scalatestplus" %%% "scalacheck-1-16" % "3.2.12.0" % Test
     )
   )
-  .nativeSettings(
-    crossScalaVersions := Seq("2.13.8", scalaVersion.value)
-  )
   .jsSettings(
-    crossScalaVersions := Seq("3.1.2", "2.13.8", scalaVersion.value),
+    crossScalaVersions := Seq("3.1.3", "2.13.8", "2.12.16"),
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule).withESFeatures(_.withESVersion(ESVersion.ES2015))),
-    coverageEnabled := false // FIXME: No support for Scala.js 1.0 yet, see https://github.com/scoverage/scalac-scoverage-plugin/pull/287
-  )
-  .jvmSettings(
-    crossScalaVersions := Seq("3.1.2", "2.13.8", scalaVersion.value)
+    coverageEnabled := false
   )
 
 lazy val `rtree2d-coreJVM` = `rtree2d-core`.jvm
@@ -136,7 +131,7 @@ lazy val `rtree2d-benchmark` = project
   .settings(
     crossScalaVersions := Seq(scalaVersion.value),
     libraryDependencies ++= Seq(
-      "org.locationtech.jts" % "jts-core" % "1.18.2",
+      "org.locationtech.jts" % "jts-core" % "1.19.0",
       "com.github.davidmoten" % "rtree2" % "0.9.3",
       "org.spire-math" %% "archery" % "0.6.0",
       "org.scalatest" %% "scalatest" % "3.2.12" % Test
