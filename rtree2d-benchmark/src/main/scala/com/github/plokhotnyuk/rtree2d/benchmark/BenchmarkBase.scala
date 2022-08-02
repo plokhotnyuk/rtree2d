@@ -19,9 +19,12 @@ case class PointOfInterest(x: Float, y: Float)
   "-XX:MaxNewSize=6g",
   "-XX:InitialCodeCacheSize=256m",
   "-XX:ReservedCodeCacheSize=256m",
-  "-XX:+UseParallelOldGC",
-  "-XX:-UseBiasedLocking",
-  "-XX:+AlwaysPreTouch"
+  "-XX:+UseParallelGC",
+  "-XX:-UseAdaptiveSizePolicy",
+  "-XX:MaxInlineLevel=18",
+  "-XX:+AlwaysPreTouch",
+  "-XX:+UseNUMA",
+  "-XX:-UseAdaptiveNUMAChunkSizing"
 ))
 abstract class BenchmarkBase {
   @Param(Array("1", "10", "100", "1000", "10000", "100000", "1000000", "10000000"))

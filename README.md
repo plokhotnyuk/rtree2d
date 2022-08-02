@@ -97,8 +97,8 @@ for other functions which allows filtering or accumulating found entries without
 
 Charts below are latest results of benchmarks which compare RTree2D with [Archery](https://github.com/non/archery),
 [David Monten's rtree](https://github.com/davidmoten/rtree), and [JTS](https://github.com/locationtech/jts) libraries 
-on the following environment: Intel® Core™ i7-7700 CPU @ 3.6GHz (max 4.2GHz), RAM 16Gb DDR4-2400, Ubuntu 18.04, 
-Oracle JDK 11.
+on the following environment: Intel® Core™ i9-11900H CPU @ 2.5GHz (max 4.9GHz), RAM 32Gb DDR4-3200, Ubuntu 22.04, 
+Oracle JDK 17.
 
 Main metric tested by benchmarks is an execution time in nanoseconds. So lesser values are better. Please, check out 
 the Run benchmarks section bellow how to test other metrics like allocations in bytes or number of some CPU events.     
@@ -167,7 +167,7 @@ Feel free to modify benchmarks and check how it works with your data, JDK, and S
 To see throughput with allocation rate run benchmarks with GC profiler using the following command:
 
 ```sh
-sbt -java-home /usr/lib/jvm/jdk1.8.0 clean 'rtree2d-benchmark/jmh:run -prof gc -rf json -rff rtries.json .*'
+sbt -java-home /usr/lib/jvm/zulu-17 clean 'rtree2d-benchmark/jmh:run -prof gc -rf json -rff rtries.json .*'
 ```
 
 It will save benchmark report in `rtree2d-benchmark/rtries.json` file.
@@ -183,7 +183,7 @@ series to separated images. Here is an example how it can be called for specifie
 parameter, and patterns of benchmark names:
 
 ```sh
-sbt -java-home /usr/lib/jvm/jdk1.8.0 clean 'charts -jvm /usr/lib/jvm/jdk-11/bin/java -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=16 -p partToUpdate=0.1 -p geometry=plane .*'
+sbt -java-home /usr/lib/jvm/zulu-17 clean 'charts -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=16 -p partToUpdate=0.1 -p geometry=plane .*'
 ```
 
 Results will be places in a cross-build suffixed subdirectory of the `benchmark/target` directory in `*.png` files
@@ -200,7 +200,7 @@ For testing of RTree2D with `spherical` geometry and different node capacities u
 will be placed in the same directory as above):
 
 ```sh
-sbt -java-home /usr/lib/jvm/jdk1.8.0 clean 'charts -jvm /usr/lib/jvm/jdk-11/bin/java -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=4,8,16 -p partToUpdate=0.1 -p geometry=spherical RTree2D.*'
+sbt -java-home /usr/lib/jvm/zulu-17 clean 'charts -p overlap=1 -p rectSize=10 -p nearestMax=10 -p nodeCapacity=4,8,16 -p partToUpdate=0.1 -p geometry=spherical RTree2D.*'
 ```
 
 ### Publish locally
