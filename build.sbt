@@ -33,7 +33,7 @@ lazy val commonSettings = Seq(
     )
   ),
   resolvers += Resolver.sonatypeRepo("staging"),
-  scalaVersion := "2.12.16",
+  scalaVersion := "2.12.17",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
@@ -105,14 +105,14 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(commonSettings)
   .settings(publishSettings)
   .settings(
-    crossScalaVersions := Seq("3.2.0", "2.13.8", "2.12.16"),
+    crossScalaVersions := Seq("3.2.0", "2.13.8", "2.12.17"),
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % "3.2.13" % Test,
       "org.scalatestplus" %%% "scalacheck-1-16" % "3.2.13.0" % Test
     )
   )
   .jsSettings(
-    crossScalaVersions := Seq("3.2.0", "2.13.8", "2.12.16"),
+    crossScalaVersions := Seq("3.2.0", "2.13.8", "2.12.17"),
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule).withESFeatures(_.withESVersion(ESVersion.ES2015))),
     coverageEnabled := false
   )
