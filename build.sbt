@@ -46,6 +46,7 @@ lazy val commonSettings = Seq(
   ThisBuild / parallelExecution := false,
   publishTo := sonatypePublishToBundle.value,
   sonatypeProfileName := "com.github.plokhotnyuk",
+  versionScheme := Some("early-semver"),
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/plokhotnyuk/rtree2d"),
