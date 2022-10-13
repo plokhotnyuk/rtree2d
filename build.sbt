@@ -1,4 +1,4 @@
-import org.scalajs.linker.interface.ESVersion
+import org.scalajs.linker.interface.{CheckedBehavior, ESVersion}
 import sbt._
 import scala.sys.process._
 
@@ -37,10 +37,11 @@ lazy val commonSettings = Seq(
     "-deprecation",
     "-encoding", "UTF-8",
     "-feature",
-    "-unchecked"
+    "-unchecked",
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((3, _)) => Seq("-language:Scala2,implicitConversions")
-    case _ => Seq("-target:jvm-1.8")
+    case Some((2, 12)) => Seq("-language:higherKinds")
+    case Some((2, 13)) => Seq("-Wnonunit-statement")
+    case _ => Seq()
   }),
   Test / testOptions += Tests.Argument("-oDF"),
   ThisBuild / parallelExecution := false,
@@ -80,12 +81,7 @@ lazy val publishSettings = Seq(
       newMajor == oldMajor && (newMajor != "0" || newMinor == oldMinor)
     }
 
-    def isNewCrossbuild = CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((3, _)) => true
-      case _ => false
-    }
-
-    if (isCheckingRequired && !isNewCrossbuild) Set(organization.value %% moduleName.value % oldVersion)
+    if (isCheckingRequired) Set(organization.value %%% moduleName.value % oldVersion)
     else Set()
   },
   mimaReportSignatureProblems := true
@@ -113,7 +109,17 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   )
   .jsSettings(
     crossScalaVersions := Seq("3.2.0", "2.13.10", "2.12.17"),
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule).withESFeatures(_.withESVersion(ESVersion.ES2015))),
+    scalaJSLinkerConfig ~= {
+      _.withSemantics({
+        _.optimized
+          .withProductionMode(true)
+          .withAsInstanceOfs(CheckedBehavior.Unchecked)
+          .withStringIndexOutOfBounds(CheckedBehavior.Unchecked)
+          .withArrayIndexOutOfBounds(CheckedBehavior.Unchecked)
+      }).withClosureCompiler(true)
+        .withESFeatures(_.withESVersion(ESVersion.ES2015))
+        .withModuleKind(ModuleKind.CommonJSModule)
+    },
     coverageEnabled := false
   )
 
