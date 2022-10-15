@@ -41,7 +41,7 @@ object RTree {
       val es1 = RTree.lastLevel(rtree)
       val l1 = es1.length
       val es = util.Arrays.copyOf(es1, l1 + insert.size)
-      insert.copyToArray(es, l1)
+      insert.copyToArray(es, l1): Unit
       pack(es, nodeCapacity, new XComparator[A], new YComparator[A])
     } else {
       val cs = new mutable.AnyRefMap[RTree[A], DejaVuCounter](remove.size)
@@ -50,7 +50,7 @@ object RTree {
       val l1 = es1.length
       var n = insert.size
       val es = new Array[RTree[A]](l1 + n)
-      insert.copyToArray(es, 0)
+      insert.copyToArray(es, 0): Unit
       var i = 0
       while (i < l1) {
         val e = es1(i)
@@ -176,7 +176,7 @@ sealed trait RTree[A] {
     nearest(x, y, maxDist)((d, e) => {
       res = new Some(e)
       d
-    })
+    }): Unit
     res
   }
 
@@ -196,7 +196,7 @@ sealed trait RTree[A] {
               (implicit distCalc: DistanceCalculator): IndexedSeq[RTreeEntry[A]] =
     if (k <= 0) Vector.empty
     else new RTreeEntryBinaryHeap[A](maxDist, k) {
-      nearest(x, y, maxDist)((d, e) => put(d, e))
+      nearest(x, y, maxDist)((d, e) => put(d, e)): Unit
     }.toIndexedSeq
 
   /**
@@ -400,7 +400,7 @@ private final case class RTreeNode[A](minX: Float, minY: Float, maxX: Float, max
       .append(maxX).append(',').append(maxY).append(")\n")
     var i = from
     while (i < to) {
-      level(i).pretty(sb, indent + 2)
+      level(i).pretty(sb, indent + 2): Unit
       i += 1
     }
     sb

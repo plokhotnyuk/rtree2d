@@ -1,4 +1,4 @@
-import org.scalajs.linker.interface.ESVersion
+import org.scalajs.linker.interface.{CheckedBehavior, ESVersion}
 import sbt._
 import scala.sys.process._
 
@@ -32,21 +32,22 @@ lazy val commonSettings = Seq(
       url = url("https://github.com/plokhotnyuk")
     )
   ),
-  resolvers += Resolver.sonatypeRepo("staging"),
   scalaVersion := "2.12.17",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
     "-feature",
-    "-unchecked"
+    "-unchecked",
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((3, _)) => Seq("-language:Scala2,implicitConversions")
-    case _ => Seq("-target:jvm-1.8")
+    case Some((2, 12)) => Seq("-language:higherKinds")
+    case Some((2, 13)) => Seq("-Wnonunit-statement")
+    case _ => Seq()
   }),
   Test / testOptions += Tests.Argument("-oDF"),
   ThisBuild / parallelExecution := false,
   publishTo := sonatypePublishToBundle.value,
   sonatypeProfileName := "com.github.plokhotnyuk",
+  versionScheme := Some("early-semver"),
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/plokhotnyuk/rtree2d"),
@@ -80,12 +81,7 @@ lazy val publishSettings = Seq(
       newMajor == oldMajor && (newMajor != "0" || newMinor == oldMinor)
     }
 
-    def isNewCrossbuild = CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((3, _)) => true
-      case _ => false
-    }
-
-    if (isCheckingRequired && !isNewCrossbuild) Set(organization.value %% moduleName.value % oldVersion)
+    if (isCheckingRequired) Set(organization.value %%% moduleName.value % oldVersion)
     else Set()
   },
   mimaReportSignatureProblems := true
@@ -105,15 +101,25 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(commonSettings)
   .settings(publishSettings)
   .settings(
-    crossScalaVersions := Seq("3.2.0", "2.13.8", "2.12.17"),
+    crossScalaVersions := Seq("3.2.0", "2.13.10", "2.12.17"),
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % "3.2.13" % Test,
-      "org.scalatestplus" %%% "scalacheck-1-16" % "3.2.13.0" % Test
+      "org.scalatest" %%% "scalatest" % "3.2.14" % Test,
+      "org.scalatestplus" %%% "scalacheck-1-16" % "3.2.14.0" % Test
     )
   )
   .jsSettings(
-    crossScalaVersions := Seq("3.2.0", "2.13.8", "2.12.17"),
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule).withESFeatures(_.withESVersion(ESVersion.ES2015))),
+    crossScalaVersions := Seq("3.2.0", "2.13.10", "2.12.17"),
+    scalaJSLinkerConfig ~= {
+      _.withSemantics({
+        _.optimized
+          .withProductionMode(true)
+          .withAsInstanceOfs(CheckedBehavior.Unchecked)
+          .withStringIndexOutOfBounds(CheckedBehavior.Unchecked)
+          .withArrayIndexOutOfBounds(CheckedBehavior.Unchecked)
+      }).withClosureCompiler(true)
+        .withESFeatures(_.withESVersion(ESVersion.ES2015))
+        .withModuleKind(ModuleKind.CommonJSModule)
+    },
     coverageEnabled := false
   )
 
@@ -134,7 +140,7 @@ lazy val `rtree2d-benchmark` = project
       "org.locationtech.jts" % "jts-core" % "1.19.0",
       "com.github.davidmoten" % "rtree2" % "0.9.3",
       "org.spire-math" %% "archery" % "0.6.0",
-      "org.scalatest" %% "scalatest" % "3.2.13" % Test
+      "org.scalatest" %% "scalatest" % "3.2.14" % Test
     ),
     charts := Def.inputTaskDyn {
       val jmhParams = Def.spaceDelimited().parsed
