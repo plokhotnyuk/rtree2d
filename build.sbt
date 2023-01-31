@@ -101,14 +101,14 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(commonSettings)
   .settings(publishSettings)
   .settings(
-    crossScalaVersions := Seq("3.2.1", "2.13.10", "2.12.17"),
+    crossScalaVersions := Seq("3.2.2", "2.13.10", "2.12.17"),
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % "3.2.15" % Test,
       "org.scalatestplus" %%% "scalacheck-1-16" % "3.2.14.0" % Test
     )
   )
   .jsSettings(
-    crossScalaVersions := Seq("3.2.1", "2.13.10", "2.12.17"),
+    crossScalaVersions := Seq("3.2.2", "2.13.10", "2.12.17"),
     scalaJSLinkerConfig ~= {
       _.withSemantics({
         _.optimized
