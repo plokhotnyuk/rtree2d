@@ -32,7 +32,7 @@ lazy val commonSettings = Seq(
       url = url("https://github.com/plokhotnyuk")
     )
   ),
-  scalaVersion := "2.12.17",
+  scalaVersion := "2.12.18",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
@@ -101,14 +101,14 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(commonSettings)
   .settings(publishSettings)
   .settings(
-    crossScalaVersions := Seq("3.3.0", "2.13.11", "2.12.17"),
+    crossScalaVersions := Seq("3.3.0", "2.13.11", "2.12.18"),
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % "3.2.16" % Test,
       "org.scalatestplus" %%% "scalacheck-1-16" % "3.2.14.0" % Test
     )
   )
   .jsSettings(
-    crossScalaVersions := Seq("3.3.0", "2.13.11", "2.12.17"),
+    crossScalaVersions := Seq("3.3.0", "2.13.11", "2.12.18"),
     scalaJSLinkerConfig ~= {
       _.withSemantics({
         _.optimized
