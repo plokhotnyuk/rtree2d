@@ -167,7 +167,7 @@ Feel free to modify benchmarks and check how it works with your data, JDK, and S
 To see throughput with allocation rate run benchmarks with GC profiler using the following command:
 
 ```sh
-sbt -java-home /usr/lib/jvm/zulu-17 clean 'rtree2d-benchmark/jmh:run -prof gc -rf json -rff rtries.json .*'
+sbt -java-home /usr/lib/jvm/jdk-17 clean 'rtree2d-benchmark/jmh:run -prof gc -rf json -rff rtries.json .*'
 ```
 
 It will save benchmark report in `rtree2d-benchmark/rtries.json` file.
@@ -226,7 +226,7 @@ Double check binary and source compatibility, including behavior, and release us
 are required):
 
 ```sh
-sbt release
+sbt -java-home /usr/lib/jvm/jdk-8 -J-Xmx8g clean release
 ```
 
 Do not push changes to github until promoted artifacts for the new version are not available for download on 
