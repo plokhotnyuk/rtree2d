@@ -152,24 +152,6 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
       "org.scalatest" %%% "scalatest" % "3.2.19" % Test
     )
   )
-  .jsSettings(
-    crossScalaVersions := Seq("3.3.3", "2.13.14", "2.12.19"),
-    scalaJSLinkerConfig ~= {
-      _.withSemantics({
-        _.optimized
-          .withProductionMode(true)
-          .withAsInstanceOfs(CheckedBehavior.Unchecked)
-          .withStringIndexOutOfBounds(CheckedBehavior.Unchecked)
-          .withArrayIndexOutOfBounds(CheckedBehavior.Unchecked)
-          .withArrayStores(CheckedBehavior.Unchecked)
-          .withNegativeArraySizes(CheckedBehavior.Unchecked)
-          .withNullPointers(CheckedBehavior.Unchecked)
-      }).withClosureCompiler(true)
-        .withESFeatures(_.withESVersion(ESVersion.ES2015))
-        .withModuleKind(ModuleKind.CommonJSModule)
-    },
-    coverageEnabled := false
-  )
 
 lazy val `rtree2d-coreJVM` = `rtree2d-core`.jvm
 
