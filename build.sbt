@@ -1,6 +1,9 @@
 import org.scalajs.linker.interface.{CheckedBehavior, ESVersion}
-import sbt._
-import scala.sys.process._
+import sbt.*
+
+import scala.collection.Seq
+import scala.scalanative.build.{GC, LTO, Mode}
+import scala.sys.process.*
 
 lazy val oldVersion = "git describe --abbrev=0".!!.trim.replaceAll("^v", "")
 
@@ -58,6 +61,49 @@ lazy val commonSettings = Seq(
   pomIncludeRepository := { _ => false }
 )
 
+lazy val jsSettings = Seq(
+  scalacOptions ++= {
+    val localSourcesPath = (LocalRootProject / baseDirectory).value.toURI
+    val remoteSourcesPath = s"https://raw.githubusercontent.com/plokhotnyuk/rtree2d/${git.gitHeadCommit.value.get}/"
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, _)) => Seq(
+        s"-P:scalajs:mapSourceURI:$localSourcesPath->$remoteSourcesPath",
+        "-P:scalajs:genStaticForwardersForNonTopLevelObjects"
+      )
+      case _ => Seq(
+        s"-scalajs-mapSourceURI:$localSourcesPath->$remoteSourcesPath",
+        "-scalajs-genStaticForwardersForNonTopLevelObjects"
+      )
+    }
+  },
+  scalaJSLinkerConfig ~= {
+    _.withSemantics({
+        _.optimized
+          .withProductionMode(true)
+          .withAsInstanceOfs(CheckedBehavior.Unchecked)
+          .withStringIndexOutOfBounds(CheckedBehavior.Unchecked)
+          .withArrayIndexOutOfBounds(CheckedBehavior.Unchecked)
+          .withArrayStores(CheckedBehavior.Unchecked)
+          .withNegativeArraySizes(CheckedBehavior.Unchecked)
+          .withNullPointers(CheckedBehavior.Unchecked)
+      }).withClosureCompiler(true)
+      .withESFeatures(_.withESVersion(ESVersion.ES2015))
+      .withModuleKind(ModuleKind.CommonJSModule)
+  },
+  coverageEnabled := false // FIXME: Unexpected crash of scalac
+)
+
+lazy val nativeSettings = Seq(
+  scalacOptions ++= Seq("-P:scalanative:genStaticForwardersForNonTopLevelObjects"),
+  nativeConfig ~= {
+    _.withMode(Mode.releaseFast) // TODO: test with `Mode.releaseSize` and `Mode.releaseFull`
+      .withLTO(LTO.none)
+      .withGC(GC.immix)
+  },
+  mimaPreviousArtifacts := Set(), // FIXME: remove after the first release for Scala Native 0.5
+  coverageEnabled := false // FIXME: Unexpected linking error
+)
+
 lazy val noPublishSettings = Seq(
   publish / skip := true,
   mimaPreviousArtifacts := Set()
@@ -88,7 +134,7 @@ lazy val publishSettings = Seq(
 )
 
 lazy val rtree2d = project.in(file("."))
-  .aggregate((if (isWindows) winProjects else unixProjects):_*)
+  .aggregate((if (isWindows) winProjects else unixProjects)*)
   .settings(commonSettings)
   .settings(noPublishSettings)
 
@@ -103,8 +149,8 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .settings(
     crossScalaVersions := Seq("3.3.3", "2.13.14", "2.12.19"),
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % "3.2.18" % Test,
-      "org.scalatestplus" %%% "scalacheck-1-16" % "3.2.14.0" % Test
+      "org.scalatestplus" %%% "scalacheck-1-18" % "3.2.19.0" % Test,
+      "org.scalatest" %%% "scalatest" % "3.2.19" % Test
     )
   )
   .jsSettings(
@@ -129,8 +175,10 @@ lazy val `rtree2d-core` = crossProject(JVMPlatform, JSPlatform, NativePlatform)
 lazy val `rtree2d-coreJVM` = `rtree2d-core`.jvm
 
 lazy val `rtree2d-coreJS` = `rtree2d-core`.js
+  .settings(jsSettings)
 
 lazy val `rtree2d-coreNative` = `rtree2d-core`.native
+  .settings(nativeSettings)
 
 lazy val `rtree2d-benchmark` = project
   .enablePlugins(JmhPlugin)
@@ -143,7 +191,7 @@ lazy val `rtree2d-benchmark` = project
       "org.locationtech.jts" % "jts-core" % "1.19.0",
       "com.github.davidmoten" % "rtree2" % "0.9.3",
       "org.spire-math" %% "archery" % "0.6.0",
-      "org.scalatest" %% "scalatest" % "3.2.18" % Test
+      "org.scalatest" %%% "scalatest" % "3.2.19" % Test
     ),
     charts := Def.inputTaskDyn {
       val jmhParams = Def.spaceDelimited().parsed
