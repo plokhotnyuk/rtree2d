@@ -10,7 +10,7 @@ addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.4.7")
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.2.0")
 addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "1.1.4")
 addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.3.14")
-addSbtPlugin("com.github.sbt" % "sbt-git" % "2.0.1")
+addSbtPlugin("com.github.sbt" % "sbt-git" % "2.1.0")
 
 libraryDependencies ++= Seq(
   "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.30.15",
