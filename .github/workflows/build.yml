@@ -18,13 +18,11 @@ jobs:
     strategy:
       matrix:
         java:
-          - zulu@1.17
-          - graalvm-ce-java11@21
-          - zulu@1.8
+          - 11
+          - 21
         os:
-          - ubuntu-latest
-          - macOS-latest
-          - windows-latest
+          - ubuntu-22.04-arm
+          - ubuntu-22.04
       fail-fast: false
     steps:
       - name: Configure git
@@ -35,10 +33,11 @@ jobs:
           fetch-depth: 300
       - name: Fetch tags
         run: git fetch --depth=300 origin +refs/tags/*:refs/tags/*
-      - uses: coursier/cache-action@v6.3
-      - uses: olafurpg/setup-scala@v13
+      - uses: coursier/cache-action@v6
+      - name: Setup Scala with SBT
+        uses: coursier/setup-action@v1
         with:
-          java-version: ${{matrix.java}}
+          apps: sbt
       - name: Compile, test and check binary compatibility
         run: "sbt -batch clean +test +mimaReportBinaryIssues"
         shell: bash
