@@ -48,7 +48,7 @@ lazy val commonSettings = Seq(
   }),
   Test / testOptions += Tests.Argument("-oDF"),
   ThisBuild / parallelExecution := false,
-  publishTo := sonatypePublishToBundle.value,
+  publishTo := localStaging.value,
   sonatypeProfileName := "com.github.plokhotnyuk",
   versionScheme := Some("early-semver"),
   scmInfo := Some(
