@@ -42,8 +42,14 @@ lazy val commonSettings = Seq(
     "-feature",
     "-unchecked",
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, 12)) => Seq("-language:higherKinds")
-    case Some((2, 13)) => Seq("-Wnonunit-statement")
+    case Some((2, 12)) => Seq(
+      "-language:higherKinds",
+      "-opt:l:method"
+    )
+    case Some((2, 13)) => Seq(
+      "-Wnonunit-statement",
+      "-opt:l:method"
+    )
     case _ => Seq()
   }),
   Test / testOptions += Tests.Argument("-oDF"),
