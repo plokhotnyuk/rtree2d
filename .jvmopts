@@ -1,3 +1,2 @@
--Xmx4g
--XX:+UseG1GC
+-Xmx6g
 -Dfile.encoding=UTF8
