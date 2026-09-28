@@ -14,6 +14,6 @@ addSbtPlugin("com.github.sbt" % "sbt-git" % "2.2.0")
 addSbtPlugin("com.eed3si9n" % "sbt-salad-days" % "0.2.0")
 
 libraryDependencies ++= Seq(
-  "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.38.17",
+  "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.41.2",
   "org.jfree" % "jfreechart" % "1.5.6"
 )
